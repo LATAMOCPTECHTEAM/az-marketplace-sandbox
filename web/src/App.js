@@ -5,6 +5,7 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
 
 import './App.css';
 import Header from "./components/Header";
@@ -42,7 +43,7 @@ function App() {
 
         </Switch>
       </div>
-
+      <ToastContainer />
     </Router>
   );
 }

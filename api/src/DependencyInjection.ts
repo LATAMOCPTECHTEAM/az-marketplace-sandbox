@@ -4,10 +4,13 @@ import logger from "./helpers/Logger";
 
 import HealthcheckRoute from "./routes/HealthcheckRoute";
 import SettingsRoute from "./routes/SettingsRoute";
+import SubscriptionRoute from "./routes/SubscriptionRoute";
 
 import Server from "./server/Server";
 import { ICustomRoute } from "./types";
 import Startup from "./Startup";
+import SettingsService from "./services/SettingsService";
+import SubscriptionService from "./services/SubscriptionService";
 
 export class DependencyInjection {
 
@@ -28,16 +31,20 @@ export class DependencyInjection {
         container.register("Logger", { useValue: logger })
 
         // Services
-      
+        container.register("ISettingsService", { useClass: SettingsService })
+        container.register("ISubscriptionService", { useClass: SubscriptionService })
+
 
         // Routes
         container.register("IHeathcheckRoute", { useClass: HealthcheckRoute });
         container.register("ISettingsRoute", { useClass: SettingsRoute });
+        container.register("ISubscriptionRoute", { useClass: SubscriptionRoute });
 
         // Injecting Routes for Express
         const Routes = [
-          "IHeathcheckRoute",
-          "ISettingsRoute"
+            "IHeathcheckRoute",
+            "ISettingsRoute",
+            "ISubscriptionRoute"
         ];
         var customRoutes = Routes.map(route => Instance.getContainer().resolve<ICustomRoute>(route));
         container.register("CustomRoutes", { useValue: customRoutes })

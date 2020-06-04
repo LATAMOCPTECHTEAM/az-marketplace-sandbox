@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+
+.react-grid-Main{
+  color: black !important;
+}
+.react-grid-Toolbar{
+  color:black !important;
+  background-color: #222222 !important;
+  border:0 !important;
+}
+
+.react-grid-Canvas{
+  background-color: #a0a0a0 !important
+}
+.react-grid-Cell{
+  background-color: #faf6f6 !important;
+}
+
+.validator-error{
+  color:palevioletred;
+  font-weight: bold;
+}

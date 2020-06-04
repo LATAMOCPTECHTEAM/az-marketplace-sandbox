@@ -1,26 +1,42 @@
 import { Request, Response, NextFunction } from "express";
-import { injectable } from "tsyringe";
+import { injectable, inject } from "tsyringe";
 
 import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
-
-var mockSettings = { webhookUrl: "abc", landingPageUrl: "zxc" }
+import { ISettingsService } from "../types";
 
 @injectable()
 @RoutePrefix("/settings")
 export default class SettingsRoute extends BaseRoute {
 
-    constructor() {
+    constructor(@inject("ISettingsService") private settingsService: ISettingsService) {
         super();
     }
 
+    @RouteConfig("get", "/t")
+    async t(req: Request, res: Response, next: NextFunction): Promise<void> {
+        res.status(200).json("hi");
+
+    }
     @RouteConfig("get", "/")
     async get(req: Request, res: Response, next: NextFunction): Promise<void> {
-        res.status(200).json(mockSettings);
+        try {
+            var settings = await this.settingsService.getSettings();
+            delete settings.__v;
+            delete settings._id;
+            res.status(200).json(settings);
+        } catch (error) {
+            next(error);
+        }
     }
 
     @RouteConfig("post", "/")
     async post(req: Request, res: Response, next: NextFunction): Promise<void> {
-        mockSettings = req.body;
-        res.status(200).json("OK");
+        try {
+            await this.settingsService.updateSettings(req.body);
+            res.status(200).json("OK");
+        }
+        catch (error) {
+            next(error);
+        }
     }
 }
