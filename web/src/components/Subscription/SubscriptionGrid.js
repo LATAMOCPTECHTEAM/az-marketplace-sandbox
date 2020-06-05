@@ -74,9 +74,9 @@ class SubscriptionGrid extends Component {
                     </div>,
                     actions: [
                         {
-                            text: "View",
+                            text: "Login (Configure Account)",
                             callback: () => {
-                                alert("Option 1 clicked");
+                                _self.props.onClickLogin(row.id);
                             }
                         },
                         {
@@ -108,8 +108,13 @@ class SubscriptionGrid extends Component {
                             callback: () => {
                                 alert("Option 2 clicked");
                             }
+                        },
+                        {
+                            text: "Delete",
+                            callback: () => {
+                                _self.props.onClickDelete(row.id);
+                            }
                         }
-
                     ]
                 }
             ]

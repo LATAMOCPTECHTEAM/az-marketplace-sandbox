@@ -22,6 +22,13 @@ export default class SubscriptionService {
         }).then(res => res.data);
     }
 
+    async delete(id) {
+        return axios({
+            baseURL: `http://localhost:81/subscriptions/${id}`,
+            method: "DELETE",
+        }).then(res => res.data);
+    }
+
     async get(id) {
         return axios({
             baseURL: `http://localhost:81/subscriptions/${id}`,

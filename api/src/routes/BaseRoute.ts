@@ -28,7 +28,7 @@ export class BaseRoute implements ICustomRoute {
         var router = Router();
 
         for (var route of this.routes) {
-            console.log(`router.${route.method}(${route.route},${route.handler.toString()})`)
+            console.log(`router.${route.method}("${route.route}",${route.handler.toString()})`)
             router[route.method](route.route, route.handler.bind(this));
         }
 

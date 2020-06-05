@@ -39,10 +39,12 @@ export interface ISettingsService {
 }
 
 export interface ISubscriptionService {
+    activateSubscription(id: string, planId: string, quantity: string): void;
     createSubscription(settings: ISubscription): void;
     updateSubscription(settings: ISubscription): void;
     getSubscription(id: string): Promise<ISubscription>;
     listSubscription(): Promise<ISubscription[]>;
+    deleteSubscription(id: string): void;
 }
 
 // Startup

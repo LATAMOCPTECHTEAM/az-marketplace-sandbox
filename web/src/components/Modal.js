@@ -30,7 +30,7 @@ class ModalComponent extends Component {
   render() {
     return (
       <>
-        <Modal size={this.props.size} show={this.props.open || this.state.show} onHide={this.close.bind(this)}>
+        <Modal backdrop="static" size={this.props.size} show={this.props.open || this.state.show} onHide={this.close.bind(this)}>
           <Modal.Header closeButton>
             <Modal.Title>{this.props.title}</Modal.Title>
           </Modal.Header>
@@ -39,9 +39,12 @@ class ModalComponent extends Component {
             <Button variant="secondary" onClick={this.close.bind(this)}>
               Close
               </Button>
-            <Button variant="primary" onClick={this.handleDone.bind(this)}>
-              {this.props.submitText || "Done"}
-            </Button>
+            {
+              this.props.hideDone ? "" :
+                <Button variant="primary" onClick={this.handleDone.bind(this)}>
+                  {this.props.submitText || "Done"}
+                </Button>
+            }
           </Modal.Footer>
         </Modal>
       </>

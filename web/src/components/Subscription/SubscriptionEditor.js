@@ -43,7 +43,7 @@ export default class SubscriptionCreate extends Component {
             isFreeTrial: false,
             isTest: true,
             sandboxType: "None",
-            saasSubscriptionStatus: null
+            saasSubscriptionStatus: "PendingFulfillmentStart"
         }
     };
 
@@ -193,7 +193,9 @@ export default class SubscriptionCreate extends Component {
                         onChangeHandler={(event) => this.inputChangeHandler("planId", event.target.value)}>
                         {this.fetchMessage(true)}
                     </SelectInput>
-                    <TextInput displayCols={displayCols} inputCols={inputCols} name="quantity" displayName="Quantity" type="number" placeholder="0" value={this.state.subscription.quantity} onChangeHandler={(event) => this.inputChangeHandler("quantity", parseInt(event.target.value))} />
+                    <TextInput displayCols={displayCols} inputCols={inputCols} name="quantity" displayName="Quantity" placeholder="0" type="number"
+                        value={this.state.subscription.quantity}
+                        onChangeHandler={(event) => this.inputChangeHandler("quantity", parseInt(event.target.value))} />
                     <SelectInput
                         displayCols={displayCols} inputCols={inputCols}
                         name="statusId" displayName="Status"

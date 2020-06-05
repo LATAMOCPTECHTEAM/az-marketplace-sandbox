@@ -5,12 +5,14 @@ import logger from "./helpers/Logger";
 import HealthcheckRoute from "./routes/HealthcheckRoute";
 import SettingsRoute from "./routes/SettingsRoute";
 import SubscriptionRoute from "./routes/SubscriptionRoute";
+import MarketplaceRoute from "./routes/MarketplaceRoute";
 
 import Server from "./server/Server";
 import { ICustomRoute } from "./types";
 import Startup from "./Startup";
 import SettingsService from "./services/SettingsService";
 import SubscriptionService from "./services/SubscriptionService";
+
 
 export class DependencyInjection {
 
@@ -39,12 +41,14 @@ export class DependencyInjection {
         container.register("IHeathcheckRoute", { useClass: HealthcheckRoute });
         container.register("ISettingsRoute", { useClass: SettingsRoute });
         container.register("ISubscriptionRoute", { useClass: SubscriptionRoute });
+        container.register("IMarketplaceRoute", { useClass: MarketplaceRoute });
 
         // Injecting Routes for Express
         const Routes = [
             "IHeathcheckRoute",
             "ISettingsRoute",
-            "ISubscriptionRoute"
+            "ISubscriptionRoute",
+            "IMarketplaceRoute"
         ];
         var customRoutes = Routes.map(route => Instance.getContainer().resolve<ICustomRoute>(route));
         container.register("CustomRoutes", { useValue: customRoutes })
