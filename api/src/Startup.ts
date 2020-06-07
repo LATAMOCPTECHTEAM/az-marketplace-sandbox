@@ -3,9 +3,6 @@ import { injectable, inject } from "tsyringe";
 
 import { IServer } from "./types";
 
-// TODO Change to dependency injection
-import mongoose from "mongoose";
-import SettingsSchema from "./models/SettingsSchema";
 
 @injectable()
 export default class Startup {
@@ -20,7 +17,6 @@ export default class Startup {
             dotenv.config();
         }
 
-        await mongoose.connect("mongodb://mongo:27017/sandbox", { useFindAndModify: false })
 
         this.server.createAppWithRoutes();
         this.server.startServer();

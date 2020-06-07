@@ -15,7 +15,9 @@ class SubscriptionGrid extends Component {
             { key: "actions", name: "Actions", filterable: false, width: 130 },
             { key: "id", name: "Id", filterable: true },
             { key: "name", name: "Name", filterable: true, filterRenderer: AutoCompleteFilter },
-            { key: "planId", name: "PlanId", filterable: true, filterRenderer: AutoCompleteFilter }
+            { key: "planId", name: "PlanId", filterable: true, filterRenderer: AutoCompleteFilter },
+            { key: "saasSubscriptionStatus", name: "Status", filterable: true }
+
         ];
     }
 
@@ -23,7 +25,7 @@ class SubscriptionGrid extends Component {
         subscriptions: []
     };
 
-    async componentWillMount() {
+    async componentDidMount() {
         await this.loadGrid();
     }
 
@@ -36,8 +38,6 @@ class SubscriptionGrid extends Component {
             console.error(error);
         }
     }
-
-
 
     handleFilterChange = filter => filters => {
         const newFilters = { ...filters };
@@ -57,7 +57,6 @@ class SubscriptionGrid extends Component {
         return selectors.getRows({ rows, filters });
     }
 
-
     getCellActions(column, row) {
         var _self = this;
         const cellActions = {
@@ -73,40 +72,11 @@ class SubscriptionGrid extends Component {
                         </button>
                     </div>,
                     actions: [
-                        {
-                            text: "Login (Configure Account)",
-                            callback: () => {
-                                _self.props.onClickLogin(row.id);
-                            }
-                        },
+                    
                         {
                             text: "Edit",
                             callback: (args) => {
                                 _self.props.onClickEdit(row.id);
-                            }
-                        },
-                        {
-                            text: "Simulate: Change Plan",
-                            callback: () => {
-                                alert("Option 1 clicked");
-                            }
-                        },
-                        {
-                            text: "Simulate: Suspend",
-                            callback: () => {
-                                alert("Option 2 clicked");
-                            }
-                        },
-                        {
-                            text: "Simulate: Unsubscribe",
-                            callback: () => {
-                                alert("Option 2 clicked");
-                            }
-                        },
-                        {
-                            text: "Simulate: Reinstate",
-                            callback: () => {
-                                alert("Option 2 clicked");
                             }
                         },
                         {
@@ -122,6 +92,7 @@ class SubscriptionGrid extends Component {
         return cellActions[column.key];
     }
 
+    
 
     render() {
         let _self = this;
@@ -131,12 +102,14 @@ class SubscriptionGrid extends Component {
                 columns={_self.columns}
                 rowGetter={i => filteredRows[i]}
                 rowsCount={filteredRows.length}
-                minHeight={500}
+                minHeight={720}
                 toolbar={<Toolbar enableFilter={true} />}
+                onRowsSelected
                 onAddFilter={filter => _self.setState(_self.handleFilterChange(filter))}
                 onClearFilters={() => _self.setState({})}
                 getValidFilterValues={columnKey => _self.getValidFilterValues(_self.state.subscriptions, columnKey)}
                 getCellActions={_self.getCellActions.bind(this)}
+                onRowClick={_self.props.onRowClick}
 
             />
         </div>)

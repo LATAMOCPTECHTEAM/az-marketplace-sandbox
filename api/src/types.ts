@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction, Application } from "express";
 import { ISettings } from "./models/SettingsSchema";
 import { ISubscription } from "./models/SubscriptionSchema";
+import { IOperation } from "./models/OperationSchema";
 
 
 // # Routes
@@ -45,6 +46,15 @@ export interface ISubscriptionService {
     getSubscription(id: string): Promise<ISubscription>;
     listSubscription(): Promise<ISubscription[]>;
     deleteSubscription(id: string): void;
+}
+
+export interface IOperationService {
+    delete(operationId: string);
+    sendWebhook(operationId: string);
+    confirmChangePlan(operationId: string, subscriptionId: string, planId: string, quantity: string, status: string)
+    simulateSuspend(operation: IOperation)
+    simulateChangePlan(operation: IOperation)
+    list(subscriptionId: string): Promise<IOperation[]>;
 }
 
 // Startup

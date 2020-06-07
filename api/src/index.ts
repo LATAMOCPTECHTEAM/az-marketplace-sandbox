@@ -2,12 +2,17 @@ import "reflect-metadata";
 
 import { default as DIContainer } from "./DependencyInjection";
 import { IStartup } from "./types";
+import mongoose from "mongoose";
 
-DIContainer.setup();
-var startup = DIContainer.getContainer().resolve<IStartup>("IStartup")
-startup.main()
+mongoose.connect("mongodb://mongo:27017/sandbox", { useFindAndModify: false })
+    .then(x => {
+        DIContainer.setup();
+        var startup = DIContainer.getContainer().resolve<IStartup>("IStartup")
+
+        return startup.main();
+    })
     .then(() => {
-        console.log("Process exit successfully.")
+        console.log("Process started successfully.")
     })
     .catch(error => {
         console.error("Process exited with an error.")

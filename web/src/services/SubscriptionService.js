@@ -2,13 +2,9 @@ const axios = require('axios');
 
 export default class SubscriptionService {
 
-    constructor() {
-
-    }
-
     async create(subscription) {
         return axios({
-            baseURL: `http://localhost:81/subscriptions`,
+            baseURL: `${process.env.REACT_APP_API_URL}/subscriptions`,
             method: "POST",
             data: subscription
         }).then(res => res.data);
@@ -16,7 +12,7 @@ export default class SubscriptionService {
 
     async update(subscription) {
         return axios({
-            baseURL: `http://localhost:81/subscriptions`,
+            baseURL: `${process.env.REACT_APP_API_URL}/subscriptions`,
             method: "PUT",
             data: subscription
         }).then(res => res.data);
@@ -24,20 +20,20 @@ export default class SubscriptionService {
 
     async delete(id) {
         return axios({
-            baseURL: `http://localhost:81/subscriptions/${id}`,
+            baseURL: `${process.env.REACT_APP_API_URL}/subscriptions/${id}`,
             method: "DELETE",
         }).then(res => res.data);
     }
 
     async get(id) {
         return axios({
-            baseURL: `http://localhost:81/subscriptions/${id}`,
+            baseURL: `${process.env.REACT_APP_API_URL}/subscriptions/${id}`,
         }).then(res => res.data);
     }
 
     async list() {
         return axios({
-            baseURL: "http://localhost:81/subscriptions",
+            baseURL: `${process.env.REACT_APP_API_URL}/subscriptions`,
         }).then(res => res.data.subscriptions);
     }
 

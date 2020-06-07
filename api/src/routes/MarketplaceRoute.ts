@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import { injectable, inject } from "tsyringe";
 
 import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
-import { ISubscriptionService } from "../types";
+import { ISubscriptionService, IOperationService } from "../types";
 
 @injectable()
 @RoutePrefix("/api/saas/subscriptions")
 export default class MarketplaceRoute extends BaseRoute {
 
-    constructor(@inject("ISubscriptionService") private subscriptionService: ISubscriptionService) {
+    constructor(@inject("ISubscriptionService") private subscriptionService: ISubscriptionService, @inject("IOperationService") private operationService: IOperationService) {
         super();
     }
 
@@ -24,6 +24,17 @@ export default class MarketplaceRoute extends BaseRoute {
                 planId: subscription.planId,
                 quantity: subscription.quantity
             });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
+    @RouteConfig("patch", "/:subscriptionId/operations/:operationId")
+    async patchOperation(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            await this.operationService.confirmChangePlan(req.params.subscriptionId, req.params.operationId, req.body.planId, req.body.quantity, req.body.status);
+            res.status(200).json("OK");
         } catch (error) {
             next(error);
         }

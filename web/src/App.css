@@ -54,7 +54,20 @@
   background-color: #faf6f6 !important;
 }
 
+.react-grid-Row:nth-child(n + 6) .rdg-cell-action-menu {
+    top: 0;
+    transform: translateY(-100%);
+}
 .validator-error{
   color:palevioletred;
   font-weight: bold;
+}
+
+hr{
+  background-color: gray;
+}
+
+.btn{
+    margin-right: 5px;
+    margin-bottom: 5px;
 }

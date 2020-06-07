@@ -12,6 +12,8 @@ import { ICustomRoute } from "./types";
 import Startup from "./Startup";
 import SettingsService from "./services/SettingsService";
 import SubscriptionService from "./services/SubscriptionService";
+import OperationService from "./services/OperationService";
+import OperationRoute from "./routes/OperationsRoute";
 
 
 export class DependencyInjection {
@@ -35,20 +37,22 @@ export class DependencyInjection {
         // Services
         container.register("ISettingsService", { useClass: SettingsService })
         container.register("ISubscriptionService", { useClass: SubscriptionService })
-
+        container.register("IOperationService", { useClass: OperationService })
 
         // Routes
         container.register("IHeathcheckRoute", { useClass: HealthcheckRoute });
         container.register("ISettingsRoute", { useClass: SettingsRoute });
         container.register("ISubscriptionRoute", { useClass: SubscriptionRoute });
         container.register("IMarketplaceRoute", { useClass: MarketplaceRoute });
-
+        container.register("IOperationRoute", { useClass: OperationRoute });
+        
         // Injecting Routes for Express
         const Routes = [
             "IHeathcheckRoute",
             "ISettingsRoute",
             "ISubscriptionRoute",
-            "IMarketplaceRoute"
+            "IMarketplaceRoute",
+            "IOperationRoute"
         ];
         var customRoutes = Routes.map(route => Instance.getContainer().resolve<ICustomRoute>(route));
         container.register("CustomRoutes", { useValue: customRoutes })

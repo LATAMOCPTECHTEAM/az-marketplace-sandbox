@@ -4,7 +4,7 @@ import Modal from "../../components/Modal";
 import Button from "react-bootstrap/Button";
 import SubscriptionEditor from "../../components/Subscription/SubscriptionEditor";
 import SubscriptionDelete from "../../components/Subscription/SubscriptionDelete";
-import SubscriptionLogin from "../../components/Subscription/SubscriptionLogin";
+import SubscriptionView from "../../components/Subscription/SubscriptionView";
 
 export default class Subscriptions extends Component {
 
@@ -20,60 +20,49 @@ export default class Subscriptions extends Component {
         this.modalCreate.show();
     }
 
-    handleClickEditSubscription(id) {
-        this.state.editId = id;
-        this.setState(this.state);
-        this.modalEdit.show();
+    handleClickActionBar(id, modal) {
+        this.setState({ currentId: id });
+        modal.show();
     }
 
-    handleClickDeleteSubscription(id) {
-        this.state.deleteId = id;
-        this.setState(this.state);
-        this.modalDelete.show();
-    }
-
-    handleClickLoginSubscription(id) {
-        this.state.loginId = id;
-        this.setState(this.state);
-        this.modalLogin.show();
-    }
-
-    afterSubmitCreate() {
-        this.modalCreate.close();
+    closeModalAfterSubmit(modal) {
+        modal.close();
         this.subscriptionGrid.loadGrid();
     }
 
-    afterSubmitEdit() {
-        this.modalEdit.close();
-        this.subscriptionGrid.loadGrid();
+    onRowClick(index, row) {
+        if (row) {
+            this.setState({ currentId: row.id });
+        }
     }
-
-    afterSubmitDelete() {
-        this.modalDelete.close();
-        this.subscriptionGrid.loadGrid();
-    }
-
-
 
     render() {
         return (<div>
-            <Modal title="Create Subscription" size="xl" ref={modalCreate => this.modalCreate = modalCreate} doneHandler={() => this.subscriptionCreate.submit()} >
-                <SubscriptionEditor ref={subscriptionCreate => this.subscriptionCreate = subscriptionCreate} afterSubmitHandler={() => this.afterSubmitCreate()} />
+            <Modal title="Create Subscription" size="xl" ref={modalCreate => this.modalCreate = modalCreate} onDone={() => this.subscriptionCreate.submit()} >
+                <SubscriptionEditor ref={subscriptionCreate => this.subscriptionCreate = subscriptionCreate} afterSubmitHandler={() => this.closeModalAfterSubmit(this.modalCreate)} />
             </Modal>
             <Modal title="Edit Subscription" size="xl" ref={modalEdit => this.modalEdit = modalEdit} doneHandler={() => this.subscriptionEdit.submit()} >
-                <SubscriptionEditor id={this.state.editId} ref={subscriptionEdit => this.subscriptionEdit = subscriptionEdit} afterSubmitHandler={() => this.afterSubmitEdit()} />
+                <SubscriptionEditor id={this.state.currentId} ref={subscriptionEdit => this.subscriptionEdit = subscriptionEdit} afterSubmitHandler={() => this.closeModalAfterSubmit(this.modalEdit)} />
             </Modal>
             <Modal title="Delete Subscription" ref={modalDelete => this.modalDelete = modalDelete} doneHandler={() => this.subscriptionDelete.submit()} >
-                <SubscriptionDelete id={this.state.deleteId} ref={subscriptionDelete => this.subscriptionDelete = subscriptionDelete} afterSubmitHandler={() => this.afterSubmitDelete()} />
+                <SubscriptionDelete id={this.state.currentId} ref={subscriptionDelete => this.subscriptionDelete = subscriptionDelete} afterSubmitHandler={() => this.closeModalAfterSubmit(this.modalDelete)} />
             </Modal>
-            <Modal title="Login (Configure Account)" ref={modalLogin => this.modalLogin = modalLogin} hideDone={true} >
-                <SubscriptionLogin id={this.state.loginId} />
-            </Modal>
-            <Button onClick={this.handleClickCreateSubscription.bind(this)}>Create Subscription</Button>
-            <SubscriptionGrid ref={subscriptionGrid => this.subscriptionGrid = subscriptionGrid}
-                onClickEdit={this.handleClickEditSubscription.bind(this)}
-                onClickDelete={this.handleClickDeleteSubscription.bind(this)}
-                onClickLogin={this.handleClickLoginSubscription.bind(this)} />
+            <div className="row">
+                <div className="col col-xs-12 col-sm-12 col-md-12 col-lg-6" style={{ marginBottom: "10px" }}>
+                    <Button onClick={this.handleClickCreateSubscription.bind(this)}>Create Subscription</Button>
+                    <SubscriptionGrid ref={subscriptionGrid => this.subscriptionGrid = subscriptionGrid}
+                        onClickEdit={(id) => this.handleClickActionBar(id, this.modalEdit)}
+                        onClickDelete={(id) => this.handleClickActionBar(id, this.modalDelete)}
+                        onRowClick={this.onRowClick.bind(this)} />
+                </div>
+
+                <div className="col col-xs-12 col-sm-12 col-md-12 col-lg-6">
+                    {this.state.currentId ?
+                        <SubscriptionView ref={subscriptionView => this.subscriptionView = subscriptionView} id={this.state.currentId} afterAction={() => this.subscriptionGrid.loadGrid()} />
+                        : "Select a Subscription to see the details"}
+                </div>
+            </div>
+
         </div>)
     }
 }

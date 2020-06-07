@@ -12,11 +12,7 @@ export default class SettingsRoute extends BaseRoute {
         super();
     }
 
-    @RouteConfig("get", "/t")
-    async t(req: Request, res: Response, next: NextFunction): Promise<void> {
-        res.status(200).json("hi");
-
-    }
+  
     @RouteConfig("get", "/")
     async get(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {

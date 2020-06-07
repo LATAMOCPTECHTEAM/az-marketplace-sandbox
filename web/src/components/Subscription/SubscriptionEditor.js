@@ -89,8 +89,6 @@ export default class SubscriptionCreate extends Component {
             this.done();
         } else {
             this.validator.showMessages();
-            // rerender to show messages for the first time
-            // you can use the autoForceUpdate option to do this automatically`
             this.forceUpdate();
         }
 

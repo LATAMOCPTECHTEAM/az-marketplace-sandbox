@@ -4,7 +4,7 @@ function Title(props) {
     return (
         <h2 className="Title">
             {props.text}
-            <hr style= {{ "backgroundColor": "gray"}} />
+            <hr />
         </h2>
     );
 }
