@@ -22,6 +22,7 @@ export default class SettingsService implements ISettingsService {
 
     async getSettings(): Promise<ISettings> {
         var settings = await SettingsSchema.findOne({});
+
         return settings;
     }
 

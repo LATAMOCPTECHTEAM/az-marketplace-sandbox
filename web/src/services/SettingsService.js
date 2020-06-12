@@ -1,21 +1,18 @@
+import config from "../config";
 const axios = require('axios');
 
 export default class SettingsService {
 
-    constructor() {
-
-    }
-
     async postSettings(settings) {
         return axios({
-            baseURL: `${process.env.REACT_APP_API_URL}/settings`,
+            baseURL: `${config.api}/settings`,
             method: "POST",
             data: settings
         }).then(res => res.data);
     }
     async getSettings() {
         return axios({
-            baseURL: `${process.env.REACT_APP_API_URL}/settings`,
+            baseURL: `${config.api}/settings`,
         }).then(res => res.data);
     }
 

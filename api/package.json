@@ -6,6 +6,7 @@
   "scripts": {
     "compile": "tsc && npm run-script swagger",
     "debug": "npm run-script compile && NODE_ENV=development node --inspect-brk --nolazy bin/index.js",
+    "debug-nodemon": "nodemon -e ts --exec \"npm run-script debug\"",
     "start": "node bin/index.js",
     "test": "mocha -r ts-node/register --reporter-options mochaFile=testReport/test-results.xml --reporter mocha-junit-reporter tests/**/*.ts",
     "test-debug": "mocha -r ts-node/register --inspect-brk tests/**/*.ts",
@@ -26,6 +27,7 @@
     "express": "^4.17.1",
     "helmet": "3.9.0",
     "mongoose": "^5.9.17",
+    "nodemon": "^2.0.4",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.0",
     "request-promise": "^4.2.5",

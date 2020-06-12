@@ -5,21 +5,25 @@ import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
 import { ISettingsService } from "../types";
 
 @injectable()
-@RoutePrefix("/settings")
+@RoutePrefix("/api/settings")
 export default class SettingsRoute extends BaseRoute {
 
     constructor(@inject("ISettingsService") private settingsService: ISettingsService) {
         super();
     }
 
-  
+
     @RouteConfig("get", "/")
     async get(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             var settings = await this.settingsService.getSettings();
-            delete settings.__v;
-            delete settings._id;
-            res.status(200).json(settings);
+            if (!settings) {
+                res.status(200).json({});
+            } else {
+                delete settings.__v;
+                delete settings._id;
+                res.status(200).json(settings);
+            }
         } catch (error) {
             next(error);
         }

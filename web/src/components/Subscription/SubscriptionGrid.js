@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react';
+import React, { Component } from 'react';
 import ReactDataGrid from 'react-data-grid';
 import { Toolbar, Data, Filters } from "react-data-grid-addons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -72,7 +72,7 @@ class SubscriptionGrid extends Component {
                         </button>
                     </div>,
                     actions: [
-                    
+
                         {
                             text: "Edit",
                             callback: (args) => {
@@ -92,7 +92,7 @@ class SubscriptionGrid extends Component {
         return cellActions[column.key];
     }
 
-    
+
 
     render() {
         let _self = this;

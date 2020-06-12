@@ -45,15 +45,18 @@ export interface ISubscriptionService {
     updateSubscription(settings: ISubscription): void;
     getSubscription(id: string): Promise<ISubscription>;
     listSubscription(): Promise<ISubscription[]>;
+    listSubscriptionPaged(skip: number): Promise<{ subscriptions: ISubscription[], nextSkip: number }>;
     deleteSubscription(id: string): void;
 }
 
 export interface IOperationService {
     delete(operationId: string);
     sendWebhook(operationId: string);
-    confirmChangePlan(operationId: string, subscriptionId: string, planId: string, quantity: string, status: string)
-    simulateSuspend(operation: IOperation)
-    simulateChangePlan(operation: IOperation)
+    confirmChangePlan(operationId: string, subscriptionId: string, planId: string, quantity: string, status: string);
+    simulateSuspend(operation: IOperation);
+    simulateChangePlan(operation: IOperation);
+    simulateUnsubscribe(operation: IOperation);
+    simulateReinstate(operation: IOperation);
     list(subscriptionId: string): Promise<IOperation[]>;
 }
 

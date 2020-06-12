@@ -41,10 +41,16 @@
 .react-grid-Main{
   color: black !important;
 }
+
 .react-grid-Toolbar{
   color:black !important;
   background-color: #222222 !important;
   border:0 !important;
+  padding-right: 0px !important;
+}
+
+.react-grid-Toolbar button.btn{
+   margin: 0px !important;
 }
 
 .react-grid-Canvas{
@@ -70,4 +76,16 @@ hr{
 .btn{
     margin-right: 5px;
     margin-bottom: 5px;
+}
+
+.slide-pane__header{
+    background-color: #263f59;
+}
+
+.slide-pane__content{
+    background-color: #222222 !important;
+}
+
+.ReactModal__Overlay {
+    z-index:1;
 }

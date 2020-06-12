@@ -5,7 +5,7 @@ import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
 import { IOperationService } from "../types";
 
 @injectable()
-@RoutePrefix("/operations")
+@RoutePrefix("/api/operations")
 export default class OperationRoute extends BaseRoute {
 
     constructor(@inject("IOperationService") private operationService: IOperationService) {
@@ -34,20 +34,52 @@ export default class OperationRoute extends BaseRoute {
 
     @RouteConfig("post", "/suspend")
     async suspend(req: Request, res: Response, next: NextFunction): Promise<void> {
-        await this.operationService.simulateSuspend(req.body);
-        res.status(200).json("OK");
+        try {
+            await this.operationService.simulateSuspend(req.body);
+            res.status(200).json("OK");
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    @RouteConfig("post", "/unsubscribe")
+    async unsubscribe(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            await this.operationService.simulateUnsubscribe(req.body);
+            res.status(200).json("OK");
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    @RouteConfig("post", "/reinstate")
+    async reinstate(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            await this.operationService.simulateReinstate(req.body);
+            res.status(200).json("OK");
+        } catch (error) {
+            next(error);
+        }
     }
 
     @RouteConfig("post", "/changePlan")
     async changePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
-        await this.operationService.simulateChangePlan(req.body);
-        res.status(200).json("OK");
+        try {
+            await this.operationService.simulateChangePlan(req.body);
+            res.status(200).json("OK");
+        } catch (error) {
+            next(error);
+        }
     }
 
     @RouteConfig("get", "/:subscriptionId")
     async list(req: Request, res: Response, next: NextFunction): Promise<void> {
-        let operations = await this.operationService.list(req.params.subscriptionId);
-        res.status(200).json(operations);
+        try {
+            let operations = await this.operationService.list(req.params.subscriptionId);
+            res.status(200).json(operations);
+        } catch (error) {
+            next(error);
+        }
     }
 
 }

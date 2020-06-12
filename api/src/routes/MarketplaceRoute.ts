@@ -3,10 +3,15 @@ import { injectable, inject } from "tsyringe";
 
 import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
 import { ISubscriptionService, IOperationService } from "../types";
+import IMarketplaceRoute from "./interfaces/IMarketplaceRoute"
+import IResolveResponse from "./interfaces/models/IResolveResponse";
+import IInternalServerErrorResponse from "./interfaces/models/IInternalServerErrorResponse";
+import ISubscriptionResponse from "./interfaces/models/ISubscriptionResponse";
+import ISubscriptionsResponse from "./interfaces/models/ISubscriptionsResponse";
 
 @injectable()
 @RoutePrefix("/api/saas/subscriptions")
-export default class MarketplaceRoute extends BaseRoute {
+export default class MarketplaceRoute extends BaseRoute implements IMarketplaceRoute {
 
     constructor(@inject("ISubscriptionService") private subscriptionService: ISubscriptionService, @inject("IOperationService") private operationService: IOperationService) {
         super();
@@ -15,20 +20,101 @@ export default class MarketplaceRoute extends BaseRoute {
     @RouteConfig("post", "/resolve")
     async resolve(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            var token = req.headers["x-ms-marketplace-token"].toString();
+            let token = req.headers["x-ms-marketplace-token"].toString();
             let subscription = await this.subscriptionService.getSubscription(token);
-            res.status(200).json({
+            if (subscription == null) {
+                res.status(404);
+                return;
+            }
+            let response: IResolveResponse = {
                 id: subscription.id,
                 subscriptionName: subscription.name,
                 offerId: subscription.offerId,
                 planId: subscription.planId,
                 quantity: subscription.quantity
-            });
+            };
+            res.status(200).json(response);
+        } catch (error) {
+            let response: IInternalServerErrorResponse = {
+                error: {
+                    code: error.name,
+                    message: error.message
+                }
+            }
+            res.status(500).json(response);
+        }
+    }
+
+    @RouteConfig("get", "/")
+    async getSubscriptions(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            let skip: any = req.query["skip"];
+            let { subscriptions, nextSkip } = await this.subscriptionService.listSubscriptionPaged(parseInt(skip) || 0);
+            let response: ISubscriptionsResponse = {
+                subscriptions: subscriptions.map(subscription => {
+                    let subscriptionResponse: ISubscriptionResponse = {
+                        id: subscription.id,
+                        name: subscription.name,
+                        publisherId: subscription.publisherId,
+                        offerId: subscription.offerId,
+                        planId: subscription.planId,
+                        quantity: subscription.quantity,
+                        beneficiary: subscription.beneficiary,
+                        purchaser: subscription.purchaser,
+                        term: subscription.term,
+                        allowedCustomerOperations: subscription.allowedCustomerOperations,
+                        sessionMode: subscription.sessionMode,
+                        isFreeTrial: subscription.isFreeTrial,
+                        isTest: subscription.isTest,
+                        sandboxType: subscription.sandboxType,
+                        saasSubscriptionStatus: subscription.saasSubscriptionStatus
+                    };
+                    return subscriptionResponse;
+                }),
+                nextLink: nextSkip ? `${req.host}${req.originalUrl}?skip=${nextSkip}` : ""
+            }
+            res.status(200).json(response);
         } catch (error) {
             next(error);
         }
     }
 
+    @RouteConfig("get", "/:subscriptionId")
+    async getSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            let subscription = await this.subscriptionService.getSubscription(req.params.subscriptionId);
+            if (subscription == null) {
+                res.status(404);
+                return;
+            }
+            let response: ISubscriptionResponse = {
+                id: subscription.id,
+                name: subscription.name,
+                publisherId: subscription.publisherId,
+                offerId: subscription.offerId,
+                planId: subscription.planId,
+                quantity: subscription.quantity,
+                beneficiary: subscription.beneficiary,
+                purchaser: subscription.purchaser,
+                term: subscription.term,
+                allowedCustomerOperations: subscription.allowedCustomerOperations,
+                sessionMode: subscription.sessionMode,
+                isFreeTrial: subscription.isFreeTrial,
+                isTest: subscription.isTest,
+                sandboxType: subscription.sandboxType,
+                saasSubscriptionStatus: subscription.saasSubscriptionStatus
+            }
+            res.status(200).json(response);
+        } catch (error) {
+            let response: IInternalServerErrorResponse = {
+                error: {
+                    code: error.name,
+                    message: error.message
+                }
+            }
+            res.status(500).json(response);
+        }
+    }
 
     @RouteConfig("patch", "/:subscriptionId/operations/:operationId")
     async patchOperation(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -40,17 +126,7 @@ export default class MarketplaceRoute extends BaseRoute {
         }
     }
 
-    @RouteConfig("get", "/:subscriptionId")
-    async get(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            let subscription = await this.subscriptionService.getSubscription(req.params.subscriptionId);
-            delete subscription.__v;
-            delete subscription._id;
-            res.status(200).json(subscription);
-        } catch (error) {
-            next(error);
-        }
-    }
+
 
     @RouteConfig("post", "/:subscriptionId/activate")
     async activate(req: Request, res: Response, next: NextFunction): Promise<void> {

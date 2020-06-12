@@ -1,10 +1,11 @@
-import React, { useState, Component } from 'react';
-import SubscriptionGrid from "../../components/Subscription/SubscriptionGrid";
-import Modal from "../../components/Modal";
+import React, { Component } from 'react';
+import SlidingPane from "react-sliding-pane";
 import Button from "react-bootstrap/Button";
-import SubscriptionEditor from "../../components/Subscription/SubscriptionEditor";
-import SubscriptionDelete from "../../components/Subscription/SubscriptionDelete";
-import SubscriptionView from "../../components/Subscription/SubscriptionView";
+import SubscriptionGrid from "components/Subscription/SubscriptionGrid";
+import Modal from "components/Modal";
+import SubscriptionEditor from "components/Subscription/SubscriptionEditor";
+import SubscriptionDelete from "components/Subscription/SubscriptionDelete";
+import SubscriptionView from "components/Subscription/SubscriptionView";
 
 export default class Subscriptions extends Component {
 
@@ -30,9 +31,9 @@ export default class Subscriptions extends Component {
         this.subscriptionGrid.loadGrid();
     }
 
-    onRowClick(index, row) {
-        if (row) {
-            this.setState({ currentId: row.id });
+    onRowClick(index, row, cell) {
+        if (row && cell.idx !== 0) {
+            this.setState({ showDetails: true, currentId: row.id });
         }
     }
 
@@ -48,7 +49,7 @@ export default class Subscriptions extends Component {
                 <SubscriptionDelete id={this.state.currentId} ref={subscriptionDelete => this.subscriptionDelete = subscriptionDelete} afterSubmitHandler={() => this.closeModalAfterSubmit(this.modalDelete)} />
             </Modal>
             <div className="row">
-                <div className="col col-xs-12 col-sm-12 col-md-12 col-lg-6" style={{ marginBottom: "10px" }}>
+                <div className="col col-xs-12" style={{ marginBottom: "10px" }}>
                     <Button onClick={this.handleClickCreateSubscription.bind(this)}>Create Subscription</Button>
                     <SubscriptionGrid ref={subscriptionGrid => this.subscriptionGrid = subscriptionGrid}
                         onClickEdit={(id) => this.handleClickActionBar(id, this.modalEdit)}
@@ -56,11 +57,15 @@ export default class Subscriptions extends Component {
                         onRowClick={this.onRowClick.bind(this)} />
                 </div>
 
-                <div className="col col-xs-12 col-sm-12 col-md-12 col-lg-6">
-                    {this.state.currentId ?
-                        <SubscriptionView ref={subscriptionView => this.subscriptionView = subscriptionView} id={this.state.currentId} afterAction={() => this.subscriptionGrid.loadGrid()} />
-                        : "Select a Subscription to see the details"}
-                </div>
+                <SlidingPane
+                    className="some-custom-class"
+                    isOpen={this.state.showDetails}
+                    title="Subscription Details"
+                    onRequestClose={() => {
+                        this.setState({ showDetails: false });
+                    }}>
+                    <SubscriptionView ref={subscriptionView => this.subscriptionView = subscriptionView} id={this.state.currentId} afterAction={() => this.subscriptionGrid.loadGrid()} />
+                </SlidingPane>
             </div>
 
         </div>)

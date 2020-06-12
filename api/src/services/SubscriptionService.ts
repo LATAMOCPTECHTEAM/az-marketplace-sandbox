@@ -10,6 +10,19 @@ export default class SubscriptionService implements ISubscriptionService {
 
     }
 
+    async listSubscriptionPaged(skip: number): Promise<{ subscriptions: ISubscription[]; nextSkip: number; }> {
+        var nextSkip = 0;
+        var totalSubscriptions = await SubscriptionSchema.count({});
+        var subscriptionList = await SubscriptionSchema.find({})
+            .sort("desc")
+            .skip(skip)
+            .limit(1);
+        if (skip + subscriptionList.length < totalSubscriptions) {
+            nextSkip = skip + subscriptionList.length;
+        }
+        return { subscriptions: subscriptionList, nextSkip: nextSkip };
+    }
+
     async activateSubscription(id: string, planId: string, quantity: string) {
         var subscription: ISubscription = await SubscriptionSchema.findOne({ id: id });
 

@@ -10,6 +10,7 @@ import AuthenticationHandler from './handlers/AuthenticationHandler';
 import ErrorHandler from './handlers/ErrorHandler';
 import NotFoundHandler from './handlers/NotFoundHandler';
 import SwaggerHandler from './handlers/SwaggerHandler';
+var path = require('path');
 
 import { ICustomRoute, IServer } from '../types';
 
@@ -50,8 +51,16 @@ export default class Server implements IServer {
         }
 
         SwaggerHandler(this.app, this.logger);
-        NotFoundHandler(this.app);
+
+
+        this.app.use('/static', express.static(path.resolve(__dirname + '/../public/static')));
+        this.app.use('/*', (req, res) => {
+            res.sendFile(path.resolve(__dirname + '/../public/index.html'));
+        })
+
         ErrorHandler(this.app);
+
+        NotFoundHandler(this.app);
 
         // App Settings
         this.app.set('port', process.env.PORT || 80);

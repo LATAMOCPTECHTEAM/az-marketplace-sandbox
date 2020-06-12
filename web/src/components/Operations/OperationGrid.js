@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react';
+import React, { Component } from 'react';
 import ReactDataGrid from 'react-data-grid';
 import { Toolbar, Data, Filters } from "react-data-grid-addons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -23,7 +23,7 @@ export default class OperationsGrid extends Component {
     }
 
     state = {
-        id: this.props.id,
+        id: null,
         operations: []
     };
 

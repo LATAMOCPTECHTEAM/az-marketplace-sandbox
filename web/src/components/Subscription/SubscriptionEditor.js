@@ -8,7 +8,7 @@ import SubscriptionService from "../../services/SubscriptionService";
 import Button from "react-bootstrap/Button";
 var Chance = require('chance');
 
-export default class SubscriptionCreate extends Component {
+export default class SubscriptionEditor extends Component {
 
 
     state = {
@@ -107,7 +107,7 @@ export default class SubscriptionCreate extends Component {
             console.log(`Option ${options[i].value} - ${options[i].selected}`)
             if (options[i].selected) {
                 var index = newState.allowedCustomerOperations.indexOf(options[i].value);
-                if (index == -1)
+                if (index === -1)
                     newState.allowedCustomerOperations.push(options[i].value);
                 else
                     newState.allowedCustomerOperations.splice(index, 1);
@@ -124,7 +124,7 @@ export default class SubscriptionCreate extends Component {
         var date = moment(value);
         newState.term.startDate = date.format("YYYY-MM-DD");
 
-        date.add(1, this.state.subscription.term.termUnit == "P1M" ? 'M' : 'Y');
+        date.add(1, this.state.subscription.term.termUnit === "P1M" ? 'M' : 'Y');
         newState.term.endDate = date.format("YYYY-MM-DD");
         this.setState({ subscription: newState });
     }
@@ -174,15 +174,7 @@ export default class SubscriptionCreate extends Component {
                         validator={this.validator}
                         validatorOptions="required" >
                     </TextInput>
-                    <TextInput displayCols={displayCols} inputCols={inputCols}
-                        name="publisherId" displayName="Publisher Id" placeholder="Publisher Id"
-                        value={this.state.subscription.publisherId}
-                        onChangeHandler={(event) => this.inputChangeHandler("publisherId", event.target.value)}>
-                        {this.fetchMessage()}
-                    </TextInput>
-                    <TextInput displayCols={displayCols} inputCols={inputCols} name="offerId" displayName="Offer Id" placeholder="Offer Id" value={this.state.subscription.offerId} onChangeHandler={(event) => this.inputChangeHandler("offerId", event.target.value)}>
-                        {this.fetchMessage()}
-                    </TextInput>
+
                     <SelectInput
                         displayCols={displayCols} inputCols={inputCols}
                         name="planId" displayName="Plan"
@@ -204,6 +196,15 @@ export default class SubscriptionCreate extends Component {
                 </div>
 
                 <div className="col col-xs-12 col-sm-12 col-md-4">
+                    <TextInput displayCols={displayCols} inputCols={inputCols}
+                        name="publisherId" displayName="Publisher Id" placeholder="Publisher Id"
+                        value={this.state.subscription.publisherId}
+                        onChangeHandler={(event) => this.inputChangeHandler("publisherId", event.target.value)}>
+                        {this.fetchMessage()}
+                    </TextInput>
+                    <TextInput displayCols={displayCols} inputCols={inputCols} name="offerId" displayName="Offer Id" placeholder="Offer Id" value={this.state.subscription.offerId} onChangeHandler={(event) => this.inputChangeHandler("offerId", event.target.value)}>
+                        {this.fetchMessage()}
+                    </TextInput>
                     <SelectInput
                         displayCols={displayCols} inputCols={inputCols}
                         name="termUnit" displayName="Term Unit"
@@ -287,7 +288,7 @@ export default class SubscriptionCreate extends Component {
                 <br />
                 The code below will be stored in the database, and will be the result of the list and get subscription calls.
                 <br />
-                <CodeBlock language="json" language="json" text={JSON.stringify(this.state.subscription, null, 4)} />
+                <CodeBlock language="json" text={JSON.stringify(this.state.subscription, null, 4)} />
             </div>
         </div >)
     }

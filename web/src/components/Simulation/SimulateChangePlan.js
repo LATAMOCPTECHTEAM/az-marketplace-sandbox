@@ -6,7 +6,7 @@ import OperationService from "../../services/OperationService";
 
 var Chance = require('chance');
 
-export default class SubscriptionDelete extends Component {
+export default class SimulateChangePlan extends Component {
 
     state = {
         subscription: {},
@@ -96,7 +96,7 @@ export default class SubscriptionDelete extends Component {
             <ol>
                 <li>
                     <p>The Sandbox will create a new operation record with the JSON below.</p>
-                    <p>You can query it later using the <a href="#">Operations Get API.</a></p>
+                    <p>You can query it later using the <a href="/">Operations Get API.</a></p>
                 </li>
                 <li>The Sandbox will call the webhook configured in <a href="/settings" target="_blank">Settings</a>, sending the JSON below.</li>
             </ol>
@@ -106,7 +106,7 @@ export default class SubscriptionDelete extends Component {
             <br />
             <h5>Expected Action<hr /></h5>
             <p>
-                After receiving the request on the webhook, you need to make the necessary changes on your SaaS solution and call the <a href="#">Operation Patch API</a> sending the new PlanId and Quantity.
+                After receiving the request on the webhook, you need to make the necessary changes on your SaaS solution and call the <a href="/">Operation Patch API</a> sending the new PlanId and Quantity.
                 Like in the template below:
             </p>
             <p>

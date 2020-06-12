@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Modal from "../../components/Modal";
 import SimulateChangePlan from "../../components/Simulation/SimulateChangePlan";
 
-export default class SubscriptionDelete extends Component {
+export default class SimulateChangePlanModal extends Component {
 
     show = () => this.modal.show();
 

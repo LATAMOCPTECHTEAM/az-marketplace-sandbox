@@ -29,17 +29,30 @@ export default class OperationService implements IOperationService {
 
         operationModel.status = status == "Success" ? "Succeeded" : "Failed";
 
-        await OperationSchema.update({ id: operationModel.id }, operationModel);
+        await OperationSchema.updateOne({ id: operationModel.id }, operationModel);
 
         subscriptionModel.planId = planId;
         subscriptionModel.quantity = quantity;
 
-        await SubscriptionSchema.update({ id: subscriptionModel.id }, subscriptionModel);
+        await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
 
     }
 
     async simulateChangePlan(operation: IOperation) {
         var operationModel = await OperationSchema.create(operation);
+
+        this.sendWebhook(operationModel.id)
+            .catch(error => { });
+    }
+
+
+    async simulateUnsubscribe(operation: IOperation) {
+        var operationModel = await OperationSchema.create(operation);
+        var subscriptionModel = await SubscriptionSchema.findOne({ id: operation.subscriptionId });
+
+        subscriptionModel.saasSubscriptionStatus = "Unsubscribed";
+
+        await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
 
         this.sendWebhook(operationModel.id)
             .catch(error => { });
@@ -52,7 +65,19 @@ export default class OperationService implements IOperationService {
         subscriptionModel.saasSubscriptionStatus = "Suspended";
 
         await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
-        
+
+        this.sendWebhook(operationModel.id)
+            .catch(error => { });
+    }
+
+    async simulateReinstate(operation: IOperation) {
+        var operationModel = await OperationSchema.create(operation);
+        var subscriptionModel = await SubscriptionSchema.findOne({ id: operation.subscriptionId });
+
+        subscriptionModel.saasSubscriptionStatus = "Subscribed";
+
+        await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
+
         this.sendWebhook(operationModel.id)
             .catch(error => { });
     }

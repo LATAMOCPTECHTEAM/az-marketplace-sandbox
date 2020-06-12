@@ -2,7 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.117.1/containers/javascript-node-12
 {
 	"name": "Node.js 12",
-	"dockerComposeFile": "../../docker-compose-vscode-with-bridge.yml",
+	"dockerComposeFile": "../../docker-compose-vscode.yml",
 	"service": "api",
 	"workspaceFolder": "/workspace/api",
 	"shutdownAction": "none",

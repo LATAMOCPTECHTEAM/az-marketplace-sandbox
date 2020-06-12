@@ -1,10 +1,10 @@
 import "reflect-metadata";
-
+import config from "./Config";
 import { default as DIContainer } from "./DependencyInjection";
 import { IStartup } from "./types";
 import mongoose from "mongoose";
 
-mongoose.connect("mongodb://mongo:27017/sandbox", { useFindAndModify: false })
+mongoose.connect(config.mongo, { useFindAndModify: false })
     .then(x => {
         DIContainer.setup();
         var startup = DIContainer.getContainer().resolve<IStartup>("IStartup")

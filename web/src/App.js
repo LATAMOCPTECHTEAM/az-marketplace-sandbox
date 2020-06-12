@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import "react-sliding-pane/dist/react-sliding-pane.css";
 import './App.css';
 import Header from "./components/Header";
 import Home from "./pages/Home/Home";

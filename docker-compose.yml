@@ -1,0 +1,22 @@
+--- #-------------------------------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
+version: "3"
+
+
+services:
+  mongo:
+    image: "mongo:4.0-xenial"
+    ports:
+      - "27017:27017"
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+    - docker-compose.env
+    ports:
+      - "3002:80"
+    command: npm start

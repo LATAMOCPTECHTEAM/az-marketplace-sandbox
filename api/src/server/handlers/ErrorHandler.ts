@@ -14,7 +14,6 @@ export default function ErrorHandler(app: Application): void {
             console.error(error);
         }
         sendHttpErrorModule(httpError, req, res, next);
-        next();
     });
 }
 

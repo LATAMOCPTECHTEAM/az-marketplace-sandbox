@@ -1,6 +1,6 @@
 import React from 'react';
-import TextInput from "../../components/FormInputs/TextInput";
-import Button from "../../components/FormInputs/Button";
+import TextInput from "components/FormInputs/TextInput";
+import Button from "components/FormInputs/Button";
 import Table from "react-bootstrap/Table";
 
 export default class SettingsPlans extends React.Component {

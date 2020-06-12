@@ -7,6 +7,28 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Debug-Nodemon",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "debug-nodemon"
+            ],
+            "port": 9229,
+            "outFiles": [
+                "${workspaceRoot}/bin"
+            ],
+            "restart": true,
+            "sourceMaps": true,
+            "timeout": 30000,
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "outputCapture": "std"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Debug",
             "cwd": "${workspaceFolder}",
             "runtimeExecutable": "npm",

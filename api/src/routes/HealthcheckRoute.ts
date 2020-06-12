@@ -5,7 +5,7 @@ import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
 import { IHealthcheck } from "../types";
 
 @injectable()
-@RoutePrefix("/health")
+@RoutePrefix("/api/health")
 export default class HealthcheckRoute extends BaseRoute implements IHealthcheck {
 
     constructor() {
@@ -13,9 +13,9 @@ export default class HealthcheckRoute extends BaseRoute implements IHealthcheck 
     }
 
     /**
-    * GET /health 
+    * GET /api/health 
     * @swagger
-    * /health:
+    * /api/health:
     *   get:
     *     tags:
     *     - "healthcheck"
