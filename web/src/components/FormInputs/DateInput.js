@@ -16,7 +16,7 @@ function DateInput(props) {
                         />
                     </div>
                     {props.children}
-
+                    {props.validator ? props.validator.message(props.displayName, props.value, props.validatorOptions, { className: "validator-error" }) : ""}
                 </div>
             </div>
         </div>

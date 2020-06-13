@@ -18,7 +18,11 @@ export default class Subscriptions extends Component {
     }
 
     handleClickCreateSubscription() {
-        this.modalCreate.show();
+        this.setState({ showCreatePane: true });
+    }
+
+    handleClickEditSubscription(id) {
+        this.setState({ showEditPane: true, currentId: id });
     }
 
     handleClickActionBar(id, modal) {
@@ -31,6 +35,10 @@ export default class Subscriptions extends Component {
         this.subscriptionGrid.loadGrid();
     }
 
+    reloadGrid() {
+        this.subscriptionGrid.loadGrid();
+    }
+
     onRowClick(index, row, cell) {
         if (row && cell.idx !== 0) {
             this.setState({ showDetails: true, currentId: row.id });
@@ -39,12 +47,24 @@ export default class Subscriptions extends Component {
 
     render() {
         return (<div>
-            <Modal title="Create Subscription" size="xl" ref={modalCreate => this.modalCreate = modalCreate} onDone={() => this.subscriptionCreate.submit()} >
-                <SubscriptionEditor ref={subscriptionCreate => this.subscriptionCreate = subscriptionCreate} afterSubmitHandler={() => this.closeModalAfterSubmit(this.modalCreate)} />
-            </Modal>
-            <Modal title="Edit Subscription" size="xl" ref={modalEdit => this.modalEdit = modalEdit} doneHandler={() => this.subscriptionEdit.submit()} >
-                <SubscriptionEditor id={this.state.currentId} ref={subscriptionEdit => this.subscriptionEdit = subscriptionEdit} afterSubmitHandler={() => this.closeModalAfterSubmit(this.modalEdit)} />
-            </Modal>
+            <SlidingPane
+                title="Create Subscription"
+                isOpen={this.state.showCreatePane}
+                onRequestClose={() => {
+                    this.setState({ showCreatePane: false });
+                }}>
+                <SubscriptionEditor afterSubmit={() => this.setState({ showCreatePane: false }) | this.reloadGrid()} />
+            </SlidingPane>
+
+            <SlidingPane
+                title="Edit Subscription"
+                isOpen={this.state.showEditPane}
+                onRequestClose={() => {
+                    this.setState({ showEditPane: false });
+                }}>
+                <SubscriptionEditor id={this.state.currentId} afterSubmit={() => this.setState({ showEditPane: false }) | this.reloadGrid()} />
+            </SlidingPane>
+
             <Modal title="Delete Subscription" ref={modalDelete => this.modalDelete = modalDelete} doneHandler={() => this.subscriptionDelete.submit()} >
                 <SubscriptionDelete id={this.state.currentId} ref={subscriptionDelete => this.subscriptionDelete = subscriptionDelete} afterSubmitHandler={() => this.closeModalAfterSubmit(this.modalDelete)} />
             </Modal>
@@ -52,13 +72,12 @@ export default class Subscriptions extends Component {
                 <div className="col col-xs-12" style={{ marginBottom: "10px" }}>
                     <Button onClick={this.handleClickCreateSubscription.bind(this)}>Create Subscription</Button>
                     <SubscriptionGrid ref={subscriptionGrid => this.subscriptionGrid = subscriptionGrid}
-                        onClickEdit={(id) => this.handleClickActionBar(id, this.modalEdit)}
+                        onClickEdit={(id) => this.handleClickEditSubscription(id)}
                         onClickDelete={(id) => this.handleClickActionBar(id, this.modalDelete)}
                         onRowClick={this.onRowClick.bind(this)} />
                 </div>
 
                 <SlidingPane
-                    className="some-custom-class"
                     isOpen={this.state.showDetails}
                     title="Subscription Details"
                     onRequestClose={() => {

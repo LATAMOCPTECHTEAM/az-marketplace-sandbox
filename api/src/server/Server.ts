@@ -53,8 +53,9 @@ export default class Server implements IServer {
         SwaggerHandler(this.app, this.logger);
 
 
+        this.app.use('/assets', express.static(path.resolve(__dirname + '/../assets')));
         this.app.use('/static', express.static(path.resolve(__dirname + '/../public/static')));
-        this.app.use('/*', (req, res) => {
+        this.app.use(/^\/(?!api).*/, (req, res) => {
             res.sendFile(path.resolve(__dirname + '/../public/index.html'));
         })
 

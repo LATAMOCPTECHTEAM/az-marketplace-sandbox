@@ -39,8 +39,7 @@ export default class SubscriptionService implements ISubscriptionService {
         var isQuantityEmpty = (quantity == null || quantity == undefined || quantity == "");
 
         if (!((isSubQuantityEmpty && isQuantityEmpty) || subscription.quantity == quantity))
-            throw new Error("PlanId divergence."); //TODO[VALIDATE]
-
+            throw new Error("Quantity divergence."); //TODO[VALIDATE]
 
         subscription.saasSubscriptionStatus = "Subscribed"
 
@@ -52,6 +51,7 @@ export default class SubscriptionService implements ISubscriptionService {
     }
 
     async createSubscription(subscription: ISubscription) {
+        subscription.creationDate = new Date();
         await SubscriptionSchema.create(subscription);
     }
 
@@ -61,7 +61,7 @@ export default class SubscriptionService implements ISubscriptionService {
     }
 
     async listSubscription(): Promise<ISubscription[]> {
-        var subscriptionList = await SubscriptionSchema.find();
+        var subscriptionList = await SubscriptionSchema.find({},null, { sort: { creationDate: -1 } });
         return subscriptionList;
     }
 

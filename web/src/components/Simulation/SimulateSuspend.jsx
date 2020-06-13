@@ -11,6 +11,12 @@ var Chance = require('chance');
 
 export default class SimulateSuspend extends Component {
 
+    constructor() {
+        super();
+        this.subscriptionService = new SubscriptionService();
+        this.settingsService = new SettingsService();
+    }
+
     state = {
         loading: true,
         subscription: {},
@@ -20,10 +26,8 @@ export default class SimulateSuspend extends Component {
 
     async componentDidMount() {
         try {
-            var subscriptionService = new SubscriptionService();
-            var settingsService = new SettingsService();
-            var settings = await settingsService.getSettings();
-            var subscription = await subscriptionService.get(this.props.id)
+            var settings = await this.settingsService.getSettings();
+            var subscription = await this.subscriptionService.get(this.props.id);
 
             var chance = new Chance();
             var operation = {

@@ -10,9 +10,11 @@ export default function SwaggerHandler(app: Application, logger: Logger): void {
         swaggerDoc = require('../../swagger.json');
         swaggerDoc.servers[0].url = `/${process.env.API_VERSION || ""}`;
         swaggerDoc.info.description = `API Version: ${process.env.API_VERSION}, Build Version: ${process.env.BUILD_VERSION}`;
-
+        var options = {
+            customCssUrl: '/assets/swagger-theme.css'
+        }
         router.use('/swagger', swaggerUi.serve);
-        router.get('/swagger', swaggerUi.setup(swaggerDoc));
+        router.get('/swagger', swaggerUi.setup(swaggerDoc, options));
     } catch (error) {
         logger.error("Seems like you doesn\`t have swagger.json file. Please, run: npm run-script swagger");
         router.get('/swagger', (req, res) => {

@@ -4,7 +4,7 @@ function Header() {
     return (
         <div className="Header">
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-                <a className="navbar-brand" href="/">Azure Marketplace Sandbox</a>
+                <a className="navbar-brand" href="/"><img alt="Microsoft Logo" src="/icons/microsoft-icon.png" style={{ height: "16px", marginTop: "-3px", marginRight: "10px" }} />Azure Marketplace Sandbox</a>
                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
@@ -19,9 +19,6 @@ function Header() {
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="/settings">Settings</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="/about">About</a>
                         </li>
                     </ul>
                 </div>

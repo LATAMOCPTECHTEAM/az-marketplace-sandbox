@@ -3,7 +3,7 @@ import { BaseRoute } from "../BaseRoute";
 
 export default interface IMarketplaceRoute extends BaseRoute {
     /**
-    * GET /api/saas/subscriptions/resolve 
+    * POST /api/saas/subscriptions/resolve 
     * @swagger
     * /api/saas/subscriptions/resolve:
     *   post:
@@ -158,5 +158,124 @@ export default interface IMarketplaceRoute extends BaseRoute {
     *                 $ref: '#/components/schemas/InternalServerError'
     */
     getSubscription(req: Request, res: Response, next: NextFunction);
+
+    /**
+    * POST /api/saas/subscriptions/{subscriptionId}/activate 
+    * @swagger
+    * /api/saas/subscriptions/{subscriptionId}/activate:
+    *   post:
+    *     tags:
+    *     - "Activate"
+    *     summary: "Activate a Subscription"
+    *     description: "Activate a Subscription"
+    *     parameters:
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) A unique string value for tracking the request from the client, preferably a GUID. If this value isn't provided, one will be generated and provided in the response headers."
+    *       name: x-ms-requestid
+    *       schema:
+    *         type: string
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) A unique string value for operation on the client. This parameter correlates all events from client operation with events on the server side. If this value isn't provided, one will be generated and provided in the response headers."
+    *       name: x-ms-correlationid
+    *       schema:
+    *         type: string
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) Get JSON web token (JWT) bearer token. For example: \"Bearer <access_token>\". https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration#get-a-token-based-on-the-azure-ad-app"
+    *       name: authorization
+    *       schema:
+    *         type: string
+    *     - in: path
+    *       description: "A unique identifier of the SaaS subscription that's obtained after resolving the token via Resolve API."
+    *       name: subscriptionId
+    *       schema:
+    *         type: string
+    *     - in: query
+    *       name: apiVersion
+    *       description: "(Ignored by the Sandbox) The version of the operation to use for this request. (Not validated in the Sandbox API)"
+    *     requestBody:
+    *       description: Optional description in *Markdown*
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               planId:
+    *                 type: string
+    *                 example: planId
+    *               quantity:
+    *                 type: string
+    *                 example: quantity
+    *     responses:
+    *       200:
+    *         description: "Activates the subscription."
+    *       400:
+    *         description: "Bad request: validation failures."
+    *       403:
+    *         description: "Unauthorized. The authentication token wasn't provided or is invalid, or the request is attempting to access an acquisition that doesn't belong to the current publisher."
+    *       404:
+    *         description: "Not Found."
+    *       500:
+    *         description: "Internal Server Error"
+    *         content:
+    *             application/json:
+    *               schema:
+    *                 $ref: '#/components/schemas/InternalServerError'
+    */
+    activate(req: Request, res: Response, next: NextFunction);
+
+
+
+     /**
+    * GET /api/saas/subscriptions/{subscriptionId}/listAvailablePlans
+    * @swagger
+    * /api/saas/subscriptions/{subscriptionId}/listAvailablePlans:
+    *   get:
+    *     tags:
+    *     - "Plans"
+    *     summary: "List available plans \n t"
+    *     description: "Gets the specified SaaS subscription. Use this call to get license information and plan information."
+    *     parameters:
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) A unique string value for tracking the request from the client, preferably a GUID. If this value isn't provided, one will be generated and provided in the response headers."
+    *       name: x-ms-requestid
+    *       schema:
+    *         type: string
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) A unique string value for operation on the client. This parameter correlates all events from client operation with events on the server side. If this value isn't provided, one will be generated and provided in the response headers."
+    *       name: x-ms-correlationid
+    *       schema:
+    *         type: string
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) Get JSON web token (JWT) bearer token. For example: \"Bearer <access_token>\". https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration#get-a-token-based-on-the-azure-ad-app"
+    *       name: authorization
+    *       schema:
+    *         type: string
+    *     - in: path
+    *       description: "A unique identifier of the SaaS subscription that's obtained after resolving the token via Resolve API."
+    *       name: subscriptionId
+    *       schema:
+    *         type: string
+    *       required: true
+    *     - in: query
+    *       name: apiVersion
+    *       description: "(Ignored by the Sandbox) The version of the operation to use for this request. (Not validated in the Sandbox API)"
+    *     responses:
+    *       200:
+    *         description: Success
+    *         content:
+    *             application/json:
+    *               schema:
+    *                 $ref: '#/components/schemas/ListAvailablePlansResponse'
+    *       403:
+    *         description: Unauthorized. The authentication token wasn't provided or is invalid, or the request is attempting to access an acquisition that doesn't belong to the current publisher.
+    *       500:
+    *         description: "Internal Server Error"
+    *         content:
+    *             application/json:
+    *               schema:
+    *                 $ref: '#/components/schemas/InternalServerError'
+    */
+    listAvailablePlans(req: Request, res: Response, next: NextFunction);
 
 }

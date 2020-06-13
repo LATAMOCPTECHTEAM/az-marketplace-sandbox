@@ -17,6 +17,7 @@ function SelectInput(props) {
                                 : ""}
                         </Form.Control>
                         {props.children}
+                        {props.validator ? props.validator.message(props.displayName, props.value, props.validatorOptions, { className: "validator-error" }) : ""}
                     </Form.Group>
                 </div>
             </div>

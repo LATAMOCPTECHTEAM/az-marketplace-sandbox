@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function WithErrorHandler(props) {
+function WithErrorHandler(props) {
     return (
         <React.Fragment>
             {props.error ? <div className="jumbotron">
@@ -13,3 +13,5 @@ export default function WithErrorHandler(props) {
         </React.Fragment>
     );
 }
+
+export default React.memo(WithErrorHandler);

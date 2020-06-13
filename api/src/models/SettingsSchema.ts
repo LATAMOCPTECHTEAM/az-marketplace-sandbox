@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 export interface ISettings extends mongoose.Document {
     landingPageUrl: string;
     webhookUrl: string;
@@ -8,9 +7,12 @@ export interface ISettings extends mongoose.Document {
     offerId: string;
     beneficiaryTenantId: string;
     purchaserTenantId: string;
-    plans: string[]
+    plans: {
+        planId: string,
+        displayName: string,
+        isPrivate: boolean
+    }[]
 }
-
 
 const SettingsSchema = new mongoose.Schema(
     {
@@ -22,7 +24,9 @@ const SettingsSchema = new mongoose.Schema(
         purchaserTenantId: String,
         plans: [
             {
-                type: String
+                planId: String,
+                displayName: String,
+                isPrivate: Boolean
             }
         ]
 

@@ -1,27 +1,52 @@
 import React from 'react';
-import TextInput from "components/FormInputs/TextInput";
-import Button from "components/FormInputs/Button";
+import { TextInput, Checkbox } from "components/FormInputs";
+import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
+import SimpleReactValidator from 'simple-react-validator';
 
 export default class SettingsPlans extends React.Component {
 
-    state = {
-        planInput: "",
-        plans: this.props.plans || []
-    }
-
-    planInputKeyPressHandler(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            var plans = [...this.state.plans];
-            plans.push(this.state.planInput);
-            this.setState({ plans: plans, planInput: "" });
-            this.onPlanChange(plans);
+    constructor(props) {
+        super(props);
+        this.validator = new SimpleReactValidator();
+        this.state = {
+            newPlan: {
+                planId: "",
+                displayName: "",
+                isPrivate: false
+            },
+            plans: this.props.plans || []
         }
     }
 
-    planInputChangeHandler(event) {
-        this.setState({ planInput: event.target.value });
+    planInputKeyPress(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.onClickAddPlan();
+        }
+    }
+
+    onClickAddPlan() {
+        if (this.validator.allValid()) {
+            var plans = [...this.state.plans];
+            plans.push({
+                planId: this.state.newPlan.planId,
+                displayName: this.state.newPlan.displayName,
+                isPrivate: this.state.newPlan.isPrivate
+            });
+            this.setState({ plans: plans, newPlan: { planId: "", displayName: "", isPrivate: false } });
+            this.onPlanChange(plans);
+            this.validator.hideMessages();
+        } else {
+            this.validator.showMessages();
+            this.forceUpdate();
+        }
+    }
+
+    planInputChangeHandler(property, value) {
+        var newPlan = { ...this.state.newPlan };
+        newPlan[property] = value;
+        this.setState({ newPlan: newPlan });
     }
 
     planGridRemoveHandler(plan) {
@@ -32,35 +57,56 @@ export default class SettingsPlans extends React.Component {
     }
 
     onPlanChange(plans) {
-        if (this.props.onPlanChange) {
-            this.props.onPlanChange(plans);
-        }
+        this.props.onPlanChange && this.props.onPlanChange(plans)
     }
 
     render() {
-        let displayCols = "col col-xs-12 col-sm-12 col-md-4 col-lg-1";
+        let displayCols = "col-xs-12 col-sm-12 col-md-4 col-lg-2";
+        let inputCols = "col-xs-12 col-sm-12 col-md-8 col-lg-10";
         return (<div>
-            <TextInput displayCols={displayCols} inputCols="col col-xs-12 col-sm-12 col-md-4 col-lg-4"
-                name="planInput" displayName="Add PlanId"
-                value={this.state.planInput}
-                onChangeHandler={(event) => this.planInputChangeHandler(event)}
-                onKeyPressHandler={(event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault();
-                        this.planInputKeyPressHandler(event);
-                    }
-                }} />
             <div className="row">
                 <div className="col-xs-12 col-sm-12 col-md-4 col-lg-5">
                     <Table striped bordered hover>
                         <tbody>
                             {this.state.plans ?
                                 this.state.plans.map(plan => {
-                                    return <tr><td>{plan}</td><td style={{ "width": "80px" }}><Button text="Remove" type="button" onClick={(event) => { this.planGridRemoveHandler(plan) }} /></td></tr>
+                                    return <tr>
+                                        <td>{plan.displayName}</td>
+                                        <td>{plan.planId}</td>
+                                        <td>{String(plan.isPrivate)}</td>
+                                        <td style={{ "width": "80px" }}><Button type="button" onClick={(event) => { this.planGridRemoveHandler(plan) }}>Remove</Button></td>
+                                    </tr>
                                 })
                                 : ""}
                         </tbody>
                     </Table>
+                </div>
+                <div className="col-xs-12 col-sm-12 col-md-8 col-lg-7">
+                    <h5>
+                        Add Plan
+                        <hr />
+                    </h5>
+                    <div className="col col-xs-12">
+                        <TextInput displayCols={displayCols} inputCols={inputCols}
+                            name="displayName" displayName="Display Name" placeholder="Gold plan for Contoso"
+                            value={this.state.newPlan.displayName}
+                            validator={this.validator} validatorOptions="required"
+                            onChangeHandler={(event) => this.planInputChangeHandler("displayName", event.target.value)} onKeyPressHandler={(event) => this.planInputKeyPress(event)} />
+                    </div>
+                    <div className="col col-xs-12">
+                        <TextInput displayCols={displayCols} inputCols={inputCols}
+                            name="planId" displayName="Plan Id" placeholder="gold"
+                            value={this.state.newPlan.planId}
+                            validator={this.validator} validatorOptions="required"
+                            onChangeHandler={(event) => this.planInputChangeHandler("planId", event.target.value)} onKeyPressHandler={(event) => this.planInputKeyPress(event)} />
+                    </div>
+                    <Checkbox
+                        displayCols={displayCols} inputCols={inputCols}
+                        name="isPrivate" displayName="Private Plan"
+                        checked={this.state.newPlan.isPrivate}
+                        onChangeHandler={(event) => this.planInputChangeHandler("isPrivate", !!event.target.checked)}>
+                    </Checkbox>
+                    <Button type="button" onClick={() => this.onClickAddPlan()}>Add Plan</Button>
                 </div>
             </div>
         </div >)

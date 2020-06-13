@@ -28,7 +28,8 @@ export interface ISubscription extends mongoose.Document {
     isFreeTrial: boolean,
     isTest: boolean,
     sandboxType: string,
-    saasSubscriptionStatus: string
+    saasSubscriptionStatus: string,
+    creationDate: Date
 }
 
 
@@ -62,7 +63,8 @@ const SubscriptionSchema = new mongoose.Schema(
         isFreeTrial: Boolean,
         isTest: Boolean,
         sandboxType: String,
-        saasSubscriptionStatus: String
+        saasSubscriptionStatus: String,
+        creationDate: Date
     }
 );
 

@@ -103,10 +103,10 @@ export default class OperationService implements IOperationService {
                     "timeStamp": operationModel.timeStamp,
                     "status": operationModel.status
                 }
-            })
+            });
             console.log(`Success calling the webhook API, Operation ${operationModel.id}`);
         } catch (error) {
-            console.error(`Success calling the webhook API, Operation ${operationModel.id}: ${error.message}`);
+            console.error(`Error calling the webhook API, Operation ${operationModel.id}: ${error.message}`);
             throw error;
         }
     }

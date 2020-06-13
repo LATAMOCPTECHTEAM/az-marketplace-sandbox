@@ -2,20 +2,54 @@ import { Request, Response, NextFunction } from "express";
 import { injectable, inject } from "tsyringe";
 
 import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
-import { ISubscriptionService, IOperationService } from "../types";
+import { ISubscriptionService, IOperationService, ISettingsService } from "../types";
 import IMarketplaceRoute from "./interfaces/IMarketplaceRoute"
 import IResolveResponse from "./interfaces/models/IResolveResponse";
 import IInternalServerErrorResponse from "./interfaces/models/IInternalServerErrorResponse";
 import ISubscriptionResponse from "./interfaces/models/ISubscriptionResponse";
 import ISubscriptionsResponse from "./interfaces/models/ISubscriptionsResponse";
+import IListAvailablePlans from "./interfaces/models/IListAvailablePlansResponse";
 
 @injectable()
 @RoutePrefix("/api/saas/subscriptions")
 export default class MarketplaceRoute extends BaseRoute implements IMarketplaceRoute {
 
-    constructor(@inject("ISubscriptionService") private subscriptionService: ISubscriptionService, @inject("IOperationService") private operationService: IOperationService) {
+    constructor(
+        @inject("ISubscriptionService") private subscriptionService: ISubscriptionService,
+        @inject("IOperationService") private operationService: IOperationService,
+        @inject("ISettingsService") private settingsService: ISettingsService) {
         super();
     }
+
+    @RouteConfig("get", "/:subscriptionId/listAvailablePlans")
+    async listAvailablePlans(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            let settings = await this.settingsService.getSettings();
+            if (settings == null) {
+                res.status(404);
+                return;
+            }
+            let response: IListAvailablePlans = {
+                plans: settings.plans.map(plan => {
+                    return {
+                        planId: plan.planId,
+                        displayName: plan.displayName,
+                        isPrivate: plan.isPrivate
+                    };
+                })
+            }
+            res.status(200).json(response);
+        } catch (error) {
+            let response: IInternalServerErrorResponse = {
+                error: {
+                    code: error.name,
+                    message: error.message
+                }
+            }
+            res.status(500).json(response);
+        }
+    }
+
 
     @RouteConfig("post", "/resolve")
     async resolve(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -75,7 +109,13 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
             }
             res.status(200).json(response);
         } catch (error) {
-            next(error);
+            let response: IInternalServerErrorResponse = {
+                error: {
+                    code: error.name,
+                    message: error.message
+                }
+            }
+            res.status(500).json(response);
         }
     }
 
@@ -122,7 +162,13 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
             await this.operationService.confirmChangePlan(req.params.subscriptionId, req.params.operationId, req.body.planId, req.body.quantity, req.body.status);
             res.status(200).json("OK");
         } catch (error) {
-            next(error);
+            let response: IInternalServerErrorResponse = {
+                error: {
+                    code: error.name,
+                    message: error.message
+                }
+            }
+            res.status(500).json(response);
         }
     }
 

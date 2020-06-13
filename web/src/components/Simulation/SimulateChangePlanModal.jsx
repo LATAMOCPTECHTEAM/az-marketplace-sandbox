@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Modal from "../../components/Modal";
-import SimulateChangePlan from "../../components/Simulation/SimulateChangePlan";
+import Modal from "../Modal";
+import SimulateChangePlan from "./SimulateChangePlan"
 
 export default class SimulateChangePlanModal extends Component {
 
@@ -8,8 +8,7 @@ export default class SimulateChangePlanModal extends Component {
 
     afterSubmit() {
         this.modal.close();
-        if (this.props.afterSubmit)
-            this.props.afterSubmit();
+        this.props.afterSubmit && this.props.afterSubmit();
     }
 
     render() {
