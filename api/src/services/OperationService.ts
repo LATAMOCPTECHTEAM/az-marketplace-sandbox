@@ -3,6 +3,9 @@ import * as request from "request-promise";
 import { IOperationService, ISettingsService } from "../types";
 import SubscriptionSchema, { ISubscription } from "../models/SubscriptionSchema";
 import OperationSchema, { IOperation } from "../models/OperationSchema";
+import Chance from "chance";
+import BadRequestError from "../errors/BadRequest";
+import SettingsSchema from "../models/SettingsSchema";
 
 @injectable()
 export default class OperationService implements IOperationService {
@@ -10,6 +13,8 @@ export default class OperationService implements IOperationService {
     constructor(@inject("ISettingsService") private settingsService: ISettingsService) {
 
     }
+
+
 
 
     async delete(operationId: string) {
@@ -38,12 +43,89 @@ export default class OperationService implements IOperationService {
 
     }
 
-    async simulateChangePlan(operation: IOperation) {
-        var operationModel = await OperationSchema.create(operation);
+    async changePlan(subscriptionId: string, planId: string, id?: string, activityId?: string, timeStamp?: string): Promise<IOperation> {
+        let settingsModel = await SettingsSchema.findOne({});
+        var subscriptionModel = await SubscriptionSchema.findOne({ id: subscriptionId });
 
-        this.sendWebhook(operationModel.id)
-            .catch(error => { });
+        if (subscriptionModel == null) {
+            throw new BadRequestError("Subscription Not Found");
+        }
+
+        if (!settingsModel.plans.some(plan => plan.planId == planId)) {
+            throw new BadRequestError("Plan not found");
+        }
+
+        if (subscriptionModel.planId == planId) {
+            throw new BadRequestError("Trying to change to the same plan");
+        }
+
+        if (subscriptionModel.saasSubscriptionStatus != "Subscribed") {
+            throw new BadRequestError("The SaaS subscription status is not Subscribed");
+        }
+
+        if (!subscriptionModel.allowedCustomerOperations.some(operation => operation == "Update")) {
+            throw new BadRequestError("The update operation for a SaaS subscription is not included in allowedCustomerOperations");
+        }
+
+        var chance = new Chance();
+        var operationModel: IOperation = new OperationSchema({
+            "id": id || chance.guid(),
+            "activityId": activityId || chance.guid(),
+            "subscriptionId": subscriptionModel.id,
+            "offerId": subscriptionModel.offerId,
+            "publisherId": subscriptionModel.publisherId,
+            "planId": planId,
+            "quantity": subscriptionModel.quantity,
+            "action": "ChangePlan",
+            "timeStamp": timeStamp || new Date().toISOString(),
+            "status": "InProgress"
+        })
+
+        operationModel = await OperationSchema.create(operationModel);
+        this.sendWebhook(operationModel.id).catch(error => { });
+
+        return operationModel;
     }
+
+    async changeQuantity(subscriptionId: string, quantity: string, id?: string, activityId?: string, timeStamp?: string): Promise<IOperation> {
+        var subscriptionModel = await SubscriptionSchema.findOne({ id: subscriptionId });
+
+        if (subscriptionModel == null) {
+            throw new BadRequestError("Subscription Not Found");
+        }
+
+        if (subscriptionModel.quantity == quantity) {
+            throw new BadRequestError("Trying to change to the same quantity");
+        }
+
+        if (subscriptionModel.saasSubscriptionStatus != "Subscribed") {
+            throw new BadRequestError("The SaaS subscription status is not Subscribed");
+        }
+
+        if (subscriptionModel.allowedCustomerOperations.some(operation => operation == "Update")) {
+            throw new BadRequestError("The update operation for a SaaS subscription is not included in allowedCustomerOperations");
+        }
+
+        var chance = new Chance();
+        var operationModel: IOperation = new OperationSchema({
+            "id": id || chance.guid(),
+            "activityId": activityId || chance.guid(),
+            "subscriptionId": subscriptionModel.id,
+            "offerId": subscriptionModel.offerId,
+            "publisherId": subscriptionModel.publisherId,
+            "planId": subscriptionModel.planId,
+            "quantity": quantity,
+            "action": "ChangeQuantity",
+            "timeStamp": timeStamp || new Date().toISOString(),
+            "status": "InProgress"
+        })
+
+        operationModel = await OperationSchema.create(operationModel);
+        this.sendWebhook(operationModel.id).catch(error => { });
+
+        return operationModel;
+    }
+
 
 
     async simulateUnsubscribe(operation: IOperation) {

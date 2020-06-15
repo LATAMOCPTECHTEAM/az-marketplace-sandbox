@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import Modal from "components/Modal";
-import OperationDelete from "components/Operations/OperationDelete";
+import SubscriptionDelete from "components/Subscription/SubscriptionDelete";
 
-export default class OperationDeleteModal extends Component {
+export default class SubscrpitionDeleteModal extends Component {
+    
     show = () => this.modal.show();
 
     afterSubmitHandler() {
@@ -13,12 +14,12 @@ export default class OperationDeleteModal extends Component {
 
     render() {
         return (<Modal title="Delete Operation" ref={modal => this.modal = modal} onDone={() => this.subscriptionDelete.submit()}>
-            <OperationDelete id={this.props.id} ref={subscriptionDelete => this.subscriptionDelete = subscriptionDelete} afterSubmit={this.afterSubmitHandler.bind(this)} />
+            <SubscriptionDelete id={this.props.id} ref={subscriptionDelete => this.subscriptionDelete = subscriptionDelete} afterSubmit={this.afterSubmitHandler.bind(this)} />
         </Modal>)
     }
 }
 
-OperationDeleteModal.propTypes = {
+SubscrpitionDeleteModal.propTypes = {
     id: PropTypes.number,
     afterSubmit: PropTypes.func
 }

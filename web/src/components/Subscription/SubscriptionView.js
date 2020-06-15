@@ -84,7 +84,7 @@ export default class SubscriptionView extends Component {
 
     render() {
         return (<div>
-            <WithLoading show={!this.state.loading} type="bubbles" color="gray">
+            <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
                     <div>
                         <SimulateChangePlanModal id={this.props.id} ref={simulateChangePlanModal => this.simulateChangePlanModal = simulateChangePlanModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />

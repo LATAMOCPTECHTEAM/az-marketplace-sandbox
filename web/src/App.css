@@ -54,7 +54,8 @@
 }
 
 .react-grid-Canvas{
-  background-color: #a0a0a0 !important
+  background-color: #222222 !important;
+  overflow-x: hidden !important;
 }
 .react-grid-Cell{
   background-color: #faf6f6 !important;

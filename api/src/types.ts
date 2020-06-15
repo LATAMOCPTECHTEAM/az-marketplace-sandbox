@@ -54,7 +54,8 @@ export interface IOperationService {
     sendWebhook(operationId: string);
     confirmChangePlan(operationId: string, subscriptionId: string, planId: string, quantity: string, status: string);
     simulateSuspend(operation: IOperation);
-    simulateChangePlan(operation: IOperation);
+    changePlan(subscriptionId: string, planId: string, id?: string, activityId?: string, timeStamp?: string): Promise<IOperation>;
+    changeQuantity(subscriptionId: string, quantity: string, id?: string, activityId?: string, timeStamp?: string): Promise<IOperation>;
     simulateUnsubscribe(operation: IOperation);
     simulateReinstate(operation: IOperation);
     list(subscriptionId: string): Promise<IOperation[]>;

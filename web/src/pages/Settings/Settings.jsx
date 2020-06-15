@@ -1,13 +1,18 @@
 import React from 'react';
+import Button from "react-bootstrap/Button";
 import ToastStatus from "helpers/ToastStatus";
-import { TextInput, Button } from "components/FormInputs";
+import { TextInput } from "components/FormInputs";
 import SettingService from "services/SettingsService";
 import SettingsPlans from "./SettingsPlans";
 import WithLoading from "hoc/WithLoading";
 import WithErrorHandler from "hoc/WithErrorHandler";
 
-class Settings extends React.Component {
+export default class Settings extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.settingsService = new SettingService();
+    }
     state = {
         error: null,
         loading: true,
@@ -24,8 +29,7 @@ class Settings extends React.Component {
 
     componentDidMount() {
         ToastStatus(async () => {
-            var service = new SettingService();
-            var settings = await service.getSettings();
+            var settings = await this.settingsService.getSettings();
             this.setState({ settings: settings, loading: false });
         }, null, "Error Retrieving Data")
             .catch(error => {
@@ -45,7 +49,7 @@ class Settings extends React.Component {
         await ToastStatus(async () => {
             var service = new SettingService();
             await service.postSettings(this.state.settings);
-        }, "Information Saved succesfully.", "Error Saving Data");
+        }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
     }
 
     onPlanChangeHandler(plans) {
@@ -58,7 +62,7 @@ class Settings extends React.Component {
         let displayCols = "col-xs-12 col-sm-12 col-md-4 col-lg-1";
         let inputCols = "col-xs-12 col-sm-12 col-md-8 col-lg-5"
         return (<div className="Settings">
-            <WithLoading show={!this.state.loading} type="bubbles" color="gray" >
+            <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
                     <div className="col-xs-12">
                         <form onSubmit={this.handleSubmit.bind(this)}>
@@ -72,13 +76,11 @@ class Settings extends React.Component {
                             <hr />
                             <SettingsPlans plans={this.state.settings.plans} onPlanChange={this.onPlanChangeHandler.bind(this)} />
                             <hr />
-                            <Button text="Submit" />
+                            <Button type="submit">Submit</Button>
                         </form>
                     </div>
                 </WithErrorHandler>
             </WithLoading>
-        </div>)
+        </div >)
     }
 }
-
-export default Settings;

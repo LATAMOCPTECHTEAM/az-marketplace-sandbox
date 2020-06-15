@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import Modal from "../Modal";
-import SimulateChangePlan from "./SimulateChangePlan"
+import PropTypes from "prop-types";
+import Modal from "components/Modal";
+import SimulateChangePlan from "components/Simulation/SimulateChangePlan"
 
 export default class SimulateChangePlanModal extends Component {
 
@@ -14,7 +15,11 @@ export default class SimulateChangePlanModal extends Component {
     render() {
         return (<Modal title="Simulate: Change Plan" size="lg" ref={modal => this.modal = modal} onDone={() => this.form.submit()} >
             <SimulateChangePlan ref={form => this.form = form} id={this.props.id} afterSubmit={this.afterSubmit.bind(this)} />
-        </Modal>
-        )
+        </Modal>)
     }
+}
+
+SimulateChangePlanModal.propTypes = {
+    id: PropTypes.number,
+    afterSubmit: PropTypes.func
 }

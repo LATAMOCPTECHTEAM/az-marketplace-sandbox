@@ -66,7 +66,6 @@ export default class OperationsGrid extends Component {
         return selectors.getRows({ rows, filters });
     }
 
-
     getCellActions(column, row) {
         var _self = this;
         var btnWebhook = [{
@@ -98,8 +97,6 @@ export default class OperationsGrid extends Component {
         return cellActions[column.key];
     }
 
-
-
     render() {
         let _self = this;
         const filteredRows = this.getRows(_self.state.operations, this.state.filters);
@@ -116,7 +113,6 @@ export default class OperationsGrid extends Component {
                 getValidFilterValues={columnKey => _self.getValidFilterValues(_self.state.operations, columnKey)}
                 getCellActions={_self.getCellActions.bind(this)}
                 onRowClick={_self.props.onRowClick}
-
             />
         </div>)
     }

@@ -1,20 +1,19 @@
 import React, { Component } from 'react';
-import { TextInput, CodeBlock } from "../FormInputs";
-import SubscriptionService from "../../services/SubscriptionService";
-import SettingsService from "../../services/SettingsService";
-import OperationService from "../../services/OperationService";
+import PropTypes from "prop-types";
+import Chance from 'chance';
+import { TextInput, CodeBlock } from "components/FormInputs";
+import SubscriptionService from "services/SubscriptionService";
+import OperationService from "services/OperationService";
 import WithLoading from "hoc/WithLoading";
 import WithErrorHandler from "hoc/WithErrorHandler";
 import ToastStatus from "helpers/ToastStatus";
 
-var Chance = require('chance');
+export default class SimulateChangeQuantity extends Component {
 
-export default class SimulateChangePlan extends Component {
-
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.subscriptionService = new SubscriptionService();
-        this.settingsService = new SettingsService();
+        this.operationService = new OperationService();
     }
 
     state = {
@@ -59,21 +58,18 @@ export default class SimulateChangePlan extends Component {
         this.setState({ operationResponse: operationResponseState });
     }
 
-    async submit() {
+    submit() {
         this.setState({ loading: true });
         ToastStatus(async () => {
-            var operationService = new OperationService();
-            await operationService.simulateChangePlan(this.state.operation)
+            await this.operationService.simulateChangePlan(this.state.operation)
             this.props.afterSubmit && this.props.afterSubmit();
             this.setState({ loading: false });
-        }, "Request sent sucessfully", "Error Retrieving Data")
+        }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
             .catch(error => {
                 this.setState({ loading: false });
                 console.error(error);
             });
     }
-
-    fetchMessage = (forceShow) => this.props.id && !forceShow ? "" : <small>Fetched from <a href="/settings" target="_blank">Settings</a></small>
 
     inputChangeHandler(quantity) {
         let newState = { ...this.state.operation };
@@ -87,7 +83,7 @@ export default class SimulateChangePlan extends Component {
         let inputCols = "col-xs-12 col-sm-12 col-md-8 col-lg-10"
 
         return (
-            <WithLoading show={!this.state.loading} type="bubbles" color="gray">
+            <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
                     <div>
                         <p>Are you sure you want to change the subscription {this.props.id} ?</p>
@@ -119,4 +115,9 @@ export default class SimulateChangePlan extends Component {
                 </WithErrorHandler>
             </WithLoading>)
     }
+}
+
+SimulateChangeQuantity.propTypes = {
+    id: PropTypes.number,
+    afterSubmit: PropTypes.func
 }

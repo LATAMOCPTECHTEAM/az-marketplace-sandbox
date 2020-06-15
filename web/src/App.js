@@ -8,14 +8,13 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import './App.css';
-import Header from "components/Header";
-import Footer from "components/Footer";
-import Home from "./pages/Home/Home";
-import Subscriptions from './pages/Subscriptions/Subscriptions';
-import Settings from './pages/Settings/Settings.jsx';
-import About from "./pages/About/About";
-
-import Title from "./components/Title";
+import Header from "components/UI/Header";
+import Title from "components/UI/Title";
+import Footer from "components/UI/Footer";
+import Home from "pages/Home/Home";
+import Subscriptions from 'pages/Subscriptions/Subscriptions';
+import Settings from 'pages/Settings/Settings.jsx';
+import About from "pages/About/About";
 
 function App() {
     return (

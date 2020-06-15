@@ -1,14 +1,13 @@
-import React, {  Component } from 'react';
+import React, { Component } from 'react';
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
-require("./Modal.css")
-class ModalComponent extends Component {
+import "./Modal.css";
+import PropTypes from "prop-types";
+
+export default class ModalComponent extends Component {
 
     state = {
         show: false
-    }
-    componentDidMount() {
-
     }
 
     show() {
@@ -16,24 +15,17 @@ class ModalComponent extends Component {
     }
 
     close() {
-        if (this.props.closeHandler)
-            this.props.closeHandler();
+        this.props.onClose && this.props.onClose();
         this.setState({ show: false })
     }
 
-    handleDone() {
-        if (this.props.doneHandler) {
-            this.props.doneHandler()
-        }
-        if (this.props.onDone) {
-            this.props.onDone()
-        }
+    doneHandler() {
+        this.props.onDone && this.props.onDone();
     };
 
     render() {
         return (
-
-            <Modal backdrop="static" size={this.props.size} show={this.props.open || this.state.show} onHide={this.close.bind(this)}>
+            <Modal backdrop="static" size={this.props.size} show={this.state.show} onHide={this.close.bind(this)}>
                 <Modal.Header closeButton>
                     <Modal.Title>{this.props.title}</Modal.Title>
                 </Modal.Header>
@@ -42,7 +34,7 @@ class ModalComponent extends Component {
                     <Button variant="secondary" onClick={this.close.bind(this)}>Close</Button>
                     {
                         this.props.hideDone ? "" :
-                            <Button variant="primary" onClick={this.handleDone.bind(this)}>
+                            <Button variant="primary" onClick={this.doneHandler.bind(this)}>
                                 {this.props.submitText || "Done"}
                             </Button>
                     }
@@ -53,4 +45,11 @@ class ModalComponent extends Component {
     }
 }
 
-export default ModalComponent;
+ModalComponent.propTypes = {
+    id: PropTypes.number,
+    size: PropTypes.string,
+    submitText: PropTypes.string,
+    hideDone: PropTypes.bool,
+    onDone: PropTypes.func,
+    onClose: PropTypes.func,
+}

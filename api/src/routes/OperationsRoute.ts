@@ -65,7 +65,7 @@ export default class OperationRoute extends BaseRoute {
     @RouteConfig("post", "/changePlan")
     async changePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            await this.operationService.simulateChangePlan(req.body);
+            await this.operationService.changePlan(req.body.subscriptionId, req.body.planId, req.body.id, req.body.activityId, req.body.timeStamp);
             res.status(200).json("OK");
         } catch (error) {
             next(error);

@@ -1,20 +1,21 @@
 import React, { Component } from 'react';
-import { CodeBlock } from "../FormInputs";
-import SubscriptionService from "../../services/SubscriptionService";
-import SettingsService from "../../services/SettingsService";
-import OperationService from "../../services/OperationService";
+import PropTypes from "prop-types";
+import Chance from 'chance';
+import { CodeBlock } from "components/FormInputs";
+import SubscriptionService from "services/SubscriptionService";
+import SettingsService from "services/SettingsService";
+import OperationService from "services/OperationService";
 import WithLoading from "hoc/WithLoading";
 import WithErrorHandler from "hoc/WithErrorHandler";
-import ToastStatus from "../../helpers/ToastStatus";
-
-var Chance = require('chance');
+import ToastStatus from "helpers/ToastStatus";
 
 export default class SimulateSuspend extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.subscriptionService = new SubscriptionService();
         this.settingsService = new SettingsService();
+        this.operationService = new OperationService();
     }
 
     state = {
@@ -52,8 +53,7 @@ export default class SimulateSuspend extends Component {
     async submit() {
         this.setState({ loading: true });
         ToastStatus(async () => {
-            var operationService = new OperationService();
-            await operationService.simulateSuspend(this.state.operation)
+            await this.operationService.simulateSuspend(this.state.operation)
             this.props.afterSubmit && this.props.afterSubmit();
             this.setState({ loading: false });
         }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
@@ -65,7 +65,7 @@ export default class SimulateSuspend extends Component {
 
     render() {
         return (
-            <WithLoading show={!this.state.loading} type="bubbles" color="gray">
+            <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
                     <div>
                         <p>Are you sure you want to change the subscription {this.props.id} ?</p>
@@ -90,4 +90,9 @@ export default class SimulateSuspend extends Component {
                 </WithErrorHandler>
             </WithLoading>)
     }
+}
+
+SimulateSuspend.propTypes = {
+    id: PropTypes.number,
+    afterSubmit: PropTypes.func
 }

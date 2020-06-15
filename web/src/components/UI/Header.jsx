@@ -1,4 +1,5 @@
 import React from 'react';
+import config from "config";
 
 function Header() {
     return (
@@ -21,7 +22,13 @@ function Header() {
                             <a className="nav-link" href="/settings">Settings</a>
                         </li>
                     </ul>
+                    <span className="navbar-text">
+                        <a href={`${config.swagger}`} target="_blank" rel="noopener noreferrer" >
+                            <img alt="Swagger UI" src="/icons/swagger-logo.png" style={{ height: "30px" }} />
+                        </a>
+                    </span>
                 </div>
+
             </nav>
         </div>
     );

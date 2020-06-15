@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { SelectInput, CodeBlock } from "../FormInputs";
+import PropTypes from "prop-types";
+import Chance from 'chance';
+import { CodeBlock } from "../FormInputs";
 import SubscriptionService from "../../services/SubscriptionService";
 import SettingsService from "../../services/SettingsService";
 import OperationService from "../../services/OperationService";
 import WithLoading from "hoc/WithLoading";
 import WithErrorHandler from "hoc/WithErrorHandler";
 import ToastStatus from "helpers/ToastStatus";
-
-var Chance = require('chance');
+import PlanPicker from "components/Settings/PlanPicker";
 
 export default class SimulateChangePlan extends Component {
 
@@ -15,6 +16,7 @@ export default class SimulateChangePlan extends Component {
         super();
         this.subscriptionService = new SubscriptionService();
         this.settingsService = new SettingsService();
+        this.operationService = new OperationService();
     }
 
     state = {
@@ -26,9 +28,7 @@ export default class SimulateChangePlan extends Component {
 
     async componentDidMount() {
         try {
-            var settings = await this.settingsService.getSettings();
             var subscription = await this.subscriptionService.get(this.props.id);
-
             var chance = new Chance();
             var operation = {
                 "id": chance.guid(),
@@ -42,7 +42,7 @@ export default class SimulateChangePlan extends Component {
                 "timeStamp": new Date().toISOString(),
                 "status": "InProgress"
             };
-            this.setState({ subscription: subscription, operation: operation, planOptions: settings.plans.map(x => x.planId), loading: false });
+            this.setState({ subscription: subscription, operation: operation, loading: false });
             this.updateOperationResponse();
         } catch (error) {
             this.setState({ error: error, loading: false });
@@ -63,11 +63,10 @@ export default class SimulateChangePlan extends Component {
     async submit() {
         this.setState({ loading: true });
         ToastStatus(async () => {
-            var operationService = new OperationService();
-            await operationService.simulateChangePlan(this.state.operation)
+            await this.operationService.simulateChangePlan(this.state.operation)
             this.props.afterSubmit && this.props.afterSubmit();
             this.setState({ loading: false });
-        }, "Request sent sucessfully", "Error Retrieving Data")
+        }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
             .catch(error => {
                 this.setState({ loading: false });
                 console.error(error);
@@ -87,22 +86,18 @@ export default class SimulateChangePlan extends Component {
     }
 
     render() {
-        let displayCols = "col-xs-12 col-sm-12 col-md-4 col-lg-2";
-        let inputCols = "col-xs-12 col-sm-12 col-md-8 col-lg-10"
-
         return (
-            <WithLoading show={!this.state.loading} type="bubbles" color="gray">
+            <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
                     <div>
                         <p>Are you sure you want to change the subscription {this.props.id} ?</p>
-                        <SelectInput
-                            displayCols={displayCols} inputCols={inputCols}
-                            name="planId" displayName="Plan"
-                            options={this.state.planOptions}
-                            value={this.state.operation.planId}
-                            onChangeHandler={(event) => this.inputChangeHandler("planId", event.target.value)}>
-                            {this.fetchMessage(true)}
-                        </SelectInput>
+                        <PlanPicker
+                            planId={this.state.operation.planId}
+                            planOptions={this.state.planOptions}
+                            validator={this.validator}
+                            validatorOptions="required"
+                            onPlanChanged={(value) => this.inputChangeHandler("planId", value)}
+                        />
                         <h5>Operation Action<hr /></h5>
                         <ol>
                             <li>
@@ -128,4 +123,9 @@ export default class SimulateChangePlan extends Component {
                 </WithErrorHandler>
             </WithLoading>)
     }
+}
+
+SimulateChangePlan.propTypes = {
+    id: PropTypes.number,
+    afterSubmit: PropTypes.func
 }

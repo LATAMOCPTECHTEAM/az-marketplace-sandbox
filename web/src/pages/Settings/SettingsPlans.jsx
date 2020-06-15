@@ -81,19 +81,18 @@ export default class SettingsPlans extends React.Component {
                         </tbody>
                     </Table>
                 </div>
-                <div className="col-xs-12 col-sm-12 col-md-8 col-lg-7">
-                    <h5>
-                        Add Plan
-                        <hr />
-                    </h5>
-                    <div className="col col-xs-12">
+                <div className="col-xs-12 col-sm-12 col-md-8 col-lg-7" style={{ backgroundColor: "#303030", padding: "20px", borderRadius: "20px" }}>
+                    <div className="col-xs-12">
+                        <h5>Add Plan<hr /></h5>
+                    </div>
+                    <div className="col-xs-12">
                         <TextInput displayCols={displayCols} inputCols={inputCols}
                             name="displayName" displayName="Display Name" placeholder="Gold plan for Contoso"
                             value={this.state.newPlan.displayName}
                             validator={this.validator} validatorOptions="required"
                             onChangeHandler={(event) => this.planInputChangeHandler("displayName", event.target.value)} onKeyPressHandler={(event) => this.planInputKeyPress(event)} />
                     </div>
-                    <div className="col col-xs-12">
+                    <div className="col-xs-12">
                         <TextInput displayCols={displayCols} inputCols={inputCols}
                             name="planId" displayName="Plan Id" placeholder="gold"
                             value={this.state.newPlan.planId}

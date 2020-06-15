@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from "prop-types";
 import Modal from "components/Modal";
 import SimulateReinstate from "./SimulateReinstate";
 
@@ -14,7 +15,11 @@ export default class SimulateReinstateModal extends Component {
     render() {
         return (<Modal title="Simulate: Reinstate" size="lg" ref={modal => this.modal = modal} onDone={() => this.form.submit()} >
             <SimulateReinstate ref={form => this.form = form} id={this.props.id} afterSubmit={this.afterSubmit.bind(this)} />
-        </Modal>
-        )
+        </Modal>)
     }
+}
+
+SimulateReinstateModal.propTypes = {
+    id: PropTypes.number,
+    afterSubmit: PropTypes.func
 }

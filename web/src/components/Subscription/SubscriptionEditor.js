@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { TextInput, SelectInput, Checkbox, SelectMultiple, CodeBlock, DateInput } from "../FormInputs";
 import moment from "moment";
 import SimpleReactValidator from 'simple-react-validator';
+import Button from "react-bootstrap/Button";
+import { TextInput, SelectInput, Checkbox, SelectMultiple, CodeBlock, DateInput } from "../FormInputs";
+import PlanPicker from "components/Settings/PlanPicker";
 
 import SettingService from "../../services/SettingsService";
 import SubscriptionService from "../../services/SubscriptionService";
-import Button from "react-bootstrap/Button";
 
 import WithLoading from "hoc/WithLoading";
 import WithErrorHandler from "hoc/WithErrorHandler";
@@ -16,9 +17,10 @@ var Chance = require('chance');
 export default class SubscriptionEditor extends Component {
     state = {
         showPreview: false,
+        planOptions: [],
         termUnitOptions: ["P1M", "P1Y"],
         customerOperationsOptions: ["Read", "Update", "Delete"],
-        saasSubscriptionStatusOptions: ["NotStarted", "PendingFulfillmentStart", "Subscribed", "Suspended", "Unsubscribed"],
+        saasSubscriptionStatusOptions: ["PendingFulfillmentStart", "Subscribed", "Suspended", "Unsubscribed"],
         subscription: {
             id: new Chance().guid(),
             name: null,
@@ -110,7 +112,6 @@ export default class SubscriptionEditor extends Component {
         let newState = { ...this.state.subscription };
 
         for (var i = 0, l = options.length; i < l; i++) {
-            console.log(`Option ${options[i].value} - ${options[i].selected}`)
             if (options[i].selected) {
                 var index = newState.allowedCustomerOperations.indexOf(options[i].value);
                 if (index === -1)
@@ -152,15 +153,13 @@ export default class SubscriptionEditor extends Component {
 
     randomMessage = (forceShow) => this.props.id && !forceShow ? "" : <small>Genereted randomly.</small>;
 
-    fetchMessage(forceShow) {
-        return this.props.id && !forceShow ? "" : <small>Fetched from <a href="/settings" target="_blank">Settings</a></small>;
-    }
+    fetchMessage = (forceShow) => this.props.id && !forceShow ? "" : <small>Fetched from <a href="/settings" target="_blank">Settings</a></small>;
 
     render() {
         let displayCols = "col-xs-12 col-sm-12 col-md-4 col-lg-3";
         let inputCols = "col-xs-12 col-sm-12 col-md-8 col-lg-9"
         return (
-            <WithLoading show={!this.state.loading} type="bubbles" color="gray">
+            <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
                     <div>
                         <h5>Plan Properties <hr /></h5>
@@ -179,15 +178,12 @@ export default class SubscriptionEditor extends Component {
                                     onChangeHandler={(event) => this.inputChangeHandler("name", event.target.value)}
                                     validator={this.validator} validatorOptions="required" >
                                 </TextInput>
-                                <SelectInput
-                                    displayCols={displayCols} inputCols={inputCols}
-                                    name="planId" displayName="Plan"
-                                    options={this.state.planOptions}
-                                    value={this.state.subscription.planId}
-                                    onChangeHandler={(event) => this.inputChangeHandler("planId", event.target.value)}
-                                    validator={this.validator} validatorOptions="required">
-                                    {this.fetchMessage(true)}
-                                </SelectInput>
+                                <PlanPicker
+                                    planId={this.state.subscription.planId}
+                                    planOptions={this.state.planOptions}
+                                    validator={this.validator}
+                                    validatorOptions="required"
+                                    onPlanChanged={(value) => this.inputChangeHandler("planId", value)} />
                                 <TextInput displayCols={displayCols} inputCols={inputCols} name="quantity" displayName="Quantity" placeholder="0" type="number"
                                     value={this.state.subscription.quantity}
                                     onChangeHandler={(event) => this.inputChangeHandler("quantity", parseInt(event.target.value))} />
