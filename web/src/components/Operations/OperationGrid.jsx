@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import ReactDataGrid from 'react-data-grid';
-import { Toolbar, Data, Filters } from "react-data-grid-addons";
+import { Filters } from "react-data-grid-addons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCogs } from '@fortawesome/free-solid-svg-icons'
-import OperationsService from "../../services/OperationService";
+import OperationsService from "services/OperationService";
+import DataGrid from "components/DataGrid";
 
 const { AutoCompleteFilter } = Filters;
-const selectors = Data.Selectors;
 
 export default class OperationsGrid extends Component {
 
@@ -48,24 +47,6 @@ export default class OperationsGrid extends Component {
 
     componentDidMount = () => this.load();
 
-    handleFilterChange = filter => filters => {
-        const newFilters = { ...filters };
-        if (filter.filterTerm) {
-            newFilters[filter.column.key] = filter;
-        } else {
-            delete newFilters[filter.column.key];
-        }
-        return newFilters;
-    };
-
-    getValidFilterValues(rows, columnId) {
-        return rows.map(r => r[columnId]).filter((item, i, a) => i === a.indexOf(item));
-    }
-
-    getRows(rows, filters) {
-        return selectors.getRows({ rows, filters });
-    }
-
     getCellActions(column, row) {
         var _self = this;
         var btnWebhook = [{
@@ -98,22 +79,14 @@ export default class OperationsGrid extends Component {
     }
 
     render() {
-        let _self = this;
-        const filteredRows = this.getRows(_self.state.operations, this.state.filters);
         return (<div>
-            <ReactDataGrid
-                columns={_self.columns}
-                rowGetter={i => filteredRows[i]}
-                rowsCount={filteredRows.length}
-                minHeight={500}
-                toolbar={<Toolbar enableFilter={true} />}
-                onRowsSelected
-                onAddFilter={filter => _self.setState(_self.handleFilterChange(filter))}
-                onClearFilters={() => _self.setState({})}
-                getValidFilterValues={columnKey => _self.getValidFilterValues(_self.state.operations, columnKey)}
-                getCellActions={_self.getCellActions.bind(this)}
-                onRowClick={_self.props.onRowClick}
+            <DataGrid
+                columns={this.columns}
+                data={this.state.operations}
+                getCellActions={this.getCellActions.bind(this)}
+                onRowClick={this.props.onRowClick}
             />
         </div>)
     }
+
 }

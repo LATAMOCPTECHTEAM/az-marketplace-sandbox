@@ -1,6 +1,6 @@
 import React from 'react';
 
-function TextInput(props) {
+export default function TextInput(props) {
     return (
         <div>
             <div className="form-group row">
@@ -14,5 +14,3 @@ function TextInput(props) {
         </div>
     );
 }
-
-export default TextInput;

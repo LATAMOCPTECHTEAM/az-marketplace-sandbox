@@ -37,7 +37,7 @@ function App() {
                         <About />
                     </Route>
                     <Route path="/">
-                        <Title text="Home" />
+                        <Title text="Welcome to the Azure Marketplace Sandbox" />
                         <Home />
                     </Route>
 

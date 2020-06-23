@@ -59,6 +59,7 @@ export interface IOperationService {
     simulateUnsubscribe(operation: IOperation);
     simulateReinstate(operation: IOperation);
     list(subscriptionId: string): Promise<IOperation[]>;
+    get(subscriptionId: string, operationId: string): Promise<IOperation>;
 }
 
 // Startup

@@ -13,6 +13,7 @@ export default class Settings extends React.Component {
         super(props);
         this.settingsService = new SettingService();
     }
+    
     state = {
         error: null,
         loading: true,

@@ -6,6 +6,7 @@ import OperationSchema, { IOperation } from "../models/OperationSchema";
 import Chance from "chance";
 import BadRequestError from "../errors/BadRequest";
 import SettingsSchema from "../models/SettingsSchema";
+import NotFoundError from "../errors/NotFound";
 
 @injectable()
 export default class OperationService implements IOperationService {
@@ -14,19 +15,23 @@ export default class OperationService implements IOperationService {
 
     }
 
+    async get(subscriptionId: string, operationId: string): Promise<IOperation> {
+        let operation = await OperationSchema.findOne({ subscriptionId: subscriptionId, operationId: operationId });
 
-
+        if (!operation) {
+            throw new NotFoundError("Operation not Found.");
+        }
+        return operation;
+    }
 
     async delete(operationId: string) {
         await OperationSchema.deleteOne({ id: operationId });
     }
 
-
     async list(subscriptionId: string): Promise<IOperation[]> {
         var operations = await OperationSchema.find({ subscriptionId: subscriptionId }, null, { sort: { timeStamp: -1 } });
         return operations;
     }
-
 
     async confirmChangePlan(subscriptionId: string, operationId: string, planId: string, quantity: string, status: string) {
         var operationModel = await OperationSchema.findOne({ id: operationId });
@@ -125,8 +130,6 @@ export default class OperationService implements IOperationService {
 
         return operationModel;
     }
-
-
 
     async simulateUnsubscribe(operation: IOperation) {
         var operationModel = await OperationSchema.create(operation);

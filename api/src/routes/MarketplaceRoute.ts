@@ -8,6 +8,7 @@ import IResolveResponse from "./interfaces/models/IResolveResponse";
 import IInternalServerErrorResponse from "./interfaces/models/IInternalServerErrorResponse";
 import ISubscriptionResponse from "./interfaces/models/ISubscriptionResponse";
 import ISubscriptionsResponse from "./interfaces/models/ISubscriptionsResponse";
+import IOperationResponse from "./interfaces/models/IOperationResponse";
 import IListAvailablePlans from "./interfaces/models/IListAvailablePlansResponse";
 import Config from "../Config";
 import BadRequestError from "../errors/BadRequest";
@@ -22,6 +23,8 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
         @inject("ISettingsService") private settingsService: ISettingsService) {
         super();
     }
+
+
 
     validateApiVersion(req: Request) {
         if (req.query["api-version"] != Config.saasAPIVersion) {
@@ -168,8 +171,6 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
         }
     }
 
-
-
     @RouteConfig("post", "/:subscriptionId/activate")
     async activate(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
@@ -197,6 +198,29 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
             var operationLocation = `${req.host}/api/saas/subscriptions/${operation.subscriptionId}/operations/${operation.id}?apiVersion=${Config.saasAPIVersion}`;
             res.setHeader("Operation-Location", operationLocation);
             res.status(200).json("OK");
+        } catch (error) {
+            this.handleError(error, res);
+        }
+    }
+
+    @RouteConfig("get", "/:subscriptionId/operations/:operationId")
+    async getOperation(req: Request, res: Response, next: NextFunction) {
+        try {
+            this.validateApiVersion(req);
+            let operation = await this.operationService.get(req.params.subscriptionId, req.params.operationId);
+            let response: IOperationResponse = {
+                id: operation.id,
+                action: operation.action,
+                activityId: operation.activityId,
+                offerId: operation.offerId,
+                planId: operation.planId,
+                publisherId: operation.publisherId,
+                quantity: operation.quantity,
+                status: operation.status,
+                subscriptionId: operation.subscriptionId,
+                timeStamp: operation.timeStamp
+            }
+            res.status(200).json(response);
         } catch (error) {
             this.handleError(error, res);
         }

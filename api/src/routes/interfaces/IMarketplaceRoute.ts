@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { BaseRoute } from "../BaseRoute";
 
 export default interface IMarketplaceRoute extends BaseRoute {
+    
     /**
     * POST /api/saas/subscriptions/resolve 
     * @swagger
@@ -170,6 +171,8 @@ export default interface IMarketplaceRoute extends BaseRoute {
     *                 $ref: '#/components/schemas/SubscriptionResponse'
     *       403:
     *         description: Unauthorized. The authentication token wasn't provided or is invalid, or the request is attempting to access an acquisition that doesn't belong to the current publisher.
+    *       404:
+    *         description: Not found. The SaaS subscription with subscriptionId is not found.
     *       500:
     *         description: "Internal Server Error"
     *         content:
@@ -314,99 +317,18 @@ export default interface IMarketplaceRoute extends BaseRoute {
     */
     listAvailablePlans(req: Request, res: Response, next: NextFunction);
 
-    /**
-    * PATCH /api/saas/subscriptions/{subscriptionId}
-    * @swagger
-    * /api/saas/subscriptions/{subscriptionId}:
-    *   patch:
-    *     tags:
-    *     - "Change Plan"
-    *     summary: "Change the plan on the subscription"
-    *     description: "<p>Update the existing plan purchased for a SaaS subscription to a new plan (public or private). The publisher must call this API when a plan is changed on the publisher side for a SaaS subscription purchased in marketplace.</p>
-    *                   <br/>
-    *                   <p>This API can be called only for Active subscriptions. Any plan can be changed to any other existing plan (public or private) but not to itself. For private plans, the customer's tenant must be defined as part of plan's audience in Partner Center.</p>
-    *                   <br/>
-    *                   <a href=\"https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#change-the-plan-on-the-subscription\" target=\"_blank\">Official Documentation</a>"
-    *     parameters:
-    *     - in: header
-    *       description: "(Ignored by the Sandbox) A unique string value for tracking the request from the client, preferably a GUID. If this value isn't provided, one will be generated and provided in the response headers."
-    *       name: x-ms-requestid
-    *       schema:
-    *         type: string
-    *     - in: header
-    *       description: "(Ignored by the Sandbox) A unique string value for operation on the client. This parameter correlates all events from client operation with events on the server side. If this value isn't provided, one will be generated and provided in the response headers."
-    *       name: x-ms-correlationid
-    *       schema:
-    *         type: string
-    *     - in: header
-    *       description: "(Ignored by the Sandbox) Get JSON web token (JWT) bearer token. For example: \"Bearer <access_token>\". https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration#get-a-token-based-on-the-azure-ad-app"
-    *       name: authorization
-    *       schema:
-    *         type: string
-    *     - in: path
-    *       description: "A unique identifier of the SaaS subscription that's obtained after resolving the token via Resolve API."
-    *       name: subscriptionId
-    *       required: true
-    *       schema:
-    *         type: string
-    *     - in: query
-    *       name: api-version
-    *       description: "The version of the API to use for this request. The Sandbox API currently validates against the API Version=2018-08-31"
-    *       required: true
-    *       example: "2018-08-31"
-    *     requestBody:
-    *       description: Optional description in *Markdown*
-    *       required: true
-    *       content:
-    *         application/json:
-    *           schema:
-    *             type: object
-    *             properties:
-    *               planId:
-    *                 type: string
-    *                 description: "The ID of the new plan to be purchased"
-    *                 example: gold
-    *     responses:
-    *       200:
-    *         description: "<p>The request to change plan has been accepted and handled asynchronously. The partner is expected to poll the Operation-Location URL to determine a success or failure of the change plan request. 
-    *                          Polling should be done every several seconds until the final status of Failed, Succeed, or Conflict is received for the operation. 
-    *                          Final operation status should be returned quickly, but can take several minutes in some cases.</p>
-    *                       <br/>
-    *                       <p>The partner will also get webhook notification when the action is ready to be completed successfully on the Marketplace side. And only then the publisher should make the plan change on the publisher side.</p>"
-    *         headers:
-    *           Operation-Location:
-    *             description: "URL to get the operation's status. For example, https://marketplaceapi.microsoft.com/api/saas/subscriptions/<subscriptionId>/operations/<operationId>?api-version=2018-08-31."
-    *       400:
-    *         description: "
-    *           Bad request: validation failures.
-    *           <ul>
-    *             <li>The new plan does not exist or is not available for this specific SaaS subscription.</li>
-    *             <li>Trying to change to the same plan.</li>
-    *             <li>The SaaS subscription status is not Subscribed.</li>
-    *             <li>The update operation for a SaaS subscription is not included in allowedCustomerOperations.</li>
-    *           </ul>
-    *           "
-    *       403:
-    *         description: "Unauthorized. The authentication token wasn't provided or is invalid, or the request is attempting to access an acquisition that doesn't belong to the current publisher."
-    *       404:
-    *         description: "Not Found."
-    *       500:
-    *         description: "Internal Server Error"
-    *         content:
-    *             application/json:
-    *               schema:
-    *                 $ref: '#/components/schemas/InternalServerError'
-    */
+    
    /**
     * PATCH /api/saas/subscriptions/{subscriptionId}
     * @swagger
     * /api/saas/subscriptions/{subscriptionId}:
     *   patch:
     *     tags:
-    *     - "Change Quantity"
-    *     summary: "Change the quantity on the subscription"
+    *     - "Change Quantity/Change Plan"
+    *     summary: "Change the plan or the quantity on the subscription"
     *     description: "<p>Update the existing plan purchased for a SaaS subscription to a new plan (public or private). The publisher must call this API when a plan is changed on the publisher side for a SaaS subscription purchased in marketplace.</p>
     *                   <br/>
+    *                   <p>Either the plan or quantity of seats can be changed at one time, not both.</p>
     *                   <p>This API can be called only for Active subscriptions. Any plan can be changed to any other existing plan (public or private) but not to itself. For private plans, the customer's tenant must be defined as part of plan's audience in Partner Center.</p>
     *                   <br/>
     *                   <a href=\"https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#change-the-plan-on-the-subscription\" target=\"_blank\">Official Documentation</a>"
@@ -445,6 +367,10 @@ export default interface IMarketplaceRoute extends BaseRoute {
     *           schema:
     *             type: object
     *             properties:
+    *               quantity:
+    *                 type: number
+    *                 description: "New plan quantity"
+    *                 example: 5
     *               planId:
     *                 type: string
     *                 description: "The ID of the new plan to be purchased"
@@ -481,4 +407,70 @@ export default interface IMarketplaceRoute extends BaseRoute {
     *                 $ref: '#/components/schemas/InternalServerError'
     */
    changePlanOrQuantity(req: Request, res: Response, next: NextFunction);
+
+
+   /**
+    * GET /api/saas/subscriptions/{subscriptionId}
+    * @swagger
+    * /api/saas/subscriptions/{subscriptionId}/operations/{operationId}:
+    *   get:
+    *     tags:
+    *     - "Operations"
+    *     summary: "Get operation status"
+    *     description: "<p>Enables the publisher to track the status of the specified async operation: Unsubscribe, ChangePlan, or ChangeQuantity.
+                           The operationId for this API call can be retrieved from the value returned by Operation-Location, get pending operations API call, or the <id> parameter value received in a webhook call.</p>
+    *                   <br/>
+    *                   <a href=\"https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#get-subscription\" target=\"_blank\">Official Documentation</a>"
+    *     parameters:
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) A unique string value for tracking the request from the client, preferably a GUID. If this value isn't provided, one will be generated and provided in the response headers."
+    *       name: x-ms-requestid
+    *       schema:
+    *         type: string
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) A unique string value for operation on the client. This parameter correlates all events from client operation with events on the server side. If this value isn't provided, one will be generated and provided in the response headers."
+    *       name: x-ms-correlationid
+    *       schema:
+    *         type: string
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) Get JSON web token (JWT) bearer token. For example: \"Bearer <access_token>\". https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration#get-a-token-based-on-the-azure-ad-app"
+    *       name: authorization
+    *       schema:
+    *         type: string
+    *     - in: path
+    *       description: "A unique identifier of the SaaS subscription that's obtained after resolving the token via Resolve API."
+    *       name: subscriptionId
+    *       schema:
+    *         type: string
+    *       required: true
+    *     - in: path
+    *       description: "The unique identifier of the operation being retrieved."
+    *       name: operationId
+    *       schema:
+    *         type: string
+    *       required: true
+    *     - in: query
+    *       name: api-version
+    *       description: "The version of the API to use for this request. The Sandbox API currently validates against the API Version=2018-08-31"
+    *       required: true
+    *       example: "2018-08-31"
+    *     responses:
+    *       200:
+    *         description: Success
+    *         content:
+    *             application/json:
+    *               schema:
+    *                 $ref: '#/components/schemas/SubscriptionResponse'
+    *       403:
+    *         description: Unauthorized. The authentication token wasn't provided or is invalid, or the request is attempting to access an acquisition that doesn't belong to the current publisher.
+    *       404:
+    *         description: Not found. The SaaS subscription with subscriptionId or the Operation with operation id is not found.
+    *       500:
+    *         description: "Internal Server Error"
+    *         content:
+    *             application/json:
+    *               schema:
+    *                 $ref: '#/components/schemas/InternalServerError'
+    */
+   getOperation(req: Request, res: Response, next: NextFunction);
 }
