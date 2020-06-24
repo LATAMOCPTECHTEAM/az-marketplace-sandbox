@@ -61,11 +61,9 @@ export default class SettingsPlans extends React.Component {
     }
 
     render() {
-        let displayCols = "col-xs-12 col-sm-12 col-md-4 col-lg-2";
-        let inputCols = "col-xs-12 col-sm-12 col-md-8 col-lg-10";
         return (<div>
             <div className="row">
-                <div className="col-xs-12 col-sm-12 col-md-4 col-lg-5">
+                <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <Table striped bordered hover>
                         <tbody>
                             {this.state.plans ?
@@ -81,26 +79,25 @@ export default class SettingsPlans extends React.Component {
                         </tbody>
                     </Table>
                 </div>
-                <div className="col-xs-12 col-sm-12 col-md-8 col-lg-7" style={{ backgroundColor: "#303030", padding: "20px", borderRadius: "20px" }}>
+                <div className="col-xs-12 col-sm-12 col-md-6 col-lg-6" style={{ backgroundColor: "#303030", padding: "20px", borderRadius: "20px" }}>
                     <div className="col-xs-12">
                         <h5>Add Plan<hr /></h5>
                     </div>
                     <div className="col-xs-12">
-                        <TextInput displayCols={displayCols} inputCols={inputCols}
+                        <TextInput
                             name="displayName" displayName="Display Name" placeholder="Gold plan for Contoso"
                             value={this.state.newPlan.displayName}
                             validator={this.validator} validatorOptions="required"
                             onChangeHandler={(event) => this.planInputChangeHandler("displayName", event.target.value)} onKeyPressHandler={(event) => this.planInputKeyPress(event)} />
                     </div>
                     <div className="col-xs-12">
-                        <TextInput displayCols={displayCols} inputCols={inputCols}
+                        <TextInput
                             name="planId" displayName="Plan Id" placeholder="gold"
                             value={this.state.newPlan.planId}
                             validator={this.validator} validatorOptions="required"
                             onChangeHandler={(event) => this.planInputChangeHandler("planId", event.target.value)} onKeyPressHandler={(event) => this.planInputKeyPress(event)} />
                     </div>
                     <Checkbox
-                        displayCols={displayCols} inputCols={inputCols}
                         name="isPrivate" displayName="Private Plan"
                         checked={this.state.newPlan.isPrivate}
                         onChangeHandler={(event) => this.planInputChangeHandler("isPrivate", !!event.target.checked)}>

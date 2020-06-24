@@ -156,8 +156,6 @@ export default class SubscriptionEditor extends Component {
     fetchMessage = (forceShow) => this.props.id && !forceShow ? "" : <small>Fetched from <a href="/settings" target="_blank">Settings</a></small>;
 
     render() {
-        let displayCols = "col-xs-12 col-sm-12 col-md-4 col-lg-3";
-        let inputCols = "col-xs-12 col-sm-12 col-md-8 col-lg-9"
         return (
             <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
@@ -165,14 +163,14 @@ export default class SubscriptionEditor extends Component {
                         <h5>Plan Properties <hr /></h5>
                         <div className="row">
                             <div className="col-xs-12 col-sm-12 col-md-4">
-                                <TextInput displayCols={displayCols} inputCols={inputCols}
+                                <TextInput
                                     name="id" displayName="Id" placeholder="random guid"
                                     value={this.state.subscription.id}
                                     onChangeHandler={(event) => this.inputChangeHandler("id", event.target.value)}
                                     validator={this.validator} validatorOptions="required" >
                                     {this.randomMessage()}
                                 </TextInput>
-                                <TextInput displayCols={displayCols} inputCols={inputCols}
+                                <TextInput
                                     name="name" displayName="Name" placeholder="Contoso Cloud Solution"
                                     value={this.state.subscription.name}
                                     onChangeHandler={(event) => this.inputChangeHandler("name", event.target.value)}
@@ -184,11 +182,11 @@ export default class SubscriptionEditor extends Component {
                                     validator={this.validator}
                                     validatorOptions="required"
                                     onPlanChanged={(value) => this.inputChangeHandler("planId", value)} />
-                                <TextInput displayCols={displayCols} inputCols={inputCols} name="quantity" displayName="Quantity" placeholder="0" type="number"
+                                <TextInput name="quantity" displayName="Quantity" placeholder="0" type="number"
                                     value={this.state.subscription.quantity}
                                     onChangeHandler={(event) => this.inputChangeHandler("quantity", parseInt(event.target.value))} />
                                 <SelectInput
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="statusId" displayName="Status"
                                     options={this.state.saasSubscriptionStatusOptions}
                                     value={this.state.subscription.saasSubscriptionStatus}
@@ -198,14 +196,14 @@ export default class SubscriptionEditor extends Component {
                             </div>
 
                             <div className="col-xs-12 col-sm-12 col-md-4">
-                                <TextInput displayCols={displayCols} inputCols={inputCols}
+                                <TextInput
                                     name="publisherId" displayName="Publisher Id" placeholder="Publisher Id"
                                     value={this.state.subscription.publisherId}
                                     onChangeHandler={(event) => this.inputChangeHandler("publisherId", event.target.value)}
                                     validator={this.validator} validatorOptions="required">
                                     {this.fetchMessage()}
                                 </TextInput>
-                                <TextInput displayCols={displayCols} inputCols={inputCols}
+                                <TextInput
                                     name="offerId" displayName="Offer Id" placeholder="Offer Id"
                                     value={this.state.subscription.offerId}
                                     onChangeHandler={(event) => this.inputChangeHandler("offerId", event.target.value)}
@@ -213,7 +211,7 @@ export default class SubscriptionEditor extends Component {
                                     {this.fetchMessage()}
                                 </TextInput>
                                 <SelectInput
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="termUnit" displayName="Term Unit"
                                     options={this.state.termUnitOptions}
                                     value={this.state.subscription.term.termUnit}
@@ -221,20 +219,20 @@ export default class SubscriptionEditor extends Component {
                                     validator={this.validator} validatorOptions="required">
                                 </SelectInput>
                                 <DateInput
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="purchaser.term.startDate" displayName="Term Start Date"
                                     value={moment(this.state.subscription.term.startDate).toDate()}
                                     onChangeHandler={(date) => this.inputStartDateChangeHandler(date)}
                                     validator={this.validator} validatorOptions="required">
                                 </DateInput>
                                 <DateInput
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="purchaser.term.endDate" displayName="Term End Date"
                                     value={moment(this.state.subscription.term.endDate).toDate()}
                                     validator={this.validator} validatorOptions="required">
                                 </DateInput>
                                 <SelectMultiple
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="allowedCustomerOperations" displayName="Allowed CustomerOperations"
                                     options={this.state.customerOperationsOptions}
                                     value={this.state.subscription.allowedCustomerOperations}
@@ -242,7 +240,7 @@ export default class SubscriptionEditor extends Component {
                                     validator={this.validator} validatorOptions="required">
                                 </SelectMultiple>
                                 <Checkbox
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="isFreelTrial" displayName="Is Free Trial"
                                     checked={this.state.subscription.isFreeTrial}
                                     onChangeHandler={(event) => this.inputChangeHandler("isFreeTrial", event.target.checked)}>
@@ -251,7 +249,7 @@ export default class SubscriptionEditor extends Component {
 
                             <div className="col-xs-12 col-sm-12 col-md-4">
                                 <TextInput
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="beneficiary.emailId" displayName="Beneficiary Email Id" placeholder="1f0384a5-c17d-403e-8c7a-a8ad9999ab43"
                                     value={this.state.subscription.beneficiary.emailId}
                                     onChangeHandler={(event) => this.inputChangeHandler("emailId", event.target.value, ["beneficiary"])}
@@ -259,7 +257,7 @@ export default class SubscriptionEditor extends Component {
                                     {this.randomMessage()}
                                 </TextInput>
                                 <TextInput
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="beneficiary.objectId" displayName="Beneficiary Object Id" placeholder="1f0384a5-c17d-403e-8c7a-a8ad9999ab43"
                                     value={this.state.subscription.beneficiary.objectId}
                                     onChangeHandler={(event) => this.inputChangeHandler("objectId", event.target.value, ["beneficiary"])}
@@ -267,7 +265,7 @@ export default class SubscriptionEditor extends Component {
                                     {this.randomMessage()}
                                 </TextInput>
                                 <TextInput
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="beneficiary.tenantId" displayName="Beneficiary Tenant Id" placeholder="1f0384a5-c17d-403e-8c7a-a8ad9999ab43"
                                     value={this.state.subscription.beneficiary.tenantId}
                                     onChangeHandler={(event) => this.inputChangeHandler("tenantId", event.target.value, ["beneficiary"])}
@@ -275,7 +273,7 @@ export default class SubscriptionEditor extends Component {
                                     {this.fetchMessage()}
                                 </TextInput>
                                 <TextInput
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="purchaser.emailId" displayName="Purchaser Email Id" placeholder="1f0384a5-c17d-403e-8c7a-a8ad9999ab43"
                                     value={this.state.subscription.purchaser.emailId}
                                     onChangeHandler={(event) => this.inputChangeHandler("emailId", event.target.value, ["purchaser"])}
@@ -283,7 +281,7 @@ export default class SubscriptionEditor extends Component {
                                     {this.randomMessage()}
                                 </TextInput>
                                 <TextInput
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="purchaser.objectId" displayName="Beneficiary Object Id" placeholder="1f0384a5-c17d-403e-8c7a-a8ad9999ab43"
                                     value={this.state.subscription.purchaser.objectId}
                                     onChangeHandler={(event) => this.inputChangeHandler("objectId", event.target.value, ["purchaser"])}
@@ -291,7 +289,7 @@ export default class SubscriptionEditor extends Component {
                                     {this.randomMessage()}
                                 </TextInput>
                                 <TextInput
-                                    displayCols={displayCols} inputCols={inputCols}
+
                                     name="purchaser.tenantId" displayName="Purchaser Tenant Id" placeholder="ba0fa57a-cf48-4ce6-b580-6cffa4b0ea82"
                                     value={this.state.subscription.purchaser.tenantId}
                                     onChangeHandler={(event) => this.inputChangeHandler("tenantId", event.target.value, ["purchaser"])}

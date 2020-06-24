@@ -13,7 +13,7 @@ export default class Settings extends React.Component {
         super(props);
         this.settingsService = new SettingService();
     }
-    
+
     state = {
         error: null,
         loading: true,
@@ -60,25 +60,27 @@ export default class Settings extends React.Component {
     }
 
     render() {
-        let displayCols = "col-xs-12 col-sm-12 col-md-4 col-lg-1";
-        let inputCols = "col-xs-12 col-sm-12 col-md-8 col-lg-5"
+
         return (<div className="Settings">
             <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
-                    <div className="col-xs-12">
+                    <div className="col-xs-12 col-sm-12 col-md-6">
                         <form onSubmit={this.handleSubmit.bind(this)}>
-                            <TextInput displayCols={displayCols} inputCols={inputCols} name="landingPageUrl" displayName="Landing Page Url" placeholder="https://mywebsite.com" value={this.state.settings.landingPageUrl} onChangeHandler={(event) => this.inputChangeHandler("landingPageUrl", event)} />
-                            <TextInput displayCols={displayCols} inputCols={inputCols} name="webhookUrl" displayName="Webhook Url" placeholder="https://mywebsite.com/webhook" value={this.state.settings.webhookUrl} onChangeHandler={(event) => this.inputChangeHandler("webhookUrl", event)} />
-                            <TextInput displayCols={displayCols} inputCols={inputCols} name="publisherId" displayName="Publisher Id" placeholder="contosto_id" value={this.state.settings.publisherId} onChangeHandler={(event) => this.inputChangeHandler("publisherId", event)} />
-                            <TextInput displayCols={displayCols} inputCols={inputCols} name="offerId" displayName="Offer Id" placeholder="offer_id" value={this.state.settings.offerId} onChangeHandler={(event) => this.inputChangeHandler("offerId", event)} />
-                            <TextInput displayCols={displayCols} inputCols={inputCols} name="beneficiaryTenantId" displayName="Beneficiary Tenant Id" value={this.state.settings.beneficiaryTenantId} onChangeHandler={(event) => this.inputChangeHandler("beneficiaryTenantId", event)} />
-                            <TextInput displayCols={displayCols} inputCols={inputCols} name="purchaserTenantId" displayName="Purchase Tenant Id" value={this.state.settings.purchaserTenantId} onChangeHandler={(event) => this.inputChangeHandler("purchaserTenantId", event)} />
-                            <h5>Plans</h5>
-                            <hr />
-                            <SettingsPlans plans={this.state.settings.plans} onPlanChange={this.onPlanChangeHandler.bind(this)} />
-                            <hr />
-                            <Button type="submit">Submit</Button>
+                            <TextInput name="landingPageUrl" displayName="Landing Page Url" placeholder="https://mywebsite.com" value={this.state.settings.landingPageUrl} onChangeHandler={(event) => this.inputChangeHandler("landingPageUrl", event)} />
+                            <TextInput name="webhookUrl" displayName="Webhook Url" placeholder="https://mywebsite.com/webhook" value={this.state.settings.webhookUrl} onChangeHandler={(event) => this.inputChangeHandler("webhookUrl", event)} />
+                            <TextInput name="publisherId" displayName="Publisher Id" placeholder="contosto_id" value={this.state.settings.publisherId} onChangeHandler={(event) => this.inputChangeHandler("publisherId", event)} />
+                            <TextInput name="offerId" displayName="Offer Id" placeholder="offer_id" value={this.state.settings.offerId} onChangeHandler={(event) => this.inputChangeHandler("offerId", event)} />
+                            <TextInput name="beneficiaryTenantId" displayName="Beneficiary Tenant Id" value={this.state.settings.beneficiaryTenantId} onChangeHandler={(event) => this.inputChangeHandler("beneficiaryTenantId", event)} />
+                            <TextInput name="purchaserTenantId" displayName="Purchase Tenant Id" value={this.state.settings.purchaserTenantId} onChangeHandler={(event) => this.inputChangeHandler("purchaserTenantId", event)} />
                         </form>
+                    </div>
+
+                    <div className="col-xs-12 col-sm-12">
+                        <h5>Plans</h5>
+                        <hr />
+                        <SettingsPlans plans={this.state.settings.plans} onPlanChange={this.onPlanChangeHandler.bind(this)} />
+                        <hr />
+                        <Button type="submit">Submit</Button>
                     </div>
                 </WithErrorHandler>
             </WithLoading>
