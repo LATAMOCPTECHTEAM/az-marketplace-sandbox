@@ -29,9 +29,9 @@ The sanbdox provides a user interface to the simulation above and also mimics th
 
 ## User Guide
 
-### [Running the Sandbox](../wiki/Running-the-Sandbox)
-### [Configuring the Sandbox](../wiki/Configuring-the-Sandbox)
-### [Creating a SaaS Subscription](../wiki/Creating-the-SaaS-Subscription)
+### [Running the Sandbox](../../wiki/Running-the-Sandbox)
+### [Configuring the Sandbox](../../wiki/Configuring-the-Sandbox)
+### [Creating a SaaS Subscription](../../wiki/Creating-the-SaaS-Subscription)
 ### [Login Token Generation (Configure Account)](#)
 ### [Simulating Change Plan](#)
 ### [Simulating Change Quantity](#)
