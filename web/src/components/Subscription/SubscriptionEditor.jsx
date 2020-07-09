@@ -1,106 +1,107 @@
 import React, { Component } from 'react';
 import moment from "moment";
 import SimpleReactValidator from 'simple-react-validator';
+import Chance from 'chance';
 import Button from "react-bootstrap/Button";
-import { TextInput, SelectInput, Checkbox, SelectMultiple, CodeBlock, DateInput } from "../FormInputs";
+import { toast } from 'react-toastify';
+import { TextInput, SelectInput, Checkbox, SelectMultiple, CodeBlock, DateInput } from "components/FormInputs";
 import PlanPicker from "components/Settings/PlanPicker";
-
-import SettingService from "../../services/SettingsService";
-import SubscriptionService from "../../services/SubscriptionService";
-
-import WithLoading from "hoc/WithLoading";
-import WithErrorHandler from "hoc/WithErrorHandler";
-import ToastStatus from "../../helpers/ToastStatus";
-
-var Chance = require('chance');
+import { SettingsService, SubscriptionService } from "services";
+import { WithLoading, WithErrorHandler } from "hoc";
+import messages from "resources/messages";
 
 export default class SubscriptionEditor extends Component {
-    state = {
-        showPreview: false,
-        planOptions: [],
-        termUnitOptions: ["P1M", "P1Y"],
-        customerOperationsOptions: ["Read", "Update", "Delete"],
-        saasSubscriptionStatusOptions: ["PendingFulfillmentStart", "Subscribed", "Suspended", "Unsubscribed"],
-        subscription: {
-            id: new Chance().guid(),
-            name: null,
-            publisherId: null,
-            offerId: null,
-            planId: null,
-            quantity: null,
-            beneficiary: {
-                emailId: new Chance().email({ domain: "sandbox.com" }),
-                objectId: new Chance().guid(),
-                tenantId: null
-            },
-            purchaser: {
-                emailId: new Chance().email({ domain: "sandbox.com" }),
-                objectId: new Chance().guid(),
-                tenantId: null
-            },
-            term: {
-                startDate: moment().toDate(),
-                endDate: "2019-06-29",
-                termUnit: "P1M"
-            },
-            allowedCustomerOperations: ["Read", "Update", "Delete"],
-            sessionMode: "DryRun",
-            isFreeTrial: false,
-            isTest: true,
-            sandboxType: "None",
-            saasSubscriptionStatus: "PendingFulfillmentStart"
-        }
-    };
 
-    componentDidMount() {
-        this.setState({ loading: true });
+    constructor(props) {
+        super(props);
+        this.settingsService = new SettingsService();
+        this.subscriptionService = new SubscriptionService();
         this.validator = new SimpleReactValidator();
-        var service = new SettingService();
-        var subscriptionService = new SubscriptionService();
-        let subscriptionState = { ...this.state.subscription };
-        let editSubscriptionPromise = Promise.resolve();
-        if (this.props.id)
-            editSubscriptionPromise = subscriptionService.get(this.props.id)
-                .then(subscription => {
-                    subscriptionState = subscription;
-                })
-        editSubscriptionPromise
-            .then(service.getSettings)
-            .then(settings => {
-                if (!this.props.id) {
-                    subscriptionState.publisherId = settings.publisherId;
-                    subscriptionState.offerId = settings.offerId;
-                    subscriptionState.purchaser.tenantId = settings.purchaserTenantId;
-                    subscriptionState.beneficiary.tenantId = settings.beneficiaryTenantId;
-                }
-                this.setState({ subscription: subscriptionState, planOptions: settings.plans.map(x => x.planId), loading: false });
-            })
-            .catch(error => {
-                this.setState({ error: error, loading: false });
-                console.error(error);
-            });
 
-        this.inputStartDateChangeHandler(this.state.subscription.term.startDate);
+        this.state = {
+            showPreview: false,
+            planOptions: [],
+            termUnitOptions: ["P1M", "P1Y"],
+            customerOperationsOptions: ["Read", "Update", "Delete"],
+            saasSubscriptionStatusOptions: ["PendingFulfillmentStart", "Subscribed", "Suspended", "Unsubscribed"],
+            subscription: {
+                id: new Chance().guid(),
+                name: null,
+                publisherId: null,
+                offerId: null,
+                planId: null,
+                quantity: null,
+                beneficiary: {
+                    emailId: new Chance().email({ domain: "sandbox.com" }),
+                    objectId: new Chance().guid(),
+                    tenantId: null
+                },
+                purchaser: {
+                    emailId: new Chance().email({ domain: "sandbox.com" }),
+                    objectId: new Chance().guid(),
+                    tenantId: null
+                },
+                term: {
+                    startDate: moment().toDate(),
+                    endDate: "2019-06-29",
+                    termUnit: "P1M"
+                },
+                allowedCustomerOperations: ["Read", "Update", "Delete"],
+                sessionMode: "DryRun",
+                isFreeTrial: false,
+                isTest: true,
+                sandboxType: "None",
+                saasSubscriptionStatus: "PendingFulfillmentStart"
+            }
+        };
+    }
+
+
+    async componentDidMount() {
+        try {
+            this.setState({ loading: true });
+            let subscriptionState = { ...this.state.subscription };
+
+            if (this.props.id) {
+                subscriptionState = await this.subscriptionService.get(this.props.id)
+            }
+
+            let settings = await this.settingsService.getSettings();
+
+            if (!this.props.id) {
+                subscriptionState.publisherId = settings.publisherId;
+                subscriptionState.offerId = settings.offerId;
+                subscriptionState.purchaser.tenantId = settings.purchaserTenantId;
+                subscriptionState.beneficiary.tenantId = settings.beneficiaryTenantId;
+            }
+
+            this.setState({ subscription: subscriptionState, planOptions: settings.plans.map(x => x.planId), loading: false });
+            this.inputStartDateChangeHandler(this.state.subscription.term.startDate);
+        } catch (error) {
+            this.setState({ error: error, loading: false });
+            console.error(error);
+        }
+
     }
 
     async submit() {
         if (this.validator.allValid()) {
             this.setState({ loading: true });
-            ToastStatus(async () => {
-                var subscriptionService = new SubscriptionService();
+            try {
                 if (this.props.id) {
-                    await subscriptionService.update(this.state.subscription);
+                    await this.subscriptionService.update(this.state.subscription);
                 } else {
-                    await subscriptionService.create(this.state.subscription);
+                    await this.subscriptionService.create(this.state.subscription);
                 }
                 this.props.afterSubmit && this.props.afterSubmit();
                 this.setState({ loading: false });
-            }, "Request sent sucessfully", "Error Retrieving Data")
-                .catch(error => {
-                    this.setState({ loading: false });
-                    console.error(error);
-                });
+                toast.success(messages.SUBSCRIPTION_SAVED_SUCCESS, { position: "bottom-left" });
 
+            } catch (error) {
+                console.error(error);
+                this.setState({ loading: false });
+                toast.error(messages.REQUEST_ERROR_CHECK_CONSOLE, { position: "bottom-left" });
+            }
         } else {
             this.setState({ loading: false });
             this.validator.showMessages();
@@ -302,8 +303,8 @@ export default class SubscriptionEditor extends Component {
                         <Button onClick={() => this.setState({ showPreview: !this.state.showPreview })} >Show Preview</Button>
                         <div style={{ display: this.state.showPreview ? "block" : "none" }}>
                             <br />
-                The code below will be stored in the database, and will be the result of the list and get subscription calls.
-                <br />
+                            The code below will be stored in the database, and will be the result of the list and get subscription calls.
+                            <br />
                             <CodeBlock language="json" text={JSON.stringify(this.state.subscription, null, 4)} />
                         </div>
                     </div >

@@ -1,32 +1,33 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
-import SubscriptionService from "services/SubscriptionService";
-import WithLoading from "hoc/WithLoading";
-import WithErrorHandler from "hoc/WithErrorHandler";
-import ToastStatus from "helpers/ToastStatus";
+import { toast } from 'react-toastify';
+import { SubscriptionService } from "services";
+import { WithLoading, WithErrorHandler } from "hoc";
+import messages from "resources/messages";
 
 export default class SubscriptionDelete extends Component {
 
     constructor(props) {
         super(props);
         this.subscriptionService = new SubscriptionService();
-    }
-
-    state = {
-        loading: false
+        this.state = {
+            loading: false
+        };
     }
 
     async submit() {
-        this.setState({ loading: true });
-        ToastStatus(async () => {
+        try {
+            this.setState({ loading: true });
             await this.subscriptionService.delete(this.props.id);
             this.props.afterSubmit && this.props.afterSubmit();
             this.setState({ loading: false });
-        }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
-            .catch(error => {
-                this.setState({ error: error, loading: false });
-                console.error(error);
-            });
+            toast.success(messages.DELETE_SUBSCRIPTION_SUCCESS, { position: "bottom-left" });
+
+        } catch (error) {
+            console.error(error);
+            toast.error(messages.REQUEST_ERROR_CHECK_CONSOLE, { position: "bottom-left" });
+            this.setState({ error: error, loading: false });
+        };
     }
 
     render() {
