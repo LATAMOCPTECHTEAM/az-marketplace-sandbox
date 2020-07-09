@@ -17,7 +17,6 @@ export default class Startup {
             dotenv.config();
         }
 
-
         this.server.createAppWithRoutes();
         this.server.startServer();
     }

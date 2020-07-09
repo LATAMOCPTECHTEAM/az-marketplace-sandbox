@@ -48,7 +48,7 @@ export default class OperationService implements IOperationService {
 
     }
 
-    async changePlan(subscriptionId: string, planId: string, id?: string, activityId?: string, timeStamp?: string): Promise<IOperation> {
+    async changePlan(subscriptionId: string, planId: string, id?: string, activityId?: string, timeStamp?: string): Promise<{ id: string, webhookSent: boolean }> {
         let settingsModel = await SettingsSchema.findOne({});
         var subscriptionModel = await SubscriptionSchema.findOne({ id: subscriptionId });
 
@@ -87,12 +87,22 @@ export default class OperationService implements IOperationService {
         })
 
         operationModel = await OperationSchema.create(operationModel);
-        this.sendWebhook(operationModel.id).catch(error => { });
 
-        return operationModel;
+        try {
+            await this.sendWebhook(operationModel.id)
+            return {
+                id: operationModel.id,
+                webhookSent: true
+            }
+        } catch (error) {
+            return {
+                id: operationModel.id,
+                webhookSent: false
+            }
+        }
     }
 
-    async changeQuantity(subscriptionId: string, quantity: string, id?: string, activityId?: string, timeStamp?: string): Promise<IOperation> {
+    async changeQuantity(subscriptionId: string, quantity: string, id?: string, activityId?: string, timeStamp?: string): Promise<{ id: string, webhookSent: boolean }> {
         var subscriptionModel = await SubscriptionSchema.findOne({ id: subscriptionId });
 
         if (subscriptionModel == null) {
@@ -126,12 +136,21 @@ export default class OperationService implements IOperationService {
         })
 
         operationModel = await OperationSchema.create(operationModel);
-        this.sendWebhook(operationModel.id).catch(error => { });
-
-        return operationModel;
+        try {
+            await this.sendWebhook(operationModel.id)
+            return {
+                id: operationModel.id,
+                webhookSent: true
+            }
+        } catch (error) {
+            return {
+                id: operationModel.id,
+                webhookSent: false
+            }
+        }
     }
 
-    async simulateUnsubscribe(operation: IOperation) {
+    async simulateUnsubscribe(operation: IOperation): Promise<boolean> {
         var operationModel = await OperationSchema.create(operation);
         var subscriptionModel = await SubscriptionSchema.findOne({ id: operation.subscriptionId });
 
@@ -139,11 +158,15 @@ export default class OperationService implements IOperationService {
 
         await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
 
-        this.sendWebhook(operationModel.id)
-            .catch(error => { });
+        try {
+            this.sendWebhook(operationModel.id);
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
-    async simulateSuspend(operation: IOperation) {
+    async simulateSuspend(operation: IOperation): Promise<boolean> {
         var operationModel = await OperationSchema.create(operation);
         var subscriptionModel = await SubscriptionSchema.findOne({ id: operation.subscriptionId });
 
@@ -151,11 +174,15 @@ export default class OperationService implements IOperationService {
 
         await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
 
-        this.sendWebhook(operationModel.id)
-            .catch(error => { });
+        try {
+            this.sendWebhook(operationModel.id);
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
-    async simulateReinstate(operation: IOperation) {
+    async simulateReinstate(operation: IOperation): Promise<boolean> {
         var operationModel = await OperationSchema.create(operation);
         var subscriptionModel = await SubscriptionSchema.findOne({ id: operation.subscriptionId });
 
@@ -163,8 +190,12 @@ export default class OperationService implements IOperationService {
 
         await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
 
-        this.sendWebhook(operationModel.id)
-            .catch(error => { });
+        try {
+            this.sendWebhook(operationModel.id);
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     async sendWebhook(operationId: string) {

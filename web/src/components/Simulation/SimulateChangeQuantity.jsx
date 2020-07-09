@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import Chance from 'chance';
+import { toast } from 'react-toastify';
 import { TextInput, CodeBlock } from "components/FormInputs";
-import SubscriptionService from "services/SubscriptionService";
-import OperationService from "services/OperationService";
-import WithLoading from "hoc/WithLoading";
-import WithErrorHandler from "hoc/WithErrorHandler";
-import ToastStatus from "helpers/ToastStatus";
+import { OperationService, SubscriptionService } from "services";
+import { WithLoading, WithErrorHandler } from "hoc";
+import messages from "resources/messages";
 
 export default class SimulateChangeQuantity extends Component {
 
@@ -14,13 +13,12 @@ export default class SimulateChangeQuantity extends Component {
         super(props);
         this.subscriptionService = new SubscriptionService();
         this.operationService = new OperationService();
-    }
-
-    state = {
-        loading: true,
-        subscription: {},
-        operation: {},
-        operationResponse: {}
+        this.state = {
+            loading: true,
+            subscription: {},
+            operation: {},
+            operationResponse: {}
+        }
     }
 
     async componentDidMount() {
@@ -58,17 +56,22 @@ export default class SimulateChangeQuantity extends Component {
         this.setState({ operationResponse: operationResponseState });
     }
 
-    submit() {
+    async submit() {
         this.setState({ loading: true });
-        ToastStatus(async () => {
-            await this.operationService.simulateChangePlan(this.state.operation)
-            this.props.afterSubmit && this.props.afterSubmit();
+        try {
+            var result = await this.operationService.simulateChangeQuantity(this.state.operation)
             this.setState({ loading: false });
-        }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
-            .catch(error => {
-                this.setState({ loading: false });
-                console.error(error);
-            });
+            if (result.warning) {
+                toast.info(result.warning, { position: "bottom-left" });
+            } else {
+                toast.success(messages.SIMULATE_CHANGE_QUANTITY_SUCCESS, { position: "bottom-left" });
+            }
+            this.props.afterSubmit && this.props.afterSubmit();
+        } catch (error) {
+            this.setState({ loading: false, error: error });
+            toast.error(messages.REQUEST_ERROR_CHECK_CONSOLE, { position: "bottom-left" });
+            console.error(error);
+        }
     }
 
     inputChangeHandler(quantity) {

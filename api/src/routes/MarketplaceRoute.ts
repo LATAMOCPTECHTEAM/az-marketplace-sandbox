@@ -189,13 +189,12 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
             if (req.body.planId && req.body.quantity) {
                 throw new BadRequestError("Either the plan or quantity of seats can be changed at one time, not both");
             }
-            let operation = null;
             if (req.body.quantity) {
-                operation = await this.operationService.changeQuantity(req.params.subscriptionId, req.body.quantity);
+                var { id } = await this.operationService.changeQuantity(req.params.subscriptionId, req.body.quantity);
             } else {
-                operation = await this.operationService.changePlan(req.params.subscriptionId, req.body.planId);
+                var { id } = await this.operationService.changePlan(req.params.subscriptionId, req.body.planId);
             }
-            var operationLocation = `${req.host}/api/saas/subscriptions/${operation.subscriptionId}/operations/${operation.id}?apiVersion=${Config.saasAPIVersion}`;
+            var operationLocation = `${req.host}/api/saas/subscriptions/${req.params.subscriptionId}/operations/${id}?apiVersion=${Config.saasAPIVersion}`;
             res.setHeader("Operation-Location", operationLocation);
             res.status(200).json("OK");
         } catch (error) {

@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import Chance from 'chance';
-import { CodeBlock } from "../FormInputs";
-import SubscriptionService from "../../services/SubscriptionService";
-import SettingsService from "../../services/SettingsService";
-import OperationService from "../../services/OperationService";
-import WithLoading from "hoc/WithLoading";
-import WithErrorHandler from "hoc/WithErrorHandler";
-import ToastStatus from "helpers/ToastStatus";
+import { toast } from 'react-toastify';
+import { CodeBlock } from "components/FormInputs";
+import { OperationService, SettingsService, SubscriptionService } from "services";
+import { WithLoading, WithErrorHandler } from "hoc";
 import PlanPicker from "components/Settings/PlanPicker";
+import messages from "resources/messages";
 
 export default class SimulateChangePlan extends Component {
 
@@ -17,13 +15,12 @@ export default class SimulateChangePlan extends Component {
         this.subscriptionService = new SubscriptionService();
         this.settingsService = new SettingsService();
         this.operationService = new OperationService();
-    }
-
-    state = {
-        loading: true,
-        subscription: {},
-        operation: {},
-        operationResponse: {}
+        this.state = {
+            loading: true,
+            subscription: {},
+            operation: {},
+            operationResponse: {}
+        }
     }
 
     async componentDidMount() {
@@ -62,18 +59,21 @@ export default class SimulateChangePlan extends Component {
 
     async submit() {
         this.setState({ loading: true });
-        ToastStatus(async () => {
-            await this.operationService.simulateChangePlan(this.state.operation)
-            this.props.afterSubmit && this.props.afterSubmit();
+        try {
+            var result = await this.operationService.simulateChangePlan(this.state.operation)
             this.setState({ loading: false });
-        }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
-            .catch(error => {
-                this.setState({ loading: false });
-                console.error(error);
-            });
+            if (result.warning) {
+                toast.info(result.warning, { position: "bottom-left" });
+            } else {
+                toast.success(messages.SIMULATE_CHANGE_QUANTITY_SUCCESS, { position: "bottom-left" });
+            }
+            this.props.afterSubmit && this.props.afterSubmit();
+        } catch (error) {
+            this.setState({ loading: false, error: error });
+            toast.error(messages.REQUEST_ERROR_CHECK_CONSOLE, { position: "bottom-left" });
+            console.error(error);
+        }
     }
-
-    fetchMessage = (forceShow) => this.props.id && !forceShow ? "" : <small>Fetched from <a href="/settings" target="_blank">Settings</a></small>
 
     inputChangeHandler(property, value, path) {
         let newState = { ...this.state.operation };

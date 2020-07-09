@@ -53,11 +53,11 @@ export interface IOperationService {
     delete(operationId: string);
     sendWebhook(operationId: string);
     confirmChangePlan(operationId: string, subscriptionId: string, planId: string, quantity: string, status: string);
-    simulateSuspend(operation: IOperation);
-    changePlan(subscriptionId: string, planId: string, id?: string, activityId?: string, timeStamp?: string): Promise<IOperation>;
-    changeQuantity(subscriptionId: string, quantity: string, id?: string, activityId?: string, timeStamp?: string): Promise<IOperation>;
-    simulateUnsubscribe(operation: IOperation);
-    simulateReinstate(operation: IOperation);
+    changePlan(subscriptionId: string, planId: string, id?: string, activityId?: string, timeStamp?: string): Promise<{ id: string, webhookSent: boolean }>;
+    changeQuantity(subscriptionId: string, quantity: string, id?: string, activityId?: string, timeStamp?: string): Promise<{ id: string, webhookSent: boolean }>;
+    simulateSuspend(operation: IOperation): Promise<boolean>;
+    simulateUnsubscribe(operation: IOperation): Promise<boolean>;
+    simulateReinstate(operation: IOperation): Promise<boolean>;
     list(subscriptionId: string): Promise<IOperation[]>;
     get(subscriptionId: string, operationId: string): Promise<IOperation>;
 }

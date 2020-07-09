@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from "react-bootstrap/Button";
+import SimpleReactValidator from 'simple-react-validator';
 import ToastStatus from "helpers/ToastStatus";
 import { TextInput } from "components/FormInputs";
 import SettingService from "services/SettingsService";
@@ -12,6 +13,7 @@ export default class Settings extends React.Component {
     constructor(props) {
         super(props);
         this.settingsService = new SettingService();
+        this.validator = new SimpleReactValidator();
     }
 
     state = {
@@ -47,10 +49,18 @@ export default class Settings extends React.Component {
 
     async handleSubmit(e) {
         e.preventDefault();
-        await ToastStatus(async () => {
-            var service = new SettingService();
-            await service.postSettings(this.state.settings);
-        }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
+        if (this.validator.allValid()) {
+            this.setState({ loading: true });
+            await ToastStatus(async () => {
+                var service = new SettingService();
+                await service.postSettings(this.state.settings);
+                this.setState({ loading: false });
+            }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
+        } else {
+            this.setState({ loading: false });
+            this.validator.showMessages();
+            this.forceUpdate();
+        }
     }
 
     onPlanChangeHandler(plans) {
@@ -67,12 +77,12 @@ export default class Settings extends React.Component {
                     <form onSubmit={this.handleSubmit.bind(this)}>
 
                         <div className="col-xs-12 col-sm-12 col-md-6">
-                            <TextInput name="landingPageUrl" displayName="Landing Page Url" placeholder="https://mywebsite.com" value={this.state.settings.landingPageUrl} onChangeHandler={(event) => this.inputChangeHandler("landingPageUrl", event)} />
-                            <TextInput name="webhookUrl" displayName="Webhook Url" placeholder="https://mywebsite.com/webhook" value={this.state.settings.webhookUrl} onChangeHandler={(event) => this.inputChangeHandler("webhookUrl", event)} />
-                            <TextInput name="publisherId" displayName="Publisher Id" placeholder="contosto_id" value={this.state.settings.publisherId} onChangeHandler={(event) => this.inputChangeHandler("publisherId", event)} />
-                            <TextInput name="offerId" displayName="Offer Id" placeholder="offer_id" value={this.state.settings.offerId} onChangeHandler={(event) => this.inputChangeHandler("offerId", event)} />
-                            <TextInput name="beneficiaryTenantId" displayName="Beneficiary Tenant Id" value={this.state.settings.beneficiaryTenantId} onChangeHandler={(event) => this.inputChangeHandler("beneficiaryTenantId", event)} />
-                            <TextInput name="purchaserTenantId" displayName="Purchase Tenant Id" value={this.state.settings.purchaserTenantId} onChangeHandler={(event) => this.inputChangeHandler("purchaserTenantId", event)} />
+                            <TextInput name="landingPageUrl" displayName="Landing Page Url" placeholder="https://mywebsite.com" value={this.state.settings.landingPageUrl} onChangeHandler={(event) => this.inputChangeHandler("landingPageUrl", event)} validator={this.validator} validatorOptions="required" />
+                            <TextInput name="webhookUrl" displayName="Webhook Url" placeholder="https://mywebsite.com/webhook" value={this.state.settings.webhookUrl} onChangeHandler={(event) => this.inputChangeHandler("webhookUrl", event)} validator={this.validator} validatorOptions="required" />
+                            <TextInput name="publisherId" displayName="Publisher Id" placeholder="contosto_id" value={this.state.settings.publisherId} onChangeHandler={(event) => this.inputChangeHandler("publisherId", event)} validator={this.validator} validatorOptions="required" />
+                            <TextInput name="offerId" displayName="Offer Id" placeholder="offer_id" value={this.state.settings.offerId} onChangeHandler={(event) => this.inputChangeHandler("offerId", event)} validator={this.validator} validatorOptions="required" />
+                            <TextInput name="beneficiaryTenantId" displayName="Beneficiary Tenant Id" value={this.state.settings.beneficiaryTenantId} onChangeHandler={(event) => this.inputChangeHandler("beneficiaryTenantId", event)} validator={this.validator} validatorOptions="required" />
+                            <TextInput name="purchaserTenantId" displayName="Purchase Tenant Id" value={this.state.settings.purchaserTenantId} onChangeHandler={(event) => this.inputChangeHandler("purchaserTenantId", event)} validator={this.validator} validatorOptions="required" />
                         </div>
 
                         <div className="col-xs-12 col-sm-12">

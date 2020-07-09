@@ -43,6 +43,14 @@ export default class OperationService {
         }).then(res => res.data);
     }
 
+    async simulateChangeQuantity(operation) {
+        return axios({
+            baseURL: `${config.api}/operations/changeQuantity`,
+            method: "POST",
+            data: operation
+        }).then(res => res.data);
+    }
+
     async resendWebhook(operationId) {
         return axios({
             baseURL: `${config.api}/operations/resendWebhook/${operationId}`,

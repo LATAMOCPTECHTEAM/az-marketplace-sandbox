@@ -7,11 +7,7 @@ import WithErrorHandler from "hoc/WithErrorHandler";
 
 import { CodeBlock } from "components/FormInputs";
 
-import SimulateChangePlanModal from "components/Simulation/SimulateChangePlanModal";
-import SimulateChangeQuantityModal from "components/Simulation/SimulateChangeQuantityModal";
-import SimulateSuspendModal from "components/Simulation/SimulateSuspendModal";
-import SimulateUnsubscribeModal from "components/Simulation/SimulateUnsubscribeModal";
-import SimulateReinstateModal from "components/Simulation/SimulateReinstateModal";
+
 import SubscriptionLoginModal from "components/Subscription/SubscriptionLoginModal";
 
 import OperationsGrid from 'components/Operations/OperationGrid';
@@ -19,6 +15,13 @@ import OperationDeleteModal from "components/Operations/OperationDeleteModal";
 
 import SubscriptionService from "services/SubscriptionService";
 import OperationService from "services/OperationService";
+
+import SimulateModal from "components/Simulation/SimulateModal";
+import SimulateUnsubscribe from 'components/Simulation/SimulateUnsubscribe';
+import SimulateChangePlan from "components/Simulation/SimulateChangePlan";
+import SimulateChangeQuantity from "components/Simulation/SimulateChangeQuantity";
+import SimulateSuspend from "components/Simulation/SimulateSuspend";
+import SimulateReinstate from "components/Simulation/SimulateReinstate";
 
 
 export default class SubscriptionView extends Component {
@@ -87,11 +90,11 @@ export default class SubscriptionView extends Component {
             <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
                     <div>
-                        <SimulateChangePlanModal id={this.props.id} ref={simulateChangePlanModal => this.simulateChangePlanModal = simulateChangePlanModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
-                        <SimulateChangeQuantityModal id={this.props.id} ref={simulateChangeQuantityModal => this.simulateChangeQuantityModal = simulateChangeQuantityModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
-                        <SimulateSuspendModal id={this.props.id} ref={simulateSuspendModal => this.simulateSuspendModal = simulateSuspendModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
-                        <SimulateReinstateModal id={this.props.id} ref={simulateReinstateModal => this.simulateReinstateModal = simulateReinstateModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
-                        <SimulateUnsubscribeModal id={this.props.id} ref={simulateUnsubscribeModal => this.simulateUnsubscribeModal = simulateUnsubscribeModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
+                        <SimulateModal component={SimulateChangePlan} id={this.props.id} ref={simulateChangePlanModal => this.simulateChangePlanModal = simulateChangePlanModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
+                        <SimulateModal component={SimulateChangeQuantity} id={this.props.id} ref={simulateChangeQuantityModal => this.simulateChangeQuantityModal = simulateChangeQuantityModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
+                        <SimulateModal component={SimulateSuspend} id={this.props.id} ref={simulateSuspendModal => this.simulateSuspendModal = simulateSuspendModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
+                        <SimulateModal component={SimulateReinstate} id={this.props.id} ref={simulateReinstateModal => this.simulateReinstateModal = simulateReinstateModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
+                        <SimulateModal component={SimulateUnsubscribe} id={this.props.id} ref={simulateUnsubscribeModal => this.simulateUnsubscribeModal = simulateUnsubscribeModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
                         <SubscriptionLoginModal id={this.props.id} ref={loginModal => this.loginModal = loginModal} />
                         <OperationDeleteModal id={this.state.currentOperationId} afterSubmit={() => this.grid.reload()} ref={operationDeleteModal => this.operationDeleteModal = operationDeleteModal} />
 
