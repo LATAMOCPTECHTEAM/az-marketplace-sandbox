@@ -13,7 +13,7 @@ export default class SimulateModal extends Component {
 
     render() {
         var SimulationComponent = this.props.component;
-        return (<Modal title="Simulate: Unsubscribe" size="lg" ref={modal => this.modal = modal} onDone={() => this.form.submit()} >
+        return (<Modal title={this.props.title} size="lg" ref={modal => this.modal = modal} onDone={() => this.form.submit()} >
             <SimulationComponent ref={form => this.form = form} id={this.props.id} afterSubmit={this.afterSubmit.bind(this)} />
         </Modal>)
     }
@@ -21,6 +21,7 @@ export default class SimulateModal extends Component {
 
 SimulateModal.propTypes = {
     id: PropTypes.number,
+    title: PropTypes.string,
     component: PropTypes.object,
     afterSubmit: PropTypes.func
 }

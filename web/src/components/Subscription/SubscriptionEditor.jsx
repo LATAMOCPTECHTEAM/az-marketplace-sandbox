@@ -81,7 +81,6 @@ export default class SubscriptionEditor extends Component {
             this.setState({ error: error, loading: false });
             console.error(error);
         }
-
     }
 
     async submit() {

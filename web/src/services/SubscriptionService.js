@@ -1,11 +1,10 @@
-import config from "../config";
-const axios = require('axios');
+import axios from "helpers/axios";
 
 export default class SubscriptionService {
 
     async create(subscription) {
         return axios({
-            baseURL: `${config.api}/subscriptions`,
+            url: `/subscriptions`,
             method: "POST",
             data: subscription
         }).then(res => res.data);
@@ -13,7 +12,7 @@ export default class SubscriptionService {
 
     async update(subscription) {
         return axios({
-            baseURL: `${config.api}/subscriptions`,
+            url: `/subscriptions`,
             method: "PUT",
             data: subscription
         }).then(res => res.data);
@@ -21,20 +20,20 @@ export default class SubscriptionService {
 
     async delete(id) {
         return axios({
-            baseURL: `${config.api}/subscriptions/${id}`,
+            baseURL: `/subscriptions/${id}`,
             method: "DELETE",
         }).then(res => res.data);
     }
 
     async get(id) {
         return axios({
-            baseURL: `${config.api}/subscriptions/${id}`,
+            url: `/subscriptions/${id}`,
         }).then(res => res.data);
     }
 
     async list() {
         return axios({
-            baseURL: `${config.api}/subscriptions`,
+            url: `/subscriptions`,
         }).then(res => res.data.subscriptions);
     }
 

@@ -8,29 +8,26 @@ import SubscriptionView from "components/Subscription/SubscriptionView";
 
 export default class Subscriptions extends Component {
 
-    state = {
-        showCreatePane: false,
-        showEditPane: false,
-        showDetailsPane: false,
-        subscriptions: []
+    constructor(props) {
+        super(props);
+        this.state = {
+            showCreatePane: false,
+            showEditPane: false,
+            showDetailsPane: false,
+            subscriptions: []
+        }
     }
 
-    handleClickCreateSubscription() {
-        this.setState({ showCreatePane: true });
-    }
+    handleClickCreateSubscription = () => this.setState({ showCreatePane: true });
 
-    handleClickEditSubscription(id) {
-        this.setState({ showEditPane: true, currentId: id });
-    }
+    handleClickEditSubscription = (id) => this.setState({ showEditPane: true, currentId: id });
 
     handleClickDeleteSubscription(id) {
         this.subscriptionDeleteModal.show();
         this.setState({ currentId: id });
     }
 
-    reloadGrid() {
-        this.subscriptionGrid.loadGrid();
-    }
+    reloadGrid = () => this.subscriptionGrid.loadGrid();
 
     onRowClick(index, row, cell) {
         if (row && cell.idx !== 0) {

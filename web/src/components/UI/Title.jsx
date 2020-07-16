@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Title(props) {
+export default function Title(props) {
     return (
         <h2 className="Title">
             {props.text}
@@ -8,5 +8,3 @@ function Title(props) {
         </h2>
     );
 }
-
-export default Title;

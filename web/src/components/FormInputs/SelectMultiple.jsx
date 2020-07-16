@@ -1,7 +1,7 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
 
-function SelectMultiple(props) {
+export default function SelectMultiple(props) {
     return (
         <div className="form-group">
             <label htmlFor={props.name} className="control-label">{props.displayName}</label>
@@ -18,5 +18,3 @@ function SelectMultiple(props) {
         </div>
     );
 }
-
-export default SelectMultiple;

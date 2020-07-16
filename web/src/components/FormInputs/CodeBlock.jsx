@@ -1,6 +1,7 @@
 import React from 'react';
 import { CodeBlock, dracula } from 'react-code-blocks'
-function CodeblockInput(props) {
+
+export default function CodeblockInput(props) {
     return (
         <div style={{ marginTop: "5px", marginBottom: "5px" }}>
             <CodeBlock
@@ -12,4 +13,3 @@ function CodeblockInput(props) {
         </div>
     )
 }
-export default CodeblockInput;

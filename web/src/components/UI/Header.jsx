@@ -1,7 +1,8 @@
 import React from 'react';
 import config from "config";
+import { NavLink } from "react-router-dom";
 
-function Header() {
+export default function Header() {
     return (
         <div className="Header">
             <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -12,14 +13,20 @@ function Header() {
 
                 <div className="collapse navbar-collapse" id="navbarColor01">
                     <ul className="navbar-nav mr-auto">
-                        <li className="nav-item active">
-                            <a className="nav-link" href="/">Home <span className="sr-only">(current)</span></a>
+                        <li className="nav-item">
+                            <NavLink exact className="nav-link" activeClassName="active" to="/">
+                                Home
+                            </NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="/subscriptions">Subscriptions</a>
+                            <NavLink exact className="nav-link" activeClassName="active" to="/subscriptions">
+                                Subscriptions
+                            </NavLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="/settings">Settings</a>
+                            <NavLink exact className="nav-link" activeClassName="active" to="/settings">
+                                Settings
+                            </NavLink>
                         </li>
                     </ul>
                     <span className="navbar-text">
@@ -33,5 +40,3 @@ function Header() {
         </div>
     );
 }
-
-export default Header;

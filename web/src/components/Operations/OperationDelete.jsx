@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
-import OperationService from "services/OperationService";
-import WithLoading from "hoc/WithLoading";
-import WithErrorHandler from "hoc/WithErrorHandler";
-import ToastStatus from "helpers/ToastStatus";
+import { toast } from 'react-toastify';
+import { OperationService } from "services";
+import { WithLoading, WithErrorHandler } from "hoc";
+import messages from "resources/messages";
 
 export default class OperationDelete extends Component {
 
@@ -17,15 +17,16 @@ export default class OperationDelete extends Component {
 
     async submit() {
         this.setState({ loading: true });
-        ToastStatus(async () => {
+        try {
             await this.operationService.delete(this.props.id);
             this.props.afterSubmit && this.props.afterSubmit();
             this.setState({ loading: false });
-        }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
-        .catch(error => {
-                this.setState({ error: error, loading: false });
-                console.error(error);
-            });
+            toast.success(messages.DELETE_OPERATION_SUCCESS, { position: "bottom-left" });
+        } catch (error) {
+            console.error(error);
+            this.setState({ error: error, loading: false });
+            toast.error(messages.REQUEST_ERROR_CHECK_CONSOLE, { position: "bottom-left" });
+        }
     }
 
     render() {

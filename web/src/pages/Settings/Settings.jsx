@@ -1,44 +1,43 @@
 import React from 'react';
 import Button from "react-bootstrap/Button";
 import SimpleReactValidator from 'simple-react-validator';
-import ToastStatus from "helpers/ToastStatus";
+import { toast } from 'react-toastify';
 import { TextInput } from "components/FormInputs";
-import SettingService from "services/SettingsService";
+import { SettingsService } from "services";
 import SettingsPlans from "./SettingsPlans";
-import WithLoading from "hoc/WithLoading";
-import WithErrorHandler from "hoc/WithErrorHandler";
+import { WithLoading, WithErrorHandler } from "hoc";
+import messages from "resources/messages";
 
 export default class Settings extends React.Component {
 
     constructor(props) {
         super(props);
-        this.settingsService = new SettingService();
+        this.settingsService = new SettingsService();
         this.validator = new SimpleReactValidator();
-    }
-
-    state = {
-        error: null,
-        loading: true,
-        settings: {
-            landingPageUrl: "",
-            webhookUrl: "",
-            publisherId: "",
-            offerId: "",
-            beneficiaryTenantId: "",
-            purchaserTenantId: "",
-            plans: []
+        this.state = {
+            error: null,
+            loading: true,
+            settings: {
+                landingPageUrl: "",
+                webhookUrl: "",
+                publisherId: "",
+                offerId: "",
+                beneficiaryTenantId: "",
+                purchaserTenantId: "",
+                plans: []
+            }
         }
     }
 
-    componentDidMount() {
-        ToastStatus(async () => {
+    async componentDidMount() {
+        try {
             var settings = await this.settingsService.getSettings();
             this.setState({ settings: settings, loading: false });
-        }, null, "Error Retrieving Data")
-            .catch(error => {
-                this.setState({ error: error, loading: false });
-                console.error(error);
-            });
+        } catch (error) {
+            console.error(error);
+            this.setState({ loading: false });
+            toast.error(messages.REQUEST_ERROR_CHECK_CONSOLE, { position: "bottom-left" });
+        }
     }
 
     inputChangeHandler(property, event) {
@@ -51,11 +50,15 @@ export default class Settings extends React.Component {
         e.preventDefault();
         if (this.validator.allValid()) {
             this.setState({ loading: true });
-            await ToastStatus(async () => {
-                var service = new SettingService();
-                await service.postSettings(this.state.settings);
+            try {
+                await this.settingsService.postSettings(this.state.settings);
                 this.setState({ loading: false });
-            }, "Request sent sucessfully", "Error Submitting Data. Check the console for more logs.")
+                toast.success(messages.SETTINGS_SAVED_SUCCESS, { position: "bottom-left" });
+            } catch (error) {
+                console.error(error);
+                this.setState({ loading: false });
+                toast.error(messages.REQUEST_ERROR_CHECK_CONSOLE, { position: "bottom-left" });
+            }
         } else {
             this.setState({ loading: false });
             this.validator.showMessages();
@@ -70,12 +73,10 @@ export default class Settings extends React.Component {
     }
 
     render() {
-
         return (<div className="Settings">
             <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
                     <form onSubmit={this.handleSubmit.bind(this)}>
-
                         <div className="col-xs-12 col-sm-12 col-md-6">
                             <TextInput name="landingPageUrl" displayName="Landing Page Url" placeholder="https://mywebsite.com" value={this.state.settings.landingPageUrl} onChangeHandler={(event) => this.inputChangeHandler("landingPageUrl", event)} validator={this.validator} validatorOptions="required" />
                             <TextInput name="webhookUrl" displayName="Webhook Url" placeholder="https://mywebsite.com/webhook" value={this.state.settings.webhookUrl} onChangeHandler={(event) => this.inputChangeHandler("webhookUrl", event)} validator={this.validator} validatorOptions="required" />

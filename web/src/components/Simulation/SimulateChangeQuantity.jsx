@@ -82,15 +82,12 @@ export default class SimulateChangeQuantity extends Component {
     }
 
     render() {
-        let displayCols = "col-xs-12 col-sm-12 col-md-4 col-lg-2";
-        let inputCols = "col-xs-12 col-sm-12 col-md-8 col-lg-10"
-
         return (
             <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
                     <div>
                         <p>Are you sure you want to change the subscription {this.props.id} ?</p>
-                        <TextInput displayCols={displayCols} inputCols={inputCols} name="quantity" displayName="Quantity" placeholder="0" type="number"
+                        <TextInput name="quantity" displayName="Quantity" placeholder="0" type="number"
                             value={this.state.subscription.quantity}
                             onChangeHandler={(event) => this.inputChangeHandler(event.target.value)} />
                         <h5>Operation Action<hr /></h5>

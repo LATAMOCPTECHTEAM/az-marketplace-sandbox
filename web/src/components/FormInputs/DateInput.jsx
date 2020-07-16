@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 import "./DateInput.css";
-function DateInput(props) {
+export default function DateInput(props) {
     return (
         <div className="form-group">
             <label htmlFor={props.name} className="control-label">{props.displayName}</label>
@@ -18,5 +18,3 @@ function DateInput(props) {
         </div>
     );
 }
-
-export default DateInput;

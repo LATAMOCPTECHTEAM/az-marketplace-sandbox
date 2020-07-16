@@ -1,21 +1,19 @@
 import React, { Component } from 'react';
-import { CodeBlock } from "../FormInputs";
-import SettingsService from "../../services/SettingsService";
-import SubscriptionService from "../../services/SubscriptionService";
-import WithLoading from "hoc/WithLoading";
-import WithErrorHandler from "hoc/WithErrorHandler";
+import { CodeBlock } from "components/FormInputs";
+import { SettingsService, SubscriptionService } from "services";
+import { WithLoading, WithErrorHandler } from "hoc";
+
 export default class SubscriptionLogin extends Component {
 
     constructor(props) {
         super(props);
         this.settingsService = new SettingsService();
         this.subscriptionService = new SubscriptionService();
-    }
-
-    state = {
-        loading: true,
-        landingPageUrl: null,
-        resolveResponse: null
+        this.state = {
+            loading: true,
+            landingPageUrl: null,
+            resolveResponse: null
+        }
     }
 
     async componentDidMount() {
@@ -58,7 +56,6 @@ export default class SubscriptionLogin extends Component {
 
                                 <p>By Calling the Activate API the subscription status will be set to Subscribed.</p>
                                 <p>* The Activate API should be only be called for Subscriptions in <code>PendingFulfillmentStart</code> state</p>
-
                             </div> : ""}
                     </div>
                 </WithErrorHandler>

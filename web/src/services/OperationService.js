@@ -1,18 +1,17 @@
-import config from "../config";
-const axios = require('axios');
+import axios from "helpers/axios";
 
 export default class OperationService {
 
     async delete(operationId) {
         return axios({
-            baseURL: `${config.api}/operations/${operationId}`,
+            url: `/operations/${operationId}`,
             method: "DELETE"
         }).then(res => res.data);
     }
 
     async simulateSuspend(operation) {
         return axios({
-            baseURL: `${config.api}/operations/suspend`,
+            url: `/operations/suspend`,
             method: "POST",
             data: operation
         }).then(res => res.data);
@@ -20,7 +19,7 @@ export default class OperationService {
 
     async simulateReinstate(operation) {
         return axios({
-            baseURL: `${config.api}/operations/reinstate`,
+            url: `/operations/reinstate`,
             method: "POST",
             data: operation
         }).then(res => res.data);
@@ -28,7 +27,7 @@ export default class OperationService {
 
     async simulateUnsubscribe(operation) {
         return axios({
-            baseURL: `${config.api}/operations/unsubscribe`,
+            url: `/operations/unsubscribe`,
             method: "POST",
             data: operation
         }).then(res => res.data);
@@ -37,7 +36,7 @@ export default class OperationService {
 
     async simulateChangePlan(operation) {
         return axios({
-            baseURL: `${config.api}/operations/changePlan`,
+            url: `/operations/changePlan`,
             method: "POST",
             data: operation
         }).then(res => res.data);
@@ -45,7 +44,7 @@ export default class OperationService {
 
     async simulateChangeQuantity(operation) {
         return axios({
-            baseURL: `${config.api}/operations/changeQuantity`,
+            url: `/operations/changeQuantity`,
             method: "POST",
             data: operation
         }).then(res => res.data);
@@ -53,14 +52,14 @@ export default class OperationService {
 
     async resendWebhook(operationId) {
         return axios({
-            baseURL: `${config.api}/operations/resendWebhook/${operationId}`,
+            url: `/operations/resendWebhook/${operationId}`,
             method: "POST"
         }).then(res => res.data);
     }
 
     async list(subscriptionId) {
         return axios({
-            baseURL: `${config.api}/operations/${subscriptionId}`,
+            url: `/operations/${subscriptionId}`,
             method: "GET",
         }).then(res => res.data);
     }

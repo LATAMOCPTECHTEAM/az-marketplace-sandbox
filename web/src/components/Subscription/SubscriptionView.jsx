@@ -1,50 +1,43 @@
 import React, { Component } from 'react';
 import Button from "react-bootstrap/Button";
-import ToastStatus from "helpers/ToastStatus";
 
-import WithLoading from "hoc/WithLoading";
-import WithErrorHandler from "hoc/WithErrorHandler";
+import { WithLoading, WithErrorHandler } from "hoc";
 
 import { CodeBlock } from "components/FormInputs";
-
 
 import SubscriptionLoginModal from "components/Subscription/SubscriptionLoginModal";
 
 import OperationsGrid from 'components/Operations/OperationGrid';
 import OperationDeleteModal from "components/Operations/OperationDeleteModal";
 
-import SubscriptionService from "services/SubscriptionService";
-import OperationService from "services/OperationService";
+import { SubscriptionService, OperationService } from "services";
 
-import SimulateModal from "components/Simulation/SimulateModal";
-import SimulateUnsubscribe from 'components/Simulation/SimulateUnsubscribe';
-import SimulateChangePlan from "components/Simulation/SimulateChangePlan";
-import SimulateChangeQuantity from "components/Simulation/SimulateChangeQuantity";
-import SimulateSuspend from "components/Simulation/SimulateSuspend";
-import SimulateReinstate from "components/Simulation/SimulateReinstate";
-
+import SubscriptionViewSimulateButtons from "components/Subscription/SubscriptionViewSimulateButtons";
 
 export default class SubscriptionView extends Component {
 
-    state = {
-        subscriptionId: null,
-        subscription: {
-            id: null
-        }
-    };
+    constructor(props) {
+        super(props);
+        this.operationService = new OperationService();
+        this.subscriptionService = new SubscriptionService();
+        this.state = {
+            subscriptionId: null,
+            subscription: {
+                id: null
+            }
+        };
+    }
 
     async loadSubscription() {
         if ((this.state.subscriptionId !== this.props.id) && this.props.id) {
             this.setState({ subscriptionId: this.props.id, loading: true });
-            ToastStatus(async () => {
-                var subscriptionService = new SubscriptionService();
-                let subscriptionState = await subscriptionService.get(this.props.id);
+            try {
+                let subscriptionState = await this.subscriptionService.get(this.props.id);
                 this.setState({ subscription: subscriptionState, loading: false });
-            }, null, "Error Retrieving Data")
-                .catch(error => {
-                    this.setState({ error: error, loading: false });
-                    console.error(error);
-                })
+            } catch (error) {
+                console.error(error);
+                this.setState({ error: error, loading: false });
+            }
         }
     }
 
@@ -54,30 +47,15 @@ export default class SubscriptionView extends Component {
 
     handleClickLogin = () => this.loginModal.show();
 
-    handleClickChangePlan = () => this.simulateChangePlanModal.show();
-
-    handleClickChangeQuantity = () => this.simulateChangeQuantityModal.show();
-
-    handleClickSuspend = () => this.simulateSuspendModal.show();
-
-    handleClickReinstate = () => this.simulateReinstateModal.show();
-
-    handleClickUnsubscribe = () => this.simulateUnsubscribeModal.show();
-
-    closeModalAfterSubmit = (modal) => modal.close() & this.subscriptionGrid.load();
-
     async clickResendWebhookHandler(operationId) {
         this.setState({ loading: true });
-        ToastStatus(async () => {
-            var operationService = new OperationService();
-            await operationService.resendWebhook(operationId);
+        try {
+            await this.operationService.resendWebhook(operationId);
             this.setState({ loading: false });
-        }, "Request sent sucessfully", "Error Retrieving Data")
-            .catch(error => {
-                this.setState({ loading: false });
-                console.error(error);
-            });
-
+        } catch (error) {
+            console.error(error);
+            this.setState({ loading: false });
+        }
     }
 
     async clickDeleteOperation(operationId) {
@@ -85,16 +63,15 @@ export default class SubscriptionView extends Component {
         this.operationDeleteModal.show();
     }
 
+    async afterAction() {
+        this.grid.reload();
+    }
+
     render() {
         return (<div>
             <WithLoading show={!this.state.loading}>
                 <WithErrorHandler error={this.state.error}>
                     <div>
-                        <SimulateModal component={SimulateChangePlan} id={this.props.id} ref={simulateChangePlanModal => this.simulateChangePlanModal = simulateChangePlanModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
-                        <SimulateModal component={SimulateChangeQuantity} id={this.props.id} ref={simulateChangeQuantityModal => this.simulateChangeQuantityModal = simulateChangeQuantityModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
-                        <SimulateModal component={SimulateSuspend} id={this.props.id} ref={simulateSuspendModal => this.simulateSuspendModal = simulateSuspendModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
-                        <SimulateModal component={SimulateReinstate} id={this.props.id} ref={simulateReinstateModal => this.simulateReinstateModal = simulateReinstateModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
-                        <SimulateModal component={SimulateUnsubscribe} id={this.props.id} ref={simulateUnsubscribeModal => this.simulateUnsubscribeModal = simulateUnsubscribeModal} afterSubmit={() => this.grid.reload() && this.props.afterAction ? this.props.afterAction() : null} />
                         <SubscriptionLoginModal id={this.props.id} ref={loginModal => this.loginModal = loginModal} />
                         <OperationDeleteModal id={this.state.currentOperationId} afterSubmit={() => this.grid.reload()} ref={operationDeleteModal => this.operationDeleteModal = operationDeleteModal} />
 
@@ -124,22 +101,21 @@ export default class SubscriptionView extends Component {
                                 ref={grid => this.grid = grid} id={this.state.subscription.id}
                                 onClickResendWebhook={this.clickResendWebhookHandler.bind(this)}
                                 onClickDeleteOperation={this.clickDeleteOperation.bind(this)} />
+
                             <div style={{ marginTop: "10px" }}>
-                                <Button onClick={this.handleClickChangePlan.bind(this)}>Simulate Change Plan</Button>
-                                <Button onClick={this.handleClickChangeQuantity.bind(this)}>Simulate Change Quantity</Button>
-                                <Button onClick={this.handleClickSuspend.bind(this)}>Simulate Suspend</Button>
-                                <Button onClick={this.handleClickReinstate.bind(this)}>Simulate Reinstate</Button>
-                                <Button onClick={this.handleClickUnsubscribe.bind(this)}>Simulate Unsubscribe</Button>
+                                <SubscriptionViewSimulateButtons id={this.state.subscription.id} afterAction={() => this.afterAction()} />
+                            </div>
+
+                            <div style={{ marginTop: "10px" }}>
                                 <Button onClick={() => this.setState({ showPreview: !this.state.showPreview })} >Show Preview</Button>
                             </div>
                         </div>
 
                         <div style={{ display: this.state.showPreview ? "block" : "none" }}>
                             <br />
-                The code below will be stored in the database, and will be the result of the list and get subscription calls.
-                <br />
+                            The code below will be stored in the database, and will be the result of the list and get subscription calls.
+                            <br />
                             {this.state.subscriptionId ? <CodeBlock language="json" text={JSON.stringify(this.state.subscription, null, 4)} /> : ""}
-
                         </div>
                     </div>
                 </WithErrorHandler>

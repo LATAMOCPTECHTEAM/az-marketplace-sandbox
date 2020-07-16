@@ -1,7 +1,7 @@
 import React from 'react';
 import Form from "react-bootstrap/Form";
 
-function SelectInput(props) {
+export default function SelectInput(props) {
     return (
         <div className="form-group">
             <label htmlFor={props.name} className="control-label">{props.displayName}</label>
@@ -20,5 +20,3 @@ function SelectInput(props) {
         </div>
     );
 }
-
-export default SelectInput;

@@ -8,9 +8,8 @@ export default class OperationsGrid extends Component {
 
     constructor(props) {
         super(props || {});
+        this.state = {};
     }
-
-    state = {};
 
     handleFilterChange = filter => filters => {
         const newFilters = { ...filters };
@@ -28,7 +27,7 @@ export default class OperationsGrid extends Component {
 
     render() {
         let _self = this;
-        const filteredRows = this.getRows(this.props.data, this.state.filters);
+        const filteredRows = this.getRows(this.props.data, this.state);
         return (<div>
             <ReactDataGrid
                 columns={this.props.columns}

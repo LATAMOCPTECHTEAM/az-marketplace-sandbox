@@ -4,6 +4,7 @@ import Modal from "components/Modal";
 import OperationDelete from "components/Operations/OperationDelete";
 
 export default class OperationDeleteModal extends Component {
+    
     show = () => this.modal.show();
 
     afterSubmitHandler() {
