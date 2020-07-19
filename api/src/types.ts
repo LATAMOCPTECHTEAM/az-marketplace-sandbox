@@ -1,15 +1,9 @@
 import { Router, Request, Response, NextFunction, Application } from "express";
-import { ISettings } from "./models/SettingsSchema";
-import { ISubscription } from "./models/SubscriptionSchema";
-import { IOperation } from "./models/OperationSchema";
-
+import { IOperation, ISubscription, ISettings } from "./models";
 
 // # Routes
-
 export interface IHealthcheck extends ICustomRoute {
-
     health(req: Request, res: Response, next: NextFunction): void;
-
 }
 
 export interface IRoute {
@@ -19,10 +13,8 @@ export interface IRoute {
 }
 
 export interface ICustomRoute {
-
     routes: IRoute[];
     configureRouter(app: Application): Router
-
 }
 
 // Server
@@ -62,9 +54,30 @@ export interface IOperationService {
     get(subscriptionId: string, operationId: string): Promise<IOperation>;
 }
 
+// Repositories
+export interface ISubscriptionRepository {
+    create(subscription: ISubscription);
+    getById(id: string): Promise<ISubscription>;
+    updateOne(id: string, subscription: ISubscription);
+    deleteById(id: string);
+    listByCreationDateDescending(): Promise<ISubscription[]>;
+    listPaged(skip: number, take: number, order: string): Promise<{ subscriptions: ISubscription[]; nextSkip: number; }>;
+}
+
+export interface ISettingsRepository {
+    createOrUpdate(settings: ISettings);
+    get(): Promise<ISettings>;
+}
+
+export interface IOperationRepository {
+    getById(id: string): Promise<IOperation>;
+    getBySubscriptionAndId(subscriptionId: string, operationId: string): Promise<IOperation>;
+    delete(operationId: string): Promise<void>;
+    listBySubscriptionDescendingByTimestamp(subscriptionId: string): Promise<IOperation[]>;
+    create(operation: IOperation): Promise<void>;
+    updateOne(id: string, operation: IOperation): Promise<void>;
+}
 // Startup
 export interface IStartup {
-
     main(): Promise<void>;
-
 }

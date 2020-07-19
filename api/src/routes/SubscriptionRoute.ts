@@ -16,8 +16,6 @@ export default class SubscriptionRoute extends BaseRoute {
     async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             let subscription = await this.subscriptionService.getSubscription(req.params.id);
-            delete subscription.__v;
-            delete subscription._id;
             res.status(200).json(subscription);
         } catch (error) {
             next(error);

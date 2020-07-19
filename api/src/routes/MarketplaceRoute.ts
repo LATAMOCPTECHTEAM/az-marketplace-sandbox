@@ -4,12 +4,7 @@ import { injectable, inject } from "tsyringe";
 import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
 import { ISubscriptionService, IOperationService, ISettingsService } from "../types";
 import IMarketplaceRoute from "./interfaces/IMarketplaceRoute"
-import IResolveResponse from "./interfaces/models/IResolveResponse";
-import IInternalServerErrorResponse from "./interfaces/models/IInternalServerErrorResponse";
-import ISubscriptionResponse from "./interfaces/models/ISubscriptionResponse";
-import ISubscriptionsResponse from "./interfaces/models/ISubscriptionsResponse";
-import IOperationResponse from "./interfaces/models/IOperationResponse";
-import IListAvailablePlans from "./interfaces/models/IListAvailablePlansResponse";
+import { IResolveResponse, IInternalServerErrorResponse, ISubscriptionResponse, ISubscriptionsResponse, IOperationResponse, IListAvailablePlans } from "./interfaces/models";
 import Config from "../Config";
 import BadRequestError from "../errors/BadRequest";
 
@@ -23,8 +18,6 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
         @inject("ISettingsService") private settingsService: ISettingsService) {
         super();
     }
-
-
 
     validateApiVersion(req: Request) {
         if (req.query["api-version"] != Config.saasAPIVersion) {

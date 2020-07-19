@@ -24,7 +24,7 @@ describe('Routes: Healthcheck', () => {
     describe('GET /health', () => {
         it('200: return success status', async () => {
             await request(testServer)
-                .get('/health')
+                .get('/api/health')
                 .expect(200);
         });
 

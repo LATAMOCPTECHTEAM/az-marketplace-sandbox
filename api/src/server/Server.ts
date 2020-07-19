@@ -3,8 +3,8 @@ import express from 'express';
 import http from 'http';
 import { injectable, inject } from "tsyringe";
 import { Logger } from 'winston';
+import { Address } from 'cluster';
 
-import * as serverEvents from './serverEvents';
 import DefaultHandler from './handlers/DefaultHandlers';
 import AuthenticationHandler from './handlers/AuthenticationHandler';
 import ErrorHandler from './handlers/ErrorHandler';
@@ -26,8 +26,8 @@ export default class Server implements IServer {
     startServer(): void {
         const Server: http.Server = http.createServer(this.app);
         Server.listen(this.app.get('port'));
-        Server.on('error', (error: Error) => serverEvents.onError(error, this.app.get('port')));
-        Server.on('listening', serverEvents.onListening.bind(Server));
+        Server.on('error', (error: Error) => onError(error, this.app.get('port')));
+        Server.on('listening', onListening.bind(Server));
     }
 
     createAppWithRoutes(): Application {
@@ -68,4 +68,31 @@ export default class Server implements IServer {
 
         return this.app;
     }
+
+
+}
+
+function onListening() {
+    const addr: Address = this.address();
+    const bind: string = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
+
+    console.log(`Listening on ${bind}`);
+}
+
+function onError(error: NodeJS.ErrnoException, port: number | string | boolean): void {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    const bind: string = (typeof port === 'string') ? `Pipe ${port}` : `Port ${port}`;
+
+    switch (error.code) {
+        case 'EACCES':
+            console.error(`${bind} requires elevated privileges`);
+            break;
+        case 'EADDRINUSE':
+            console.error(`${bind} is already in use`);
+            break;
+    }
+    process.exit(1);
 }

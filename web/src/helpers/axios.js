@@ -1,6 +1,5 @@
 import axios from "axios";
 import config from "config";
-import { toast } from 'react-toastify';
 import messages from "resources/messages";
 
 const instance = axios.create({
@@ -15,7 +14,6 @@ instance.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
     if (error.message === "Network Error") {
-        toast.error(messages.NETWORK_ERROR, { position: "bottom-left" });
         return Promise.reject(new Error(messages.NETWORK_ERROR));
     } else if (error.response && error.response.data && error.response.data.message) {
         return Promise.reject(new Error(error.response.data.message));

@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import config from "./Config";
 import { default as DIContainer } from "./DependencyInjection";
-import { IStartup } from "./types";
+import { IStartup } from "types";
 import mongoose from "mongoose";
 
 mongoose.connect(config.mongo, { useFindAndModify: false })

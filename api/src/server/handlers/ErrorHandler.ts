@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Application } from 'express';
-import { HttpError } from "../../errors/HttpError";
+import HttpError from "@errors/HttpError";
 
 export default function ErrorHandler(app: Application): void {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {

@@ -33,6 +33,7 @@
         "reflect-metadata": "^0.1.13",
         "request": "^2.88.0",
         "request-promise": "^4.2.5",
+        "sinon-mongoose": "^2.3.0",
         "swagger-jsdoc": "3.2.7",
         "swagger-ui-express": "^4.1.4",
         "tsyringe": "^4.0.1",

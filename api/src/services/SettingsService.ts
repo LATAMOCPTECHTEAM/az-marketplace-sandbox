@@ -1,31 +1,20 @@
-const dotenv = require("dotenv");
 import { injectable, inject } from "tsyringe";
 
-import { IServer, ISettingsService } from "../types";
-
-// TODO Change to dependency injection
-import SettingsSchema, { ISettings } from "../models/SettingsSchema";
+import { ISettingsService, ISettingsRepository } from "types";
+import { ISettings } from "models";
 
 @injectable()
 export default class SettingsService implements ISettingsService {
 
-    constructor() {
+    constructor(@inject("ISettingsRepository") private settingsRepository: ISettingsRepository) {
 
     }
 
     async updateSettings(settings: ISettings) {
-        var settingsRecord = await SettingsSchema.findOneAndUpdate({}, settings);
-        if (settingsRecord == null) {
-            await SettingsSchema.create(settings);
-        }
+        return this.settingsRepository.createOrUpdate(settings);
     }
 
     async getSettings(): Promise<ISettings> {
-        var settings = await SettingsSchema.findOne({});
-
-        return settings;
+        return this.settingsRepository.get();
     }
-
-
-
 }

@@ -1,22 +1,21 @@
 import { injectable, inject } from "tsyringe";
-import * as request from "request-promise";
-import { IOperationService, ISettingsService } from "../types";
-import SubscriptionSchema, { ISubscription } from "../models/SubscriptionSchema";
-import OperationSchema, { IOperation } from "../models/OperationSchema";
 import Chance from "chance";
-import BadRequestError from "../errors/BadRequest";
-import SettingsSchema from "../models/SettingsSchema";
-import NotFoundError from "../errors/NotFound";
+import * as request from "request-promise";
+import { IOperationService, ISubscriptionRepository, ISettingsRepository, IOperationRepository } from "types";
+import { IOperation } from "models";
+import { BadRequestError, NotFoundError } from "errors";
 
 @injectable()
 export default class OperationService implements IOperationService {
 
-    constructor(@inject("ISettingsService") private settingsService: ISettingsService) {
-
+    constructor(
+        @inject("ISubscriptionRepository") private subscriptionRepository: ISubscriptionRepository,
+        @inject("ISettingsRepository") private settingsRepository: ISettingsRepository,
+        @inject("IOperationRepository") private operationRepository: IOperationRepository) {
     }
 
     async get(subscriptionId: string, operationId: string): Promise<IOperation> {
-        let operation = await OperationSchema.findOne({ subscriptionId: subscriptionId, operationId: operationId });
+        let operation = await this.operationRepository.getBySubscriptionAndId(subscriptionId, operationId);
 
         if (!operation) {
             throw new NotFoundError("Operation not Found.");
@@ -25,68 +24,66 @@ export default class OperationService implements IOperationService {
     }
 
     async delete(operationId: string) {
-        await OperationSchema.deleteOne({ id: operationId });
+        return this.operationRepository.delete(operationId);
     }
 
     async list(subscriptionId: string): Promise<IOperation[]> {
-        var operations = await OperationSchema.find({ subscriptionId: subscriptionId }, null, { sort: { timeStamp: -1 } });
-        return operations;
+        return this.operationRepository.listBySubscriptionDescendingByTimestamp(subscriptionId);;
     }
 
     async confirmChangePlan(subscriptionId: string, operationId: string, planId: string, quantity: string, status: string) {
-        var operationModel = await OperationSchema.findOne({ id: operationId });
-        var subscriptionModel = await SubscriptionSchema.findOne({ id: subscriptionId });
+        var operation = await this.operationRepository.getById(operationId);
+        var subscription = await this.subscriptionRepository.getById(subscriptionId);
 
-        operationModel.status = status == "Success" ? "Succeeded" : "Failed";
+        operation.status = status == "Success" ? "Succeeded" : "Failed";
 
-        await OperationSchema.updateOne({ id: operationModel.id }, operationModel);
+        await this.operationRepository.updateOne(operation.id, operation);
 
-        subscriptionModel.planId = planId;
-        subscriptionModel.quantity = quantity;
+        subscription.planId = planId;
+        subscription.quantity = quantity;
 
-        await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
-
+        await this.subscriptionRepository.updateOne(subscription.id, subscription);
     }
 
     async changePlan(subscriptionId: string, planId: string, id?: string, activityId?: string, timeStamp?: string): Promise<{ id: string, webhookSent: boolean }> {
-        let settingsModel = await SettingsSchema.findOne({});
-        var subscriptionModel = await SubscriptionSchema.findOne({ id: subscriptionId });
+        let settings = await this.settingsRepository.get();
+        var subscription = await this.subscriptionRepository.getById(subscriptionId);
 
-        if (subscriptionModel == null) {
+        if (subscription == null) {
             throw new BadRequestError("Subscription Not Found");
         }
 
-        if (!settingsModel.plans.some(plan => plan.planId == planId)) {
+        if (!settings.plans.some(plan => plan.planId == planId)) {
             throw new BadRequestError("Plan not found");
         }
 
-        if (subscriptionModel.planId == planId) {
+        if (subscription.planId == planId) {
             throw new BadRequestError("Trying to change to the same plan");
         }
 
-        if (subscriptionModel.saasSubscriptionStatus != "Subscribed") {
+        if (subscription.saasSubscriptionStatus != "Subscribed") {
             throw new BadRequestError("The SaaS subscription status is not Subscribed");
         }
 
-        if (!subscriptionModel.allowedCustomerOperations.some(operation => operation == "Update")) {
+        if (!subscription.allowedCustomerOperations.some(operation => operation == "Update")) {
             throw new BadRequestError("The update operation for a SaaS subscription is not included in allowedCustomerOperations");
         }
 
         var chance = new Chance();
-        var operationModel: IOperation = new OperationSchema({
+        var operationModel: IOperation = {
             "id": id || chance.guid(),
             "activityId": activityId || chance.guid(),
-            "subscriptionId": subscriptionModel.id,
-            "offerId": subscriptionModel.offerId,
-            "publisherId": subscriptionModel.publisherId,
+            "subscriptionId": subscription.id,
+            "offerId": subscription.offerId,
+            "publisherId": subscription.publisherId,
             "planId": planId,
-            "quantity": subscriptionModel.quantity,
+            "quantity": subscription.quantity,
             "action": "ChangePlan",
             "timeStamp": timeStamp || new Date().toISOString(),
             "status": "InProgress"
-        })
+        }
 
-        operationModel = await OperationSchema.create(operationModel);
+        await this.operationRepository.create(operationModel);
 
         try {
             await this.sendWebhook(operationModel.id)
@@ -103,63 +100,64 @@ export default class OperationService implements IOperationService {
     }
 
     async changeQuantity(subscriptionId: string, quantity: string, id?: string, activityId?: string, timeStamp?: string): Promise<{ id: string, webhookSent: boolean }> {
-        var subscriptionModel = await SubscriptionSchema.findOne({ id: subscriptionId });
+        var subscription = await this.subscriptionRepository.getById(subscriptionId);
 
-        if (subscriptionModel == null) {
+        if (subscription == null) {
             throw new BadRequestError("Subscription Not Found");
         }
 
-        if (subscriptionModel.quantity == quantity) {
+        if (subscription.quantity == quantity) {
             throw new BadRequestError("Trying to change to the same quantity");
         }
 
-        if (subscriptionModel.saasSubscriptionStatus != "Subscribed") {
+        if (subscription.saasSubscriptionStatus != "Subscribed") {
             throw new BadRequestError("The SaaS subscription status is not Subscribed");
         }
 
-        if (subscriptionModel.allowedCustomerOperations.some(operation => operation == "Update")) {
+        if (subscription.allowedCustomerOperations.some(operation => operation == "Update")) {
             throw new BadRequestError("The update operation for a SaaS subscription is not included in allowedCustomerOperations");
         }
 
         var chance = new Chance();
-        var operationModel: IOperation = new OperationSchema({
+        var operation: IOperation = {
             "id": id || chance.guid(),
             "activityId": activityId || chance.guid(),
-            "subscriptionId": subscriptionModel.id,
-            "offerId": subscriptionModel.offerId,
-            "publisherId": subscriptionModel.publisherId,
-            "planId": subscriptionModel.planId,
+            "subscriptionId": subscription.id,
+            "offerId": subscription.offerId,
+            "publisherId": subscription.publisherId,
+            "planId": subscription.planId,
             "quantity": quantity,
             "action": "ChangeQuantity",
             "timeStamp": timeStamp || new Date().toISOString(),
             "status": "InProgress"
-        })
+        };
 
-        operationModel = await OperationSchema.create(operationModel);
+        await this.operationRepository.create(operation);
+
         try {
-            await this.sendWebhook(operationModel.id)
+            await this.sendWebhook(operation.id)
             return {
-                id: operationModel.id,
+                id: operation.id,
                 webhookSent: true
             }
         } catch (error) {
             return {
-                id: operationModel.id,
+                id: operation.id,
                 webhookSent: false
             }
         }
     }
 
     async simulateUnsubscribe(operation: IOperation): Promise<boolean> {
-        var operationModel = await OperationSchema.create(operation);
-        var subscriptionModel = await SubscriptionSchema.findOne({ id: operation.subscriptionId });
+        await this.operationRepository.create(operation);
+        var subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
 
-        subscriptionModel.saasSubscriptionStatus = "Unsubscribed";
+        subscription.saasSubscriptionStatus = "Unsubscribed";
 
-        await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
+        await this.subscriptionRepository.updateOne(subscription.id, subscription);
 
         try {
-            this.sendWebhook(operationModel.id);
+            this.sendWebhook(operation.id);
             return true;
         } catch (error) {
             return false;
@@ -167,15 +165,15 @@ export default class OperationService implements IOperationService {
     }
 
     async simulateSuspend(operation: IOperation): Promise<boolean> {
-        var operationModel = await OperationSchema.create(operation);
-        var subscriptionModel = await SubscriptionSchema.findOne({ id: operation.subscriptionId });
+        await this.operationRepository.create(operation);
+        var subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
 
-        subscriptionModel.saasSubscriptionStatus = "Suspended";
+        subscription.saasSubscriptionStatus = "Suspended";
 
-        await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
+        await this.subscriptionRepository.updateOne(subscription.id, subscription);
 
         try {
-            this.sendWebhook(operationModel.id);
+            this.sendWebhook(operation.id);
             return true;
         } catch (error) {
             return false;
@@ -183,15 +181,15 @@ export default class OperationService implements IOperationService {
     }
 
     async simulateReinstate(operation: IOperation): Promise<boolean> {
-        var operationModel = await OperationSchema.create(operation);
-        var subscriptionModel = await SubscriptionSchema.findOne({ id: operation.subscriptionId });
+        await this.operationRepository.create(operation);
+        var subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
 
-        subscriptionModel.saasSubscriptionStatus = "Subscribed";
+        subscription.saasSubscriptionStatus = "Subscribed";
 
-        await SubscriptionSchema.updateOne({ id: subscriptionModel.id }, subscriptionModel);
+        await this.subscriptionRepository.updateOne(subscription.id, subscription);
 
         try {
-            this.sendWebhook(operationModel.id);
+            this.sendWebhook(operation.id);
             return true;
         } catch (error) {
             return false;
@@ -199,8 +197,8 @@ export default class OperationService implements IOperationService {
     }
 
     async sendWebhook(operationId: string) {
-        var settings = await this.settingsService.getSettings();
-        var operationModel = await OperationSchema.findOne({ id: operationId });
+        var settings = await this.settingsRepository.get();
+        var operationModel = await this.operationRepository.getById(operationId);
 
         try {
             var response = await request.post(settings.webhookUrl, {

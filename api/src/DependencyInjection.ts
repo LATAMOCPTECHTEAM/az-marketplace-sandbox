@@ -2,19 +2,14 @@ import "reflect-metadata";
 import { container, DependencyContainer } from "tsyringe";
 import logger from "./helpers/Logger";
 
-import HealthcheckRoute from "./routes/HealthcheckRoute";
-import SettingsRoute from "./routes/SettingsRoute";
-import SubscriptionRoute from "./routes/SubscriptionRoute";
-import MarketplaceRoute from "./routes/MarketplaceRoute";
-
 import Server from "./server/Server";
-import { ICustomRoute } from "./types";
+import { ICustomRoute } from "types";
 import Startup from "./Startup";
-import SettingsService from "./services/SettingsService";
-import SubscriptionService from "./services/SubscriptionService";
-import OperationService from "./services/OperationService";
-import OperationRoute from "./routes/OperationsRoute";
 
+import { HealthcheckRoute, SettingsRoute, SubscriptionRoute, MarketplaceRoute, OperationRoute } from "./routes";
+import { SettingsService, SubscriptionService, OperationService } from "./services";
+import { SubscriptionSchema, SettingsSchema, OperationSchema } from "./schemas";
+import { SubscriptionRepository, SettingsRepository, OperationRepository } from "./repositories";
 
 export class DependencyInjection {
 
@@ -45,7 +40,17 @@ export class DependencyInjection {
         container.register("ISubscriptionRoute", { useClass: SubscriptionRoute });
         container.register("IMarketplaceRoute", { useClass: MarketplaceRoute });
         container.register("IOperationRoute", { useClass: OperationRoute });
-        
+
+        // Schemas
+        container.register("SubscriptionSchema", { useValue: SubscriptionSchema });
+        container.register("SettingsSchema", { useValue: SettingsSchema });
+        container.register("OperationSchema", { useValue: OperationSchema });
+
+        //Repositories
+        container.register("ISubscriptionRepository", { useClass: SubscriptionRepository });
+        container.register("ISettingsRepository", { useClass: SettingsRepository });
+        container.register("IOperationRepository", { useClass: OperationRepository });
+
         // Injecting Routes for Express
         const Routes = [
             "IHeathcheckRoute",

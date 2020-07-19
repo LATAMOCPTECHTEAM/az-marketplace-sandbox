@@ -1,30 +1,21 @@
-import { injectable } from "tsyringe";
+import { injectable, inject } from "tsyringe";
 
-import { ISubscriptionService } from "../types";
-import SubscriptionSchema, { ISubscription } from "../models/SubscriptionSchema";
+import { ISubscriptionService, ISubscriptionRepository } from "types";
+import { ISubscription } from "models";
 
 @injectable()
 export default class SubscriptionService implements ISubscriptionService {
 
-    constructor() {
-
+    constructor(@inject("ISubscriptionRepository") private subscriptionRepository: ISubscriptionRepository) {
     }
 
     async listSubscriptionPaged(skip: number): Promise<{ subscriptions: ISubscription[]; nextSkip: number; }> {
-        var nextSkip = 0;
-        var totalSubscriptions = await SubscriptionSchema.count({});
-        var subscriptionList = await SubscriptionSchema.find({})
-            .sort("desc")
-            .skip(skip)
-            .limit(1);
-        if (skip + subscriptionList.length < totalSubscriptions) {
-            nextSkip = skip + subscriptionList.length;
-        }
-        return { subscriptions: subscriptionList, nextSkip: nextSkip };
+        var { nextSkip, subscriptions } = await this.subscriptionRepository.listPaged(skip, 10, "desc");
+        return { subscriptions, nextSkip };
     }
 
     async activateSubscription(id: string, planId: string, quantity: string) {
-        var subscription: ISubscription = await SubscriptionSchema.findOne({ id: id });
+        var subscription: ISubscription = await this.subscriptionRepository.getById(id);
 
         if (subscription.saasSubscriptionStatus == "Subscribed")
             return;
@@ -43,31 +34,28 @@ export default class SubscriptionService implements ISubscriptionService {
 
         subscription.saasSubscriptionStatus = "Subscribed"
 
-        await SubscriptionSchema.updateOne({ id: subscription.id }, subscription);
+        await this.subscriptionRepository.updateOne(subscription.id, subscription);
     }
 
     async updateSubscription(subscription: ISubscription) {
-        await SubscriptionSchema.findOneAndUpdate({ id: subscription.id }, subscription);
+        await this.subscriptionRepository.updateOne(subscription.id, subscription);
     }
 
     async createSubscription(subscription: ISubscription) {
         subscription.creationDate = new Date();
-        await SubscriptionSchema.create(subscription);
+        await this.subscriptionRepository.create(subscription);
     }
 
     async getSubscription(id: string): Promise<ISubscription> {
-        var subscription = await SubscriptionSchema.findOne({ id: id });
-        return subscription;
+        return this.subscriptionRepository.getById(id);
     }
 
     async listSubscription(): Promise<ISubscription[]> {
-        var subscriptionList = await SubscriptionSchema.find({},null, { sort: { creationDate: -1 } });
-        return subscriptionList;
+        return this.subscriptionRepository.listByCreationDateDescending();
     }
 
     async deleteSubscription(id: string) {
-        await SubscriptionSchema.deleteOne({ id: id });
+        await this.subscriptionRepository.deleteById(id);
     }
-
 
 }

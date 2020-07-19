@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { injectable, inject } from "tsyringe";
 
 import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
-import { ISettingsService } from "../types";
+import { ISettingsService } from "types";
 
 @injectable()
 @RoutePrefix("/api/settings")
@@ -12,18 +12,11 @@ export default class SettingsRoute extends BaseRoute {
         super();
     }
 
-
     @RouteConfig("get", "/")
     async get(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             var settings = await this.settingsService.getSettings();
-            if (!settings) {
-                res.status(200).json({});
-            } else {
-                delete settings.__v;
-                delete settings._id;
-                res.status(200).json(settings);
-            }
+            res.status(200).json(settings || {});
         } catch (error) {
             next(error);
         }
