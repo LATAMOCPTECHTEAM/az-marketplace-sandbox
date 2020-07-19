@@ -2,6 +2,7 @@ import { injectable, inject } from "tsyringe";
 
 import { ISubscriptionService, ISubscriptionRepository } from "types";
 import { ISubscription } from "models";
+import { NotFoundError, BadRequestError } from "../errors";
 
 @injectable()
 export default class SubscriptionService implements ISubscriptionService {
@@ -41,13 +42,20 @@ export default class SubscriptionService implements ISubscriptionService {
         await this.subscriptionRepository.updateOne(subscription.id, subscription);
     }
 
-    async createSubscription(subscription: ISubscription) {
+    async createSubscription(subscription: ISubscription): Promise<void> {
+        if (await this.subscriptionRepository.getById(subscription.id)) {
+            throw new BadRequestError("Subscription already exists.");
+        }
         subscription.creationDate = new Date();
         await this.subscriptionRepository.create(subscription);
     }
 
     async getSubscription(id: string): Promise<ISubscription> {
-        return this.subscriptionRepository.getById(id);
+        let subscription = await this.subscriptionRepository.getById(id);
+        if (!subscription) {
+            throw new NotFoundError("Subscription not found.");
+        }
+        return subscription;
     }
 
     async listSubscription(): Promise<ISubscription[]> {
@@ -55,6 +63,7 @@ export default class SubscriptionService implements ISubscriptionService {
     }
 
     async deleteSubscription(id: string) {
+        let subscription = await this.getSubscription(id);
         await this.subscriptionRepository.deleteById(id);
     }
 

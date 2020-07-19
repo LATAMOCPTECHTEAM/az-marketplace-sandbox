@@ -11,8 +11,7 @@ import { StubbedInstance, stubInterface as StubInterface } from "ts-sinon";
 import SubscriptionService from "../../src/services/SubscriptionService";
 import { ISubscriptionRepository } from "../../src/types";
 import { ISubscription } from "../../src/models";
-import { ISubscriptionSchema } from "../../src/schemas";
-import { Document, DocumentQuery } from "mongoose";
+import { NotFoundError } from "../../src/errors";
 
 describe('Services: SubscriptionService', () => {
     let subscriptionRepository: StubbedInstance<ISubscriptionRepository>;
@@ -22,45 +21,112 @@ describe('Services: SubscriptionService', () => {
         subscriptionService = new SubscriptionService(subscriptionRepository);
     });
 
-    describe('get', () => {
-        it('should return subscription from the database with the provided Id', async () => {
-            var subscription: ISubscription = {
-                id: "1",
-                name: null,
-                publisherId: null,
-                offerId: null,
-                planId: null,
-                quantity: null,
-                beneficiary: {
-                    emailId: null,
-                    objectId: null,
-                    tenantId: null
-                },
-                purchaser: {
-                    emailId: null,
-                    objectId: null,
-                    tenantId: null
-                },
-                term: {
-                    startDate: null,
-                    endDate: null,
-                    termUnit: null
-                },
-                allowedCustomerOperations: [],
-                sessionMode: null,
-                isFreeTrial: false,
-                isTest: false,
-                sandboxType: null,
-                saasSubscriptionStatus: null,
-                creationDate: new Date()
-            };
+    function createDummySubscription(): ISubscription {
+        return {
+            id: "1",
+            name: null,
+            publisherId: null,
+            offerId: null,
+            planId: null,
+            quantity: null,
+            beneficiary: {
+                emailId: null,
+                objectId: null,
+                tenantId: null
+            },
+            purchaser: {
+                emailId: null,
+                objectId: null,
+                tenantId: null
+            },
+            term: {
+                startDate: null,
+                endDate: null,
+                termUnit: null
+            },
+            allowedCustomerOperations: [],
+            sessionMode: null,
+            isFreeTrial: false,
+            isTest: false,
+            sandboxType: null,
+            saasSubscriptionStatus: null,
+            creationDate: new Date()
+        };
+    }
 
-            var spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+    describe('getSubscription', () => {
+        it('should return subscription from the database with the provided Id', async () => {
+            let subscription = createDummySubscription();
+
+            let spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
 
             await expect(subscriptionService.getSubscription("1")).to.eventually.equal(subscription);
             expect(spy.calledOnce).equals(true);
         });
 
+        it('should throw an error if subscription is not found', async () => {
+            let spy = subscriptionRepository.getById.withArgs("1").resolves(null);
+
+            await expect(subscriptionService.getSubscription("1"))
+                .to.eventually.be.rejectedWith("Subscription not found.")
+                .property('name', 'NotFoundError');
+            expect(spy.calledOnce).equals(true);
+        });
+    });
+
+
+    describe('deleteSubscription', () => {
+        it('should delete the subscription provided Id', async () => {
+            let subscription = createDummySubscription();
+            subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            let spy2 = subscriptionRepository.deleteById.withArgs("1").resolves(subscription);
+
+            await subscriptionService.deleteSubscription("1");
+            expect(spy2.calledOnce).equals(true);
+        });
+
+        it('should throw an error if subscription is not found', async () => {
+            subscriptionRepository.getById.withArgs("1").resolves(null);
+            let deleteSpy = subscriptionRepository.deleteById.withArgs("1");
+
+            await expect(subscriptionService.getSubscription("1"))
+                .to.eventually.be.rejectedWith("Subscription not found.")
+                .property('name', 'NotFoundError');
+            expect(deleteSpy.called).equals(false);
+        });
+    });
+
+    describe('listSubscription', () => {
+        it('should return the subscription list from the database ordered', async () => {
+            let subscription = createDummySubscription();
+            let subscriptionList = [subscription];
+            let spy = subscriptionRepository.listByCreationDateDescending.resolves(subscriptionList);
+
+            await expect(subscriptionService.listSubscription()).to.eventually.equal(subscriptionList);
+            expect(spy.calledOnce).equals(true);
+        });
+    });
+
+    describe('createSubscription', () => {
+        it('should create the subscription provided Id', async () => {
+            let subscription = createDummySubscription();
+            let spy = subscriptionRepository.getById.withArgs("1").resolves(null);
+            let spy2 = subscriptionRepository.create.withArgs(subscription);
+
+            await subscriptionService.createSubscription(subscription);
+            expect(spy.calledOnce).equals(true);
+            expect(spy2.calledOnce).equals(true);
+        });
+
+        it('should throw an error if subscription with the same id already exists', async () => {
+            let subscription = createDummySubscription();
+            let spy = subscriptionRepository.getById.withArgs(subscription.id).resolves(subscription);
+
+            await expect(subscriptionService.createSubscription(subscription))
+                .to.eventually.be.rejectedWith("Subscription already exists.")
+                .property('name', 'BadRequestError');
+            expect(spy.called).equals(false);
+        });
     });
     /*
         describe('list', () => {

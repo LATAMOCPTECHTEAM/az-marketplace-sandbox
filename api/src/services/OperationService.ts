@@ -3,7 +3,7 @@ import Chance from "chance";
 import * as request from "request-promise";
 import { IOperationService, ISubscriptionRepository, ISettingsRepository, IOperationRepository } from "types";
 import { IOperation } from "models";
-import { BadRequestError, NotFoundError } from "errors";
+import { BadRequestError, NotFoundError } from "../errors";
 
 @injectable()
 export default class OperationService implements IOperationService {

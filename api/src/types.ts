@@ -33,8 +33,8 @@ export interface ISettingsService {
 
 export interface ISubscriptionService {
     activateSubscription(id: string, planId: string, quantity: string): void;
-    createSubscription(settings: ISubscription): void;
-    updateSubscription(settings: ISubscription): void;
+    createSubscription(subscription: ISubscription): Promise<void>;
+    updateSubscription(subscription: ISubscription): Promise<void>;
     getSubscription(id: string): Promise<ISubscription>;
     listSubscription(): Promise<ISubscription[]>;
     listSubscriptionPaged(skip: number): Promise<{ subscriptions: ISubscription[], nextSkip: number }>;
