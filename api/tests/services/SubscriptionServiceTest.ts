@@ -125,7 +125,7 @@ describe('Services: SubscriptionService', () => {
             await expect(subscriptionService.createSubscription(subscription))
                 .to.eventually.be.rejectedWith("Subscription already exists.")
                 .property('name', 'BadRequestError');
-            expect(spy.called).equals(false);
+            expect(spy.called).equals(true);
         });
     });
     /*
