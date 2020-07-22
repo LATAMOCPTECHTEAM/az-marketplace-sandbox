@@ -1,0 +1,39 @@
+name: API Integration Unit Tests
+
+on:
+  pull_request:
+    branches: 
+    - master
+    - develop
+    paths: 
+    - '.github/workflows/api-integration-unit-tests.yml'
+    - 'api/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2.1.1
+      with:
+        node-version: 12.x
+
+    - name: Install Node Dependencies on API
+      run: |
+        cd api
+        npm install
+
+    - name: Install Node Dependencies on API
+      run: |
+        cd api
+        npm test
+
+    - name: Junit Report to Annotations
+      uses: ashley-taylor/junit-report-annotations-action@master
+      with:
+        # github token
+        access-token: ${{ secrets.GITHUB_TOKEN }}
+        # glob to junit xml files
+        path: api/testReport/test-results.xml
