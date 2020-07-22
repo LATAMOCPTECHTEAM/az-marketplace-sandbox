@@ -11,9 +11,10 @@ This approach has the downsides:
 * Can’t debug locally
 * Two developers working in the same app, can break one another
 * Having to publish on each change is very slow
+* Every developer needs to have edit access to the partner center offers
 
 
-Running the Sandbox locally, enable developers to fix all the problems above, helping the to integrate the solution faster and with more reliability.
+Running the Sandbox locally, enable developers to fix all the problems above, helping them to integrate their SaaS solution faster and with more reliability.
 
 
 The sandbox enables users to simulate:
