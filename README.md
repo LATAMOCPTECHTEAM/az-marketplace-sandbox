@@ -41,4 +41,4 @@ The sanbdox provides a user interface to the simulation above and also mimics th
 
 ## Roadmap
 
-You can check the roadmap for this project in the [Github's project page](./projects/1)
+You can check the roadmap for this project in the [Github's project page](../../projects/1)
