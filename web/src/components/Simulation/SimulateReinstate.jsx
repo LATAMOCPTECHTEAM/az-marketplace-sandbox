@@ -38,7 +38,7 @@ export default class SimulateReinstate extends Component {
                 "quantity": subscription.quantity,
                 "action": "Reinstate",
                 "timeStamp": new Date().toISOString(),
-                "status": "Succeeded"
+                "status": "Succeed"
             };
             this.setState({ subscription: subscription, operation: operation, planOptions: settings.plans, loading: false });
         } catch (error) {

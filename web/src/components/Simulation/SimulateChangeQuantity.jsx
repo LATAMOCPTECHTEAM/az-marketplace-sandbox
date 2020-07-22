@@ -36,7 +36,7 @@ export default class SimulateChangeQuantity extends Component {
                 "quantity": subscription.quantity,
                 "action": "ChangeQuantity",
                 "timeStamp": new Date().toISOString(),
-                "status": "InProgress"
+                "status": "Succeed"
             };
             this.setState({ subscription: subscription, operation: operation, loading: false });
             this.updateOperationResponse();

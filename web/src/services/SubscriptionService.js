@@ -20,7 +20,7 @@ export default class SubscriptionService {
 
     async delete(id) {
         return axios({
-            baseURL: `/subscriptions/${id}`,
+            url: `/subscriptions/${id}`,
             method: "DELETE",
         }).then(res => res.data);
     }

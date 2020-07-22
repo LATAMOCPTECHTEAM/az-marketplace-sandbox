@@ -128,6 +128,32 @@ describe('Services: SubscriptionService', () => {
             expect(spy.called).equals(true);
         });
     });
+
+    describe('updateSubscription', () => {
+        it('should update the subscription provided Id', async () => {
+            let subscription = createDummySubscription();
+            let updateSubscription = { ...subscription };
+            updateSubscription.name = "sub2";
+            let spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            let spy2 = subscriptionRepository.updateOne.withArgs(subscription.id, updateSubscription);
+
+            await subscriptionService.updateSubscription(updateSubscription);
+            expect(spy.calledOnce).equals(true);
+            expect(spy2.calledOnce).equals(true);
+        });
+
+        it('should throw an error if subscription doest exists exists', async () => {
+            let subscription = createDummySubscription();
+            let updateSubscription = { ...subscription };
+            updateSubscription.name = "sub2";
+            let spy = subscriptionRepository.getById.withArgs("1").resolves(null);
+
+            await expect(subscriptionService.updateSubscription(updateSubscription))
+                .to.eventually.be.rejectedWith("Subscription not found.")
+                .property('name', 'NotFoundError');
+            expect(spy.called).equals(true);
+        });
+    });
     /*
         describe('list', () => {
             it('should run list command with args parameter and return result', async () => {

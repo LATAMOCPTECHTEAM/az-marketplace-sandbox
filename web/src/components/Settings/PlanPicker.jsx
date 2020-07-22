@@ -17,12 +17,13 @@ export default class PlanPicker extends Component {
     }
 
     async componentDidMount() {
+        debugger;
         if (this.props.planOptions) {
             this.setState({ planOptions: this.props.planOptions });
         } else {
             this.setState({ loading: true });
             try {
-                let settings = this.settingsService.getSettings()
+                let settings = await this.settingsService.getSettings()
                 this.setState({ planOptions: settings.plans.map(x => x.planId), loading: false });
             } catch (error) {
                 console.error(error);

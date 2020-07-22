@@ -39,6 +39,7 @@ export default class SubscriptionService implements ISubscriptionService {
     }
 
     async updateSubscription(subscription: ISubscription) {
+        await this.getSubscription(subscription.id);
         await this.subscriptionRepository.updateOne(subscription.id, subscription);
     }
 
@@ -63,8 +64,7 @@ export default class SubscriptionService implements ISubscriptionService {
     }
 
     async deleteSubscription(id: string) {
-        let subscription = await this.getSubscription(id);
+        await this.getSubscription(id);
         await this.subscriptionRepository.deleteById(id);
     }
-
 }

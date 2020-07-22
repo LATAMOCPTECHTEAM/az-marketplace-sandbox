@@ -62,7 +62,7 @@ export default class OperationsGrid extends Component {
         }]
 
         const cellActions = {
-            btnWebhook: (row.status === "InProgress" || row.status === "NotStarted") ? btnWebhook : null,
+            btnWebhook: btnWebhook,
             btnDelete: [{
                 icon: <div style={{ width: "130px", textAlign: "center" }}>
                     <button className="btn btn-primary btn-sm" style={{ width: "100%", marginTop: "5px", marginRight: "10px" }}>

@@ -4,7 +4,7 @@
 
 This project was made to enable developers creating/integrating Apps to the Azure Marketplace to be able to test the integrations locally. In the common marketplace integration approach, is necessary to have an offer created in Partner Center and to deploy your solution to be public acessible.
 
-This approach has the following problems:
+This approach has the downsides:
 
 * Your deployment can break production
 * Some changes may need to re-submit to the Marketplace

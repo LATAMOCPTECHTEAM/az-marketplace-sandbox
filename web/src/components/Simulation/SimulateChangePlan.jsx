@@ -37,7 +37,7 @@ export default class SimulateChangePlan extends Component {
                 "quantity": subscription.quantity,
                 "action": "ChangePlan",
                 "timeStamp": new Date().toISOString(),
-                "status": "InProgress"
+                "status": "Succeed"
             };
             this.setState({ subscription: subscription, operation: operation, loading: false });
             this.updateOperationResponse();

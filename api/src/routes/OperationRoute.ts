@@ -35,8 +35,8 @@ export default class OperationRoute extends BaseRoute {
     @RouteConfig("post", "/suspend")
     async suspend(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            var webhookSuccessfull = await this.operationService.simulateSuspend(req.body);
-            res.status(200).json(webhookSuccessfull ? { warning: "Failed to send webhook, please check the application logs." } : "OK");
+            var webhookSent = await this.operationService.simulateSuspend(req.body);
+            res.status(200).json(webhookSent ? "OK" : { warning: "Failed to send webhook, please check the application logs." });
         } catch (error) {
             next(error);
         }
@@ -45,8 +45,8 @@ export default class OperationRoute extends BaseRoute {
     @RouteConfig("post", "/unsubscribe")
     async unsubscribe(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            var webhookSuccessfull = await this.operationService.simulateUnsubscribe(req.body);
-            res.status(200).json(webhookSuccessfull ? { warning: "Failed to send webhook, please check the application logs." } : "OK");
+            var webhookSent = await this.operationService.simulateUnsubscribe(req.body);
+            res.status(200).json(webhookSent ? "OK" : { warning: "Failed to send webhook, please check the application logs." });
         } catch (error) {
             next(error);
         }
@@ -55,8 +55,8 @@ export default class OperationRoute extends BaseRoute {
     @RouteConfig("post", "/reinstate")
     async reinstate(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            var webhookSuccessfull = await this.operationService.simulateReinstate(req.body);
-            res.status(200).json(webhookSuccessfull ? { warning: "Failed to send webhook, please check the application logs." } : "OK");
+            var webhookSent = await this.operationService.simulateReinstate(req.body);
+            res.status(200).json(webhookSent ? "OK" : { warning: "Failed to send webhook, please check the application logs." });
         } catch (error) {
             next(error);
         }
@@ -66,7 +66,7 @@ export default class OperationRoute extends BaseRoute {
     async changePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             var { webhookSent } = await this.operationService.changePlan(req.body.subscriptionId, req.body.planId, req.body.id, req.body.activityId, req.body.timeStamp);
-            res.status(200).json(webhookSent ? { warning: "Failed to send webhook, please check the application logs." } : "OK");
+            res.status(200).json(webhookSent ? "OK" : { warning: "Failed to send webhook, please check the application logs." });
         } catch (error) {
             next(error);
         }
@@ -76,7 +76,7 @@ export default class OperationRoute extends BaseRoute {
     async changeQuantity(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             var { webhookSent } = await this.operationService.changeQuantity(req.body.subscriptionId, req.body.planId, req.body.id, req.body.activityId, req.body.timeStamp);
-            res.status(200).json(webhookSent ? { warning: "Failed to send webhook, please check the application logs." } : "OK");
+            res.status(200).json(webhookSent ? "OK" : { warning: "Failed to send webhook, please check the application logs." });
         } catch (error) {
             next(error);
         }

@@ -215,7 +215,7 @@ export default class OperationService implements IOperationService {
                     "quantity": operationModel.quantity,
                     "action": operationModel.action,
                     "timeStamp": operationModel.timeStamp,
-                    "status": operationModel.status
+                    "status": operationModel.status == "Succeed" ? "Success" : "InProgress"
                 }
             });
             console.log(`Success calling the webhook API, Operation ${operationModel.id}`);
