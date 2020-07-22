@@ -6,7 +6,9 @@ name: [API] Integration Unit Tests
 # events but only for the master branch
 on:
   pull_request:
-    branches: [ master, develop ]
+    branches: 
+    - master
+    - develop
     paths: 
     - 'api/**'
 
