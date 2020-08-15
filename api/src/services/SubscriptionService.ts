@@ -21,7 +21,7 @@ export default class SubscriptionService implements ISubscriptionService {
         if (subscription.saasSubscriptionStatus == "Subscribed")
             return;
 
-        if (subscription.saasSubscriptionStatus != "NotStarted" && subscription.saasSubscriptionStatus != "PendingFulfillmentStart")
+        if (subscription.saasSubscriptionStatus != "PendingFulfillmentStart")
             throw new Error("To Activate a Subscription, the status must be 'NotStarted' or 'PendingFulfillmentStart'"); //TODO[VALIDATE]
 
         if (subscription.planId != planId)
