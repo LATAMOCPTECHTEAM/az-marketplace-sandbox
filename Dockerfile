@@ -1,37 +1,33 @@
-# Building Web ReactJS
-FROM node:12 as build-web
- 
-# Building Application
-WORKDIR /build
+FROM node:12.16.3-alpine3.11 as final
+ENV NODE_ENV=production
+EXPOSE 80
+
+FROM node:12 as base
 ENV NODE_ENV=development 
+RUN npm install typescript -g
+
+# Building Web ReactJS
+FROM base as build-web
+WORKDIR /build
 
 COPY ./web/package.json package.json
-
-RUN npm install typescript -g
 RUN npm install
 
 COPY ./web .
-
 RUN npm run-script build
 
 # Building API
-FROM node:12 as build-api
- 
-# Building Application
+FROM base as build-api
 WORKDIR /build
-ENV NODE_ENV=development 
 
 COPY ./api/package.json package.json
-RUN npm install typescript -g
 RUN npm install
 
 COPY ./api .
-
 RUN npm run-script compile
 
 # Merging Build
-FROM node:12.16.3-alpine3.11
-ENV NODE_ENV=production
+FROM final
 
 WORKDIR /app
 
