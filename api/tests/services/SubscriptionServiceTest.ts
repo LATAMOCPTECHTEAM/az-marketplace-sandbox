@@ -141,6 +141,18 @@ describe('Services: SubscriptionService', () => {
         });
     });
 
+    describe('listSubscriptionPaged', () => {
+        it('should return the subscription list from the database paged', async () => {
+            let subscription = createDummySubscription();
+            let subscriptionList = [subscription];
+            let subscriptionPagedResult = { subscriptions: subscriptionList, nextSkip: 11 };
+            let spy = subscriptionRepository.listPaged.withArgs(10, 10, "desc").resolves(subscriptionPagedResult);
+
+            await expect(subscriptionService.listSubscriptionPaged(10)).to.eventually.equal(subscriptionPagedResult);
+            expect(spy.calledOnce).equals(true);
+        });
+    });
+
     describe('createSubscription', () => {
         it('should create the subscription provided Id', async () => {
             let subscription = createDummySubscription();

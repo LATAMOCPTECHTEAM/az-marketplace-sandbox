@@ -11,8 +11,8 @@ export default class SubscriptionService implements ISubscriptionService {
     }
 
     async listSubscriptionPaged(skip: number): Promise<{ subscriptions: ISubscription[]; nextSkip: number; }> {
-        var { nextSkip, subscriptions } = await this.subscriptionRepository.listPaged(skip, 10, "desc");
-        return { subscriptions, nextSkip };
+        let pagedList = await this.subscriptionRepository.listPaged(skip, 10, "desc");
+        return pagedList;
     }
 
     async activateSubscription(id: string, planId: string, quantity: string) {
