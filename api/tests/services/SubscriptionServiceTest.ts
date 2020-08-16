@@ -1,24 +1,23 @@
-// # Imports Default
+// Imports Default
 import "reflect-metadata";
+import 'mocha';
 import chai, { expect } from 'chai';
 // eslint-disable-next-line sort-imports
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
+import { StubbedInstance, stubInterface } from "ts-sinon";
 
-import 'mocha';
-import { StubbedInstance, stubInterface as StubInterface } from "ts-sinon";
-
-// # Imports
-import { ESubscriptionStatus } from "../../src/enums";
-import { ISubscription } from "../../src/models";
-import { ISubscriptionRepository } from "../../src/types";
-import SubscriptionService from "../../src/services/SubscriptionService";
+// Imports
+import { ESubscriptionStatus } from "@enums";
+import { ISubscription } from "@models";
+import { ISubscriptionRepository } from "@types";
+import { SubscriptionService } from "@services";
 
 describe('Services: SubscriptionService', () => {
     let subscriptionRepository: StubbedInstance<ISubscriptionRepository>;
     let subscriptionService: SubscriptionService;
     beforeEach(() => {
-        subscriptionRepository = StubInterface<ISubscriptionRepository>();
+        subscriptionRepository = stubInterface<ISubscriptionRepository>();
         subscriptionService = new SubscriptionService(subscriptionRepository);
     });
 
