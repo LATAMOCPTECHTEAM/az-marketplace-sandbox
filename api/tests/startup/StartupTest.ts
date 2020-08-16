@@ -7,8 +7,6 @@ import { StubbedInstance, stubInterface as StubInterface, } from "ts-sinon";
 //# Imports
 
 import Startup from "../../src/Startup"
-import { DependencyInjection } from "../../src/DependencyInjection";
-import { DependencyContainer, } from "tsyringe";
 import { IServer } from "../../src/types";
 
 describe('Startup: Startup', () => {

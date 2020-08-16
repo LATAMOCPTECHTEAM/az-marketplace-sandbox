@@ -3,6 +3,7 @@ import Chance from "chance";
 import * as request from "request-promise";
 import { IOperationService, ISubscriptionRepository, ISettingsRepository, IOperationRepository } from "types";
 import { IOperation } from "models";
+import { ESubscriptionStatus } from "../enums";
 import { BadRequestError, NotFoundError } from "../errors";
 
 @injectable()
@@ -152,7 +153,7 @@ export default class OperationService implements IOperationService {
         await this.operationRepository.create(operation);
         var subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
 
-        subscription.saasSubscriptionStatus = "Unsubscribed";
+        subscription.saasSubscriptionStatus = ESubscriptionStatus.Unsubscribed;
 
         await this.subscriptionRepository.updateOne(subscription.id, subscription);
 
@@ -168,7 +169,7 @@ export default class OperationService implements IOperationService {
         await this.operationRepository.create(operation);
         var subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
 
-        subscription.saasSubscriptionStatus = "Suspended";
+        subscription.saasSubscriptionStatus = ESubscriptionStatus.Suspended;
 
         await this.subscriptionRepository.updateOne(subscription.id, subscription);
 
@@ -184,7 +185,7 @@ export default class OperationService implements IOperationService {
         await this.operationRepository.create(operation);
         var subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
 
-        subscription.saasSubscriptionStatus = "Subscribed";
+        subscription.saasSubscriptionStatus = ESubscriptionStatus.Subscribed;
 
         await this.subscriptionRepository.updateOne(subscription.id, subscription);
 

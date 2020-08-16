@@ -1,8 +1,11 @@
 import { injectable, inject } from "tsyringe";
 
+import { ESubscriptionStatus } from "../enums";
+
 import { ISubscriptionService, ISubscriptionRepository } from "types";
 import { ISubscription } from "models";
-import { NotFoundError, BadRequestError } from "../errors";
+
+import { NotFoundError, BadRequestError, ValidationError } from "../errors";
 
 @injectable()
 export default class SubscriptionService implements ISubscriptionService {
@@ -22,18 +25,18 @@ export default class SubscriptionService implements ISubscriptionService {
             return;
 
         if (subscription.saasSubscriptionStatus != "PendingFulfillmentStart")
-            throw new Error("To Activate a Subscription, the status must be 'NotStarted' or 'PendingFulfillmentStart'"); //TODO[VALIDATE]
+            throw new BadRequestError("To Activate a Subscription, the status must be 'NotStarted' or 'PendingFulfillmentStart'");
 
         if (subscription.planId != planId)
-            throw new Error("PlanId divergence."); //TODO[VALIDATE]
+            throw new BadRequestError("PlanId divergence.");
 
-        var isSubQuantityEmpty = (subscription.quantity == null || subscription.quantity == undefined || subscription.quantity == "")
-        var isQuantityEmpty = (quantity == null || quantity == undefined || quantity == "");
+        if (!!(subscription.quantity) || !!(quantity)) {
+            if (subscription.quantity != quantity) {
+                throw new BadRequestError("Quantity divergence.");
+            }
+        }
 
-        if (!((isSubQuantityEmpty && isQuantityEmpty) || subscription.quantity == quantity))
-            throw new Error("Quantity divergence."); //TODO[VALIDATE]
-
-        subscription.saasSubscriptionStatus = "Subscribed"
+        subscription.saasSubscriptionStatus = ESubscriptionStatus.Subscribed;
 
         await this.subscriptionRepository.updateOne(subscription.id, subscription);
     }

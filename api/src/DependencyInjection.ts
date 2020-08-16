@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { container, DependencyContainer } from "tsyringe";
+
 import logger from "./helpers/Logger";
 
 import Server from "./server/Server";

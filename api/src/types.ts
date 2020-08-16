@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction, Application } from "express";
-import { IOperation, ISubscription, ISettings } from "./models";
+import { IOperation, ISubscription, ISettings } from "models";
 
 // # Routes
 export interface IHealthcheck extends ICustomRoute {

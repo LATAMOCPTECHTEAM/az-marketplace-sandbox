@@ -1,3 +1,4 @@
+import { ESubscriptionStatus } from "enums";
 export default interface ISubscription {
     id: string;
     name: string;
@@ -25,6 +26,6 @@ export default interface ISubscription {
     isFreeTrial: boolean,
     isTest: boolean,
     sandboxType: string,
-    saasSubscriptionStatus: string,
+    saasSubscriptionStatus: ESubscriptionStatus,
     creationDate: Date
 }

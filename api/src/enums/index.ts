@@ -1,1 +1,1 @@
-export { default as ESubscriptionType } from "./ESubscriptionType";
+export { default as ESubscriptionStatus } from "./ESubscriptionStatus";

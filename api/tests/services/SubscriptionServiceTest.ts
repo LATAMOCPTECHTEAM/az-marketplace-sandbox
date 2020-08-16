@@ -11,7 +11,7 @@ import { StubbedInstance, stubInterface as StubInterface } from "ts-sinon";
 import SubscriptionService from "../../src/services/SubscriptionService";
 import { ISubscriptionRepository } from "../../src/types";
 import { ISubscription } from "../../src/models";
-import { ESubscriptionType } from "../../src/enums";
+import { ESubscriptionStatus } from "../../src/enums";
 
 describe('Services: SubscriptionService', () => {
     let subscriptionRepository: StubbedInstance<ISubscriptionRepository>;
@@ -62,7 +62,7 @@ describe('Services: SubscriptionService', () => {
             publisherId: "publisherId",
             offerId: "offerId",
             planId: "planId",
-            quantity: null,
+            quantity: "1",
             beneficiary: {
                 emailId: "email@email",
                 objectId: "631af03013954504a2b3025e1c2e5c8a",
@@ -83,7 +83,7 @@ describe('Services: SubscriptionService', () => {
             isFreeTrial: false,
             isTest: false,
             sandboxType: "None",
-            saasSubscriptionStatus: ESubscriptionType.PendingFulfillmentStart,
+            saasSubscriptionStatus: ESubscriptionStatus.PendingFulfillmentStart,
             creationDate: new Date()
         };
     }
@@ -205,7 +205,7 @@ describe('Services: SubscriptionService', () => {
         it('should activate the subscription if all conditions are met', async () => {
             let subscription = createDummySubscriptionValidForActivation();
             let updateSubscription = { ...subscription };
-            updateSubscription.saasSubscriptionStatus = ESubscriptionType.Subscribed;
+            updateSubscription.saasSubscriptionStatus = ESubscriptionStatus.Subscribed;
             let spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
             let spy2 = subscriptionRepository.updateOne.withArgs(subscription.id, updateSubscription);
 
@@ -216,13 +216,70 @@ describe('Services: SubscriptionService', () => {
 
         it('should should not update the subscription if status is already subscribed', async () => {
             let subscription = createDummySubscriptionValidForActivation();
-            subscription.saasSubscriptionStatus = ESubscriptionType.Subscribed;
+            subscription.saasSubscriptionStatus = ESubscriptionStatus.Subscribed;
             let spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
             let spyUpdate = subscriptionRepository.updateOne;
 
             await subscriptionService.activateSubscription(subscription.id, subscription.planId, subscription.quantity);
             expect(spyGet.calledOnce).equals(true);
             expect(spyUpdate.calledOnce).equals(false);
+        });
+
+        it('should thow an error if subscription status is different from PendingFulfillmentStart', async () => {
+            let subscription = createDummySubscriptionValidForActivation();
+            subscription.saasSubscriptionStatus = ESubscriptionStatus.Unsubscribed;
+            let spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            let spyUpdate = subscriptionRepository.updateOne;
+
+            await expect(subscriptionService.activateSubscription(subscription.id, subscription.planId, subscription.quantity))
+                .to.eventually.be.rejectedWith("To Activate a Subscription, the status must be 'NotStarted' or 'PendingFulfillmentStart'")
+                .property('name', 'BadRequestError');
+
+            expect(spyGet.calledOnce).equals(true);
+            expect(spyUpdate.calledOnce).equals(false);
+
+        });
+
+        it('should thow an error if subscription plan is different from the planId provided', async () => {
+            let subscription = createDummySubscriptionValidForActivation();
+            subscription.saasSubscriptionStatus = ESubscriptionStatus.PendingFulfillmentStart;
+            let spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            let spyUpdate = subscriptionRepository.updateOne;
+
+            await expect(subscriptionService.activateSubscription(subscription.id, "anythingelse", subscription.quantity))
+                .to.eventually.be.rejectedWith("PlanId divergence.")
+                .property('name', 'BadRequestError');
+
+            expect(spyGet.calledOnce).equals(true);
+            expect(spyUpdate.calledOnce).equals(false);
+
+        });
+
+        it('should thow an error if subscription quantity is different from the quantity provided', async () => {
+            let subscription = createDummySubscriptionValidForActivation();
+            let spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            let spyUpdate = subscriptionRepository.updateOne;
+
+            await expect(subscriptionService.activateSubscription(subscription.id, subscription.planId, "2"))
+                .to.eventually.be.rejectedWith("Quantity divergence.")
+                .property('name', 'BadRequestError');
+
+            expect(spyGet.calledOnce).equals(true);
+            expect(spyUpdate.calledOnce).equals(false);
+
+        });
+
+        it('should activate the subscription if all conditions are met with quantities null', async () => {
+            let subscription = createDummySubscriptionValidForActivation();
+            subscription.quantity = null;
+            let updateSubscription = { ...subscription };
+            updateSubscription.saasSubscriptionStatus = ESubscriptionStatus.Subscribed;
+            let spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            let spy2 = subscriptionRepository.updateOne.withArgs(subscription.id, updateSubscription);
+
+            await subscriptionService.activateSubscription(subscription.id, subscription.planId, undefined);
+            expect(spy.calledOnce).equals(true);
+            expect(spy2.calledOnce).equals(true);
         });
 
     });
