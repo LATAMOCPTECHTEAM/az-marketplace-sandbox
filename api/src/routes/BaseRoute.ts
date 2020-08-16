@@ -1,11 +1,12 @@
+/* eslint-disable func-names */
 import { Router } from "express";
-import { ICustomRoute, IRoute } from "../types";
+import { ICustomRoute, IRoute } from "@types";
 
 export function RouteConfig(method: string, path: string) {
-    return function (target: ICustomRoute, propertyKey: string, descriptor: PropertyDescriptor) {
+    return function(target: ICustomRoute, propertyKey: string) {
         if (!target.routes)
             target.routes = [];
-        var newRoute: IRoute = {
+        const newRoute: IRoute = {
             route: path,
             method: method,
             handler: target[propertyKey]
@@ -25,9 +26,10 @@ export class BaseRoute implements ICustomRoute {
     routes: IRoute[];
     prefix: string;
     configureRouter(app: any) {
-        var router = Router();
+        // eslint-disable-next-line new-cap
+        const router = Router();
 
-        for (var route of this.routes) {
+        for (const route of this.routes) {
             router[route.method](route.route, route.handler.bind(this));
         }
 

@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { injectable, inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
+import { Request, Response } from "express";
 
-import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
-import { ISubscriptionService, IOperationService, ISettingsService } from "../types";
+
+import BadRequestError from "@errors/BadRequest";
+import Config from "@Config";
 import IMarketplaceRoute from "./interfaces/IMarketplaceRoute"
-import { IResolveResponse, IInternalServerErrorResponse, ISubscriptionResponse, ISubscriptionsResponse, IOperationResponse, IListAvailablePlans } from "./interfaces/models";
-import Config from "../Config";
-import BadRequestError from "../errors/BadRequest";
+import { BaseRoute, RouteConfig, RoutePrefix } from "./BaseRoute";
+import { IInternalServerErrorResponse, IListAvailablePlans, IOperationResponse, IResolveResponse, ISubscriptionResponse, ISubscriptionsResponse } from "./interfaces/models";
+import { IOperationService, ISettingsService, ISubscriptionService } from "@types";
 
 @injectable()
 @RoutePrefix("/api/saas/subscriptions")
@@ -20,17 +21,17 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
     }
 
     validateApiVersion(req: Request) {
-        if (req.query["api-version"] != Config.saasAPIVersion) {
+        if (req.query["api-version"] !== Config.saasAPIVersion) {
             throw new Error(`apiVersion parameter doesn't match to the current version implemented of the Sandbox (${Config.saasAPIVersion})`)
         }
     }
 
     private handleError(error: Error, res: Response) {
         let statusCode = 500;
-        if (error.name == "BadRequestError") {
+        if (error.name === "BadRequestError") {
             statusCode = 400;
         }
-        let response: IInternalServerErrorResponse = {
+        const response: IInternalServerErrorResponse = {
             error: {
                 code: error.name,
                 message: error.message
@@ -40,15 +41,15 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
     }
 
     @RouteConfig("get", "/:subscriptionId/listAvailablePlans")
-    async listAvailablePlans(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async listAvailablePlans(req: Request, res: Response): Promise<void> {
         try {
             this.validateApiVersion(req);
-            let settings = await this.settingsService.getSettings();
-            if (settings == null) {
+            const settings = await this.settingsService.getSettings();
+            if (!settings) {
                 res.status(404);
                 return;
             }
-            let response: IListAvailablePlans = {
+            const response: IListAvailablePlans = {
                 plans: settings.plans.map(plan => {
                     return {
                         planId: plan.planId,
@@ -64,16 +65,16 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
     }
 
     @RouteConfig("post", "/resolve")
-    async resolve(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async resolve(req: Request, res: Response): Promise<void> {
         try {
             this.validateApiVersion(req);
-            let token = req.headers["x-ms-marketplace-token"].toString();
-            let subscription = await this.subscriptionService.getSubscription(token);
-            if (subscription == null) {
+            const token = req.headers["x-ms-marketplace-token"].toString();
+            const subscription = await this.subscriptionService.getSubscription(token);
+            if (!subscription) {
                 res.status(404);
                 return;
             }
-            let response: IResolveResponse = {
+            const response: IResolveResponse = {
                 id: subscription.id,
                 subscriptionName: subscription.name,
                 offerId: subscription.offerId,
@@ -87,14 +88,14 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
     }
 
     @RouteConfig("get", "/")
-    async getSubscriptions(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async getSubscriptions(req: Request, res: Response): Promise<void> {
         try {
             this.validateApiVersion(req);
-            let skip: any = req.query["skip"];
-            let { subscriptions, nextSkip } = await this.subscriptionService.listSubscriptionPaged(parseInt(skip) || 0);
-            let response: ISubscriptionsResponse = {
+            const skip: any = req.query.skip;
+            const { subscriptions, nextSkip } = await this.subscriptionService.listSubscriptionPaged(parseInt(skip) || 0);
+            const response: ISubscriptionsResponse = {
                 subscriptions: subscriptions.map(subscription => {
-                    let subscriptionResponse: ISubscriptionResponse = {
+                    const subscriptionResponse: ISubscriptionResponse = {
                         id: subscription.id,
                         name: subscription.name,
                         publisherId: subscription.publisherId,
@@ -122,15 +123,15 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
     }
 
     @RouteConfig("get", "/:subscriptionId")
-    async getSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async getSubscription(req: Request, res: Response): Promise<void> {
         try {
             this.validateApiVersion(req);
-            let subscription = await this.subscriptionService.getSubscription(req.params.subscriptionId);
-            if (subscription == null) {
+            const subscription = await this.subscriptionService.getSubscription(req.params.subscriptionId);
+            if (!subscription) {
                 res.status(404);
                 return;
             }
-            let response: ISubscriptionResponse = {
+            const response: ISubscriptionResponse = {
                 id: subscription.id,
                 name: subscription.name,
                 publisherId: subscription.publisherId,
@@ -154,7 +155,7 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
     }
 
     @RouteConfig("patch", "/:subscriptionId/operations/:operationId")
-    async patchOperation(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async patchOperation(req: Request, res: Response): Promise<void> {
         try {
             this.validateApiVersion(req);
             await this.operationService.confirmChangePlan(req.params.subscriptionId, req.params.operationId, req.body.planId, req.body.quantity, req.body.status);
@@ -165,7 +166,7 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
     }
 
     @RouteConfig("post", "/:subscriptionId/activate")
-    async activate(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async activate(req: Request, res: Response): Promise<void> {
         try {
             this.validateApiVersion(req);
             await this.subscriptionService.activateSubscription(req.params.subscriptionId, req.body.planId, req.body.quantity);
@@ -176,18 +177,19 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
     }
 
     @RouteConfig("patch", "/:subscriptionId")
-    async changePlanOrQuantity(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async changePlanOrQuantity(req: Request, res: Response): Promise<void> {
         try {
             this.validateApiVersion(req);
             if (req.body.planId && req.body.quantity) {
                 throw new BadRequestError("Either the plan or quantity of seats can be changed at one time, not both");
             }
+            let id: string = null;
             if (req.body.quantity) {
-                var { id } = await this.operationService.changeQuantity(req.params.subscriptionId, req.body.quantity);
+                ({ id } = await this.operationService.changeQuantity(req.params.subscriptionId, req.body.quantity));
             } else {
-                var { id } = await this.operationService.changePlan(req.params.subscriptionId, req.body.planId);
+                ({ id } = await this.operationService.changePlan(req.params.subscriptionId, req.body.planId));
             }
-            var operationLocation = `${req.host}/api/saas/subscriptions/${req.params.subscriptionId}/operations/${id}?apiVersion=${Config.saasAPIVersion}`;
+            const operationLocation = `${req.host}/api/saas/subscriptions/${req.params.subscriptionId}/operations/${id}?apiVersion=${Config.saasAPIVersion}`;
             res.setHeader("Operation-Location", operationLocation);
             res.status(200).json("OK");
         } catch (error) {
@@ -196,11 +198,11 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
     }
 
     @RouteConfig("get", "/:subscriptionId/operations/:operationId")
-    async getOperation(req: Request, res: Response, next: NextFunction) {
+    async getOperation(req: Request, res: Response) {
         try {
             this.validateApiVersion(req);
-            let operation = await this.operationService.get(req.params.subscriptionId, req.params.operationId);
-            let response: IOperationResponse = {
+            const operation = await this.operationService.get(req.params.subscriptionId, req.params.operationId);
+            const response: IOperationResponse = {
                 id: operation.id,
                 action: operation.action,
                 activityId: operation.activityId,

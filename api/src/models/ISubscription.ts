@@ -1,31 +1,31 @@
-import { ESubscriptionStatus } from "enums";
+import { ESubscriptionStatus } from "@enums";
 export default interface ISubscription {
-    id: string;
-    name: string;
-    publisherId: string;
-    offerId: string;
-    planId: string;
-    quantity: string;
+    allowedCustomerOperations: string[],
     beneficiary: {
         emailId: string,
         objectId: string,
         tenantId: string
     },
+    creationDate: Date,
+    id: string;
+    isFreeTrial: boolean,
+    isTest: boolean,
+    name: string;
+    offerId: string;
+    planId: string;
+    publisherId: string;
     purchaser: {
         emailId: string,
         objectId: string,
         tenantId: string
     },
-    term: {
-        startDate: string,
-        endDate: string,
-        termUnit: string,
-    },
-    allowedCustomerOperations: string[],
-    sessionMode: string,
-    isFreeTrial: boolean,
-    isTest: boolean,
-    sandboxType: string,
+    quantity: string;
     saasSubscriptionStatus: ESubscriptionStatus,
-    creationDate: Date
+    sandboxType: string,
+    sessionMode: string,
+    term: {
+        endDate: string,
+        startDate: string,
+        termUnit: string,
+    }
 }

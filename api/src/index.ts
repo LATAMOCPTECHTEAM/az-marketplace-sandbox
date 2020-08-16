@@ -1,13 +1,13 @@
 import "reflect-metadata";
 import config from "./Config";
-import { default as DIContainer } from "./DependencyInjection";
-import { IStartup } from "types";
+import { default as DIContainer } from "@DependencyInjection";
+import { IStartup } from "@types";
 import mongoose from "mongoose";
 
 mongoose.connect(config.mongo, { useFindAndModify: false })
-    .then(x => {
+    .then(() => {
         DIContainer.setup();
-        var startup = DIContainer.getContainer().resolve<IStartup>("IStartup")
+        const startup = DIContainer.getContainer().resolve<IStartup>("IStartup")
 
         return startup.main();
     })

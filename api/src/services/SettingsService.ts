@@ -1,14 +1,12 @@
-import { injectable, inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 
-import { ISettingsService, ISettingsRepository } from "types";
-import { ISettings } from "models";
+import { ISettings } from "@models";
+import { ISettingsRepository, ISettingsService } from "@types";
 
 @injectable()
 export default class SettingsService implements ISettingsService {
 
-    constructor(@inject("ISettingsRepository") private settingsRepository: ISettingsRepository) {
-
-    }
+    constructor(@inject("ISettingsRepository") private settingsRepository: ISettingsRepository) { }
 
     async updateSettings(settings: ISettings) {
         return this.settingsRepository.createOrUpdate(settings);

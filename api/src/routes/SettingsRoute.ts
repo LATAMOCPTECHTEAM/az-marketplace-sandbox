@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-import { injectable, inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
+import { NextFunction, Request, Response } from "express";
 
-import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
-import { ISettingsService } from "types";
+import { ISettingsService } from "@types";
+import { BaseRoute, RouteConfig, RoutePrefix } from "./BaseRoute";
 
 @injectable()
 @RoutePrefix("/api/settings")
@@ -15,7 +15,7 @@ export default class SettingsRoute extends BaseRoute {
     @RouteConfig("get", "/")
     async get(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            var settings = await this.settingsService.getSettings();
+            const settings = await this.settingsService.getSettings();
             res.status(200).json(settings || {});
         } catch (error) {
             next(error);

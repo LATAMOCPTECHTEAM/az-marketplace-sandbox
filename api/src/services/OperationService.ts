@@ -1,10 +1,11 @@
-import { injectable, inject } from "tsyringe";
-import Chance from "chance";
 import * as request from "request-promise";
-import { IOperationService, ISubscriptionRepository, ISettingsRepository, IOperationRepository } from "types";
-import { IOperation } from "models";
-import { ESubscriptionStatus } from "../enums";
-import { BadRequestError, NotFoundError } from "../errors";
+import Chance from "chance";
+import { inject, injectable } from "tsyringe";
+
+import { ESubscriptionStatus } from "@enums";
+import { IOperation } from "@models";
+import { BadRequestError, NotFoundError } from "@errors";
+import { IOperationRepository, IOperationService, ISettingsRepository, ISubscriptionRepository } from "@types";
 
 @injectable()
 export default class OperationService implements IOperationService {
@@ -16,7 +17,7 @@ export default class OperationService implements IOperationService {
     }
 
     async get(subscriptionId: string, operationId: string): Promise<IOperation> {
-        let operation = await this.operationRepository.getBySubscriptionAndId(subscriptionId, operationId);
+        const operation = await this.operationRepository.getBySubscriptionAndId(subscriptionId, operationId);
 
         if (!operation) {
             throw new NotFoundError("Operation not Found.");
@@ -33,10 +34,10 @@ export default class OperationService implements IOperationService {
     }
 
     async confirmChangePlan(subscriptionId: string, operationId: string, planId: string, quantity: string, status: string) {
-        var operation = await this.operationRepository.getById(operationId);
-        var subscription = await this.subscriptionRepository.getById(subscriptionId);
+        const operation = await this.operationRepository.getById(operationId);
+        const subscription = await this.subscriptionRepository.getById(subscriptionId);
 
-        operation.status = status == "Success" ? "Succeeded" : "Failed";
+        operation.status = status === "Success" ? "Succeeded" : "Failed";
 
         await this.operationRepository.updateOne(operation.id, operation);
 
@@ -47,31 +48,31 @@ export default class OperationService implements IOperationService {
     }
 
     async changePlan(subscriptionId: string, planId: string, id?: string, activityId?: string, timeStamp?: string): Promise<{ id: string, webhookSent: boolean }> {
-        let settings = await this.settingsRepository.get();
-        var subscription = await this.subscriptionRepository.getById(subscriptionId);
+        const settings = await this.settingsRepository.get();
+        const subscription = await this.subscriptionRepository.getById(subscriptionId);
 
-        if (subscription == null) {
+        if (subscription === null) {
             throw new BadRequestError("Subscription Not Found");
         }
 
-        if (!settings.plans.some(plan => plan.planId == planId)) {
+        if (!settings.plans.some(plan => plan.planId === planId)) {
             throw new BadRequestError("Plan not found");
         }
 
-        if (subscription.planId == planId) {
+        if (subscription.planId === planId) {
             throw new BadRequestError("Trying to change to the same plan");
         }
 
-        if (subscription.saasSubscriptionStatus != "Subscribed") {
+        if (subscription.saasSubscriptionStatus !== ESubscriptionStatus.Subscribed) {
             throw new BadRequestError("The SaaS subscription status is not Subscribed");
         }
 
-        if (!subscription.allowedCustomerOperations.some(operation => operation == "Update")) {
+        if (!subscription.allowedCustomerOperations.some(operation => operation === "Update")) {
             throw new BadRequestError("The update operation for a SaaS subscription is not included in allowedCustomerOperations");
         }
 
-        var chance = new Chance();
-        var operationModel: IOperation = {
+        const chance = new Chance();
+        const operationModel: IOperation = {
             "id": id || chance.guid(),
             "activityId": activityId || chance.guid(),
             "subscriptionId": subscription.id,
@@ -101,26 +102,26 @@ export default class OperationService implements IOperationService {
     }
 
     async changeQuantity(subscriptionId: string, quantity: string, id?: string, activityId?: string, timeStamp?: string): Promise<{ id: string, webhookSent: boolean }> {
-        var subscription = await this.subscriptionRepository.getById(subscriptionId);
+        const subscription = await this.subscriptionRepository.getById(subscriptionId);
 
-        if (subscription == null) {
+        if (subscription === null) {
             throw new BadRequestError("Subscription Not Found");
         }
 
-        if (subscription.quantity == quantity) {
+        if (subscription.quantity === quantity) {
             throw new BadRequestError("Trying to change to the same quantity");
         }
 
-        if (subscription.saasSubscriptionStatus != "Subscribed") {
+        if (subscription.saasSubscriptionStatus !== ESubscriptionStatus.Subscribed) {
             throw new BadRequestError("The SaaS subscription status is not Subscribed");
         }
 
-        if (subscription.allowedCustomerOperations.some(operation => operation == "Update")) {
+        if (subscription.allowedCustomerOperations.some(operation => operation === "Update")) {
             throw new BadRequestError("The update operation for a SaaS subscription is not included in allowedCustomerOperations");
         }
 
-        var chance = new Chance();
-        var operation: IOperation = {
+        const chance = new Chance();
+        const operation: IOperation = {
             "id": id || chance.guid(),
             "activityId": activityId || chance.guid(),
             "subscriptionId": subscription.id,
@@ -151,7 +152,7 @@ export default class OperationService implements IOperationService {
 
     async simulateUnsubscribe(operation: IOperation): Promise<boolean> {
         await this.operationRepository.create(operation);
-        var subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
+        const subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
 
         subscription.saasSubscriptionStatus = ESubscriptionStatus.Unsubscribed;
 
@@ -167,7 +168,7 @@ export default class OperationService implements IOperationService {
 
     async simulateSuspend(operation: IOperation): Promise<boolean> {
         await this.operationRepository.create(operation);
-        var subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
+        const subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
 
         subscription.saasSubscriptionStatus = ESubscriptionStatus.Suspended;
 
@@ -183,7 +184,7 @@ export default class OperationService implements IOperationService {
 
     async simulateReinstate(operation: IOperation): Promise<boolean> {
         await this.operationRepository.create(operation);
-        var subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
+        const subscription = await this.subscriptionRepository.getById(operation.subscriptionId);
 
         subscription.saasSubscriptionStatus = ESubscriptionStatus.Subscribed;
 
@@ -198,11 +199,11 @@ export default class OperationService implements IOperationService {
     }
 
     async sendWebhook(operationId: string) {
-        var settings = await this.settingsRepository.get();
-        var operationModel = await this.operationRepository.getById(operationId);
+        const settings = await this.settingsRepository.get();
+        const operationModel = await this.operationRepository.getById(operationId);
 
         try {
-            var response = await request.post(settings.webhookUrl, {
+            await request.post(settings.webhookUrl, {
                 resolveWithFullResponse: true,
                 json: true,
                 strictSSL: false,
@@ -216,7 +217,7 @@ export default class OperationService implements IOperationService {
                     "quantity": operationModel.quantity,
                     "action": operationModel.action,
                     "timeStamp": operationModel.timeStamp,
-                    "status": operationModel.status == "Succeed" ? "Success" : "InProgress"
+                    "status": operationModel.status === "Succeed" ? "Success" : "InProgress"
                 }
             });
             console.log(`Success calling the webhook API, Operation ${operationModel.id}`);

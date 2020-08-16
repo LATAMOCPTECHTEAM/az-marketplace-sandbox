@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { ISubscription } from "models";
+
+import { ISubscription } from "@models";
 
 const SubscriptionSchemaDetails = new mongoose.Schema(
     {

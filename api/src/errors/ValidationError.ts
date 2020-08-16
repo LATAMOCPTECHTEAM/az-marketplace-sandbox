@@ -12,8 +12,8 @@ export default class ValidationError extends Error {
         super()
 
         if (obj && Array.isArray(obj) && obj.length > 0) {
-            var errors = obj.map(x => Object.values(x.constraints));
-            var errorFlatten = [].concat(...errors);
+            const errors = obj.map(x => Object.values(x.constraints));
+            const errorFlatten = [].concat(...errors);
             this.validation = errorFlatten;
         } else {
             this.message = obj;

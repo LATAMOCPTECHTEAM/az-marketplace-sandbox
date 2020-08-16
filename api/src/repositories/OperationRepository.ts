@@ -1,15 +1,14 @@
-import { injectable, inject } from "tsyringe";
-import { IOperationRepository } from "types";
-import { IOperationSchema } from "schemas";
-import { IOperation } from "models";
+import { inject, injectable } from "tsyringe";
+
+import { IOperation } from "@models";
+import { IOperationRepository } from "@types";
+import { IOperationSchema } from "@schemas";
 
 @injectable()
 export default class OperationRepository implements IOperationRepository {
 
     constructor(
-        @inject("OperationSchema") private operationSchema: IOperationSchema) {
-
-    }
+        @inject("OperationSchema") private operationSchema: IOperationSchema) { }
 
     async getById(id: string): Promise<IOperation> {
         return this.operationSchema.findOne({ id: id });

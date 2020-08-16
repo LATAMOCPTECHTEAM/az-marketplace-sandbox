@@ -1,16 +1,16 @@
+import { Address } from 'cluster';
 import { Application } from 'express';
 import express from 'express';
 import http from 'http';
-import { injectable, inject } from "tsyringe";
 import { Logger } from 'winston';
-import { Address } from 'cluster';
+import { inject, injectable } from "tsyringe";
 
-import DefaultHandler from './handlers/DefaultHandlers';
 import AuthenticationHandler from './handlers/AuthenticationHandler';
+import DefaultHandler from './handlers/DefaultHandlers';
 import ErrorHandler from './handlers/ErrorHandler';
 import NotFoundHandler from './handlers/NotFoundHandler';
 import SwaggerHandler from './handlers/SwaggerHandler';
-var path = require('path');
+const path = require('path');
 
 import { ICustomRoute, IServer } from '../types';
 
@@ -24,14 +24,14 @@ export default class Server implements IServer {
     }
 
     startServer(): void {
-        const Server: http.Server = http.createServer(this.app);
-        Server.listen(this.app.get('port'));
-        Server.on('error', (error: Error) => onError(error, this.app.get('port')));
-        Server.on('listening', onListening.bind(Server));
+        const server: http.Server = http.createServer(this.app);
+        server.listen(this.app.get('port'));
+        server.on('error', (error: Error) => onError(error, this.app.get('port')));
+        server.on('listening', onListening.bind(server));
     }
 
     createAppWithRoutes(): Application {
-        var routeHandlers = this.customRoutes;
+        const routeHandlers = this.customRoutes;
         return this.createApp(routeHandlers);
     }
 
@@ -45,7 +45,7 @@ export default class Server implements IServer {
         }
 
         if (routes && routes.length > 0) {
-            for (var route of routes) {
+            for (const route of routes) {
                 route.configureRouter(this.app);
             }
         }
@@ -53,10 +53,10 @@ export default class Server implements IServer {
         SwaggerHandler(this.app, this.logger);
 
 
-        this.app.use('/assets', express.static(path.resolve(__dirname + '/../assets')));
-        this.app.use('/static', express.static(path.resolve(__dirname + '/../public/static')));
+        this.app.use('/assets', express.static(path.resolve(`${__dirname}/../assets`)));
+        this.app.use('/static', express.static(path.resolve(`${__dirname}/../public/static`)));
         this.app.use(/^\/(?!api).*/, (req, res) => {
-            res.sendFile(path.resolve(__dirname + '/../public/index.html'));
+            res.sendFile(path.resolve(`${__dirname}/../public/index.html`));
         })
 
         ErrorHandler(this.app);
@@ -92,6 +92,8 @@ function onError(error: NodeJS.ErrnoException, port: number | string | boolean):
             break;
         case 'EADDRINUSE':
             console.error(`${bind} is already in use`);
+            break;
+        default:
             break;
     }
     process.exit(1);

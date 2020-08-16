@@ -1,0 +1,56 @@
+{
+    "env": {
+        "browser": true,
+        "es2020": true
+    },
+    "extends": [
+        "@spotify"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 11,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "sort-class-members",
+        "@typescript-eslint",
+        "typescript-sort-keys"
+    ],
+    "rules": {
+        "radix": "off",
+        "new-cap": "off",
+        "jest/valid-expect": "off",
+        "typescript-sort-keys/interface": "error",
+        "typescript-sort-keys/string-enum": "error",
+        "no-console": "off",
+        "sort-class-members/sort-class-members": [
+            2,
+            {
+                "sort": "alphabetical",
+                "order": [
+                    "[static-properties]",
+                    "[static-methods]",
+                    "[properties]",
+                    "[conventional-private-properties]",
+                    "constructor",
+                    "[methods]",
+                    "[conventional-private-methods]"
+                ],
+                "accessorPairPositioning": "getThenSet"
+            }
+        ],
+        "sort-imports": [
+            "error",
+            {
+                "allowSeparatedGroups": true,
+                "ignoreCase": true,
+                "memberSyntaxSortOrder": [
+                    "none",
+                    "all",
+                    "single",
+                    "multiple"
+                ]
+            }
+        ]
+    }
+}

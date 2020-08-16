@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-import { injectable, inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
+import { NextFunction, Request, Response } from "express";
 
-import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
-import { ISubscriptionService } from "../types";
+import { ISubscriptionService } from "@types";
+import { BaseRoute, RouteConfig, RoutePrefix } from "./BaseRoute";
 
 @injectable()
 @RoutePrefix("/api/subscriptions")
@@ -15,7 +15,7 @@ export default class SubscriptionRoute extends BaseRoute {
     @RouteConfig("get", "/:id")
     async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            let subscription = await this.subscriptionService.getSubscription(req.params.id);
+            const subscription = await this.subscriptionService.getSubscription(req.params.id);
             res.status(200).json(subscription);
         } catch (error) {
             next(error);
@@ -55,7 +55,7 @@ export default class SubscriptionRoute extends BaseRoute {
     @RouteConfig("get", "/")
     async get(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            let subscriptions = await this.subscriptionService.listSubscription();
+            const subscriptions = await this.subscriptionService.listSubscription();
             res.status(200).json({
                 subscriptions: subscriptions
             });

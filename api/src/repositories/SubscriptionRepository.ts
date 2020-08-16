@@ -1,7 +1,8 @@
-import { injectable, inject } from "tsyringe";
-import { ISubscriptionRepository } from "types";
-import { ISubscriptionSchema } from "schemas";
-import { ISubscription } from "models";
+import { inject, injectable } from "tsyringe";
+
+import { ISubscription } from "@models";
+import { ISubscriptionRepository } from "@types";
+import { ISubscriptionSchema } from "@schemas";
 
 @injectable()
 export default class SubscriptionRepository implements ISubscriptionRepository {
@@ -9,10 +10,10 @@ export default class SubscriptionRepository implements ISubscriptionRepository {
     constructor(@inject("SubscriptionSchema") private subscriptionSchema: ISubscriptionSchema) {
     }
 
-    async listPaged(skip: number, take: number, order: string = "desc"): Promise<{ subscriptions: ISubscription[]; nextSkip: number; }> {
-        var nextSkip = 0;
-        var totalSubscriptions = await this.subscriptionSchema.count({});
-        var subscriptionList = await this.subscriptionSchema.find({})
+    async listPaged(skip: number, take: number, order: string = "desc"): Promise<{ nextSkip: number; subscriptions: ISubscription[]; }> {
+        let nextSkip = 0;
+        const totalSubscriptions = await this.subscriptionSchema.count({});
+        const subscriptionList = await this.subscriptionSchema.find({})
             .sort(order)
             .skip(skip)
             .limit(take);

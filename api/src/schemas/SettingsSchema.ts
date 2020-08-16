@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { ISettings } from "models";
+
+import { ISettings } from "@models";
 
 const SettingsSchemaDetails = new mongoose.Schema(
     {

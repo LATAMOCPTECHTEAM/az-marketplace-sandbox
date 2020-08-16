@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-import { injectable, inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
+import { NextFunction, Request, Response } from "express";
 
-import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
-import { IOperationService } from "../types";
+import { IOperationService } from "@types";
+import { BaseRoute, RouteConfig, RoutePrefix } from "./BaseRoute";
 
 @injectable()
 @RoutePrefix("/api/operations")
@@ -35,7 +35,7 @@ export default class OperationRoute extends BaseRoute {
     @RouteConfig("post", "/suspend")
     async suspend(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            var webhookSent = await this.operationService.simulateSuspend(req.body);
+            const webhookSent = await this.operationService.simulateSuspend(req.body);
             res.status(200).json(webhookSent ? "OK" : { warning: "Failed to send webhook, please check the application logs." });
         } catch (error) {
             next(error);
@@ -45,7 +45,7 @@ export default class OperationRoute extends BaseRoute {
     @RouteConfig("post", "/unsubscribe")
     async unsubscribe(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            var webhookSent = await this.operationService.simulateUnsubscribe(req.body);
+            const webhookSent = await this.operationService.simulateUnsubscribe(req.body);
             res.status(200).json(webhookSent ? "OK" : { warning: "Failed to send webhook, please check the application logs." });
         } catch (error) {
             next(error);
@@ -55,7 +55,7 @@ export default class OperationRoute extends BaseRoute {
     @RouteConfig("post", "/reinstate")
     async reinstate(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            var webhookSent = await this.operationService.simulateReinstate(req.body);
+            const webhookSent = await this.operationService.simulateReinstate(req.body);
             res.status(200).json(webhookSent ? "OK" : { warning: "Failed to send webhook, please check the application logs." });
         } catch (error) {
             next(error);
@@ -65,7 +65,7 @@ export default class OperationRoute extends BaseRoute {
     @RouteConfig("post", "/changePlan")
     async changePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            var { webhookSent } = await this.operationService.changePlan(req.body.subscriptionId, req.body.planId, req.body.id, req.body.activityId, req.body.timeStamp);
+            const { webhookSent } = await this.operationService.changePlan(req.body.subscriptionId, req.body.planId, req.body.id, req.body.activityId, req.body.timeStamp);
             res.status(200).json(webhookSent ? "OK" : { warning: "Failed to send webhook, please check the application logs." });
         } catch (error) {
             next(error);
@@ -75,7 +75,7 @@ export default class OperationRoute extends BaseRoute {
     @RouteConfig("post", "/changeQuantity")
     async changeQuantity(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            var { webhookSent } = await this.operationService.changeQuantity(req.body.subscriptionId, req.body.planId, req.body.id, req.body.activityId, req.body.timeStamp);
+            const { webhookSent } = await this.operationService.changeQuantity(req.body.subscriptionId, req.body.planId, req.body.id, req.body.activityId, req.body.timeStamp);
             res.status(200).json(webhookSent ? "OK" : { warning: "Failed to send webhook, please check the application logs." });
         } catch (error) {
             next(error);
@@ -85,7 +85,7 @@ export default class OperationRoute extends BaseRoute {
     @RouteConfig("get", "/:subscriptionId")
     async list(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            let operations = await this.operationService.list(req.params.subscriptionId);
+            const operations = await this.operationService.list(req.params.subscriptionId);
             res.status(200).json(operations);
         } catch (error) {
             next(error);

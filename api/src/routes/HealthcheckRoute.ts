@@ -1,16 +1,12 @@
-import { Request, Response, NextFunction } from "express";
 import { injectable } from "tsyringe";
+import { Request, Response } from "express";
 
-import { RouteConfig, BaseRoute, RoutePrefix } from "./BaseRoute";
-import { IHealthcheck } from "../types";
+import { IHealthcheck } from "@types";
+import { BaseRoute, RouteConfig, RoutePrefix } from "./BaseRoute";
 
 @injectable()
 @RoutePrefix("/api/health")
 export default class HealthcheckRoute extends BaseRoute implements IHealthcheck {
-
-    constructor() {
-        super();
-    }
 
     /**
     * GET /api/health 
@@ -32,7 +28,7 @@ export default class HealthcheckRoute extends BaseRoute implements IHealthcheck 
     *         description: "Internal Server Error"
     */
     @RouteConfig("get", "/")
-    async health(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async health(req: Request, res: Response): Promise<void> {
         res.status(200).json("OK");
     }
 }

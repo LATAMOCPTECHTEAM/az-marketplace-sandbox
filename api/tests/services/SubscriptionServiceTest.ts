@@ -1,17 +1,18 @@
-//# Imports Default
+// # Imports Default
 import "reflect-metadata";
 import chai, { expect } from 'chai';
+// eslint-disable-next-line sort-imports
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 
 import 'mocha';
 import { StubbedInstance, stubInterface as StubInterface } from "ts-sinon";
 
-//# Imports
-import SubscriptionService from "../../src/services/SubscriptionService";
-import { ISubscriptionRepository } from "../../src/types";
-import { ISubscription } from "../../src/models";
+// # Imports
 import { ESubscriptionStatus } from "../../src/enums";
+import { ISubscription } from "../../src/models";
+import { ISubscriptionRepository } from "../../src/types";
+import SubscriptionService from "../../src/services/SubscriptionService";
 
 describe('Services: SubscriptionService', () => {
     let subscriptionRepository: StubbedInstance<ISubscriptionRepository>;
@@ -54,7 +55,6 @@ describe('Services: SubscriptionService', () => {
         };
     }
 
-
     function createDummySubscriptionValidForActivation(): ISubscription {
         return {
             id: "1",
@@ -90,16 +90,16 @@ describe('Services: SubscriptionService', () => {
 
     describe('getSubscription', () => {
         it('should return subscription from the database with the provided Id', async () => {
-            let subscription = createDummySubscription();
+            const subscription = createDummySubscription();
 
-            let spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            const spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
 
             await expect(subscriptionService.getSubscription("1")).to.eventually.equal(subscription);
             expect(spy.calledOnce).equals(true);
         });
 
         it('should throw an error if subscription is not found', async () => {
-            let spy = subscriptionRepository.getById.withArgs("1").resolves(null);
+            const spy = subscriptionRepository.getById.withArgs("1").resolves(null);
 
             await expect(subscriptionService.getSubscription("1"))
                 .to.eventually.be.rejectedWith("Subscription not found.")
@@ -111,9 +111,9 @@ describe('Services: SubscriptionService', () => {
 
     describe('deleteSubscription', () => {
         it('should delete the subscription provided Id', async () => {
-            let subscription = createDummySubscription();
+            const subscription = createDummySubscription();
             subscriptionRepository.getById.withArgs("1").resolves(subscription);
-            let spy2 = subscriptionRepository.deleteById.withArgs("1").resolves(subscription);
+            const spy2 = subscriptionRepository.deleteById.withArgs("1").resolves(subscription);
 
             await subscriptionService.deleteSubscription("1");
             expect(spy2.calledOnce).equals(true);
@@ -121,7 +121,7 @@ describe('Services: SubscriptionService', () => {
 
         it('should throw an error if subscription is not found', async () => {
             subscriptionRepository.getById.withArgs("1").resolves(null);
-            let deleteSpy = subscriptionRepository.deleteById.withArgs("1");
+            const deleteSpy = subscriptionRepository.deleteById.withArgs("1");
 
             await expect(subscriptionService.getSubscription("1"))
                 .to.eventually.be.rejectedWith("Subscription not found.")
@@ -132,9 +132,9 @@ describe('Services: SubscriptionService', () => {
 
     describe('listSubscription', () => {
         it('should return the subscription list from the database ordered', async () => {
-            let subscription = createDummySubscription();
-            let subscriptionList = [subscription];
-            let spy = subscriptionRepository.listByCreationDateDescending.resolves(subscriptionList);
+            const subscription = createDummySubscription();
+            const subscriptionList = [subscription];
+            const spy = subscriptionRepository.listByCreationDateDescending.resolves(subscriptionList);
 
             await expect(subscriptionService.listSubscription()).to.eventually.equal(subscriptionList);
             expect(spy.calledOnce).equals(true);
@@ -143,10 +143,10 @@ describe('Services: SubscriptionService', () => {
 
     describe('listSubscriptionPaged', () => {
         it('should return the subscription list from the database paged', async () => {
-            let subscription = createDummySubscription();
-            let subscriptionList = [subscription];
-            let subscriptionPagedResult = { subscriptions: subscriptionList, nextSkip: 11 };
-            let spy = subscriptionRepository.listPaged.withArgs(10, 10, "desc").resolves(subscriptionPagedResult);
+            const subscription = createDummySubscription();
+            const subscriptionList = [subscription];
+            const subscriptionPagedResult = { subscriptions: subscriptionList, nextSkip: 11 };
+            const spy = subscriptionRepository.listPaged.withArgs(10, 10, "desc").resolves(subscriptionPagedResult);
 
             await expect(subscriptionService.listSubscriptionPaged(10)).to.eventually.equal(subscriptionPagedResult);
             expect(spy.calledOnce).equals(true);
@@ -155,9 +155,9 @@ describe('Services: SubscriptionService', () => {
 
     describe('createSubscription', () => {
         it('should create the subscription provided Id', async () => {
-            let subscription = createDummySubscription();
-            let spy = subscriptionRepository.getById.withArgs("1").resolves(null);
-            let spy2 = subscriptionRepository.create.withArgs(subscription);
+            const subscription = createDummySubscription();
+            const spy = subscriptionRepository.getById.withArgs("1").resolves(null);
+            const spy2 = subscriptionRepository.create.withArgs(subscription);
 
             await subscriptionService.createSubscription(subscription);
             expect(spy.calledOnce).equals(true);
@@ -165,8 +165,8 @@ describe('Services: SubscriptionService', () => {
         });
 
         it('should throw an error if subscription with the same id already exists', async () => {
-            let subscription = createDummySubscription();
-            let spy = subscriptionRepository.getById.withArgs(subscription.id).resolves(subscription);
+            const subscription = createDummySubscription();
+            const spy = subscriptionRepository.getById.withArgs(subscription.id).resolves(subscription);
 
             await expect(subscriptionService.createSubscription(subscription))
                 .to.eventually.be.rejectedWith("Subscription already exists.")
@@ -177,11 +177,11 @@ describe('Services: SubscriptionService', () => {
 
     describe('updateSubscription', () => {
         it('should update the subscription provided Id', async () => {
-            let subscription = createDummySubscription();
-            let updateSubscription = { ...subscription };
+            const subscription = createDummySubscription();
+            const updateSubscription = { ...subscription };
             updateSubscription.name = "sub2";
-            let spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
-            let spy2 = subscriptionRepository.updateOne.withArgs(subscription.id, updateSubscription);
+            const spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            const spy2 = subscriptionRepository.updateOne.withArgs(subscription.id, updateSubscription);
 
             await subscriptionService.updateSubscription(updateSubscription);
             expect(spy.calledOnce).equals(true);
@@ -189,10 +189,10 @@ describe('Services: SubscriptionService', () => {
         });
 
         it('should throw an error if subscription doest exists exists', async () => {
-            let subscription = createDummySubscription();
-            let updateSubscription = { ...subscription };
+            const subscription = createDummySubscription();
+            const updateSubscription = { ...subscription };
             updateSubscription.name = "sub2";
-            let spy = subscriptionRepository.getById.withArgs("1").resolves(null);
+            const spy = subscriptionRepository.getById.withArgs("1").resolves(null);
 
             await expect(subscriptionService.updateSubscription(updateSubscription))
                 .to.eventually.be.rejectedWith("Subscription not found.")
@@ -203,11 +203,11 @@ describe('Services: SubscriptionService', () => {
 
     describe('activateSubscription', () => {
         it('should activate the subscription if all conditions are met', async () => {
-            let subscription = createDummySubscriptionValidForActivation();
-            let updateSubscription = { ...subscription };
+            const subscription = createDummySubscriptionValidForActivation();
+            const updateSubscription = { ...subscription };
             updateSubscription.saasSubscriptionStatus = ESubscriptionStatus.Subscribed;
-            let spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
-            let spy2 = subscriptionRepository.updateOne.withArgs(subscription.id, updateSubscription);
+            const spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            const spy2 = subscriptionRepository.updateOne.withArgs(subscription.id, updateSubscription);
 
             await subscriptionService.activateSubscription(subscription.id, subscription.planId, subscription.quantity);
             expect(spy.calledOnce).equals(true);
@@ -215,10 +215,10 @@ describe('Services: SubscriptionService', () => {
         });
 
         it('should should not update the subscription if status is already subscribed', async () => {
-            let subscription = createDummySubscriptionValidForActivation();
+            const subscription = createDummySubscriptionValidForActivation();
             subscription.saasSubscriptionStatus = ESubscriptionStatus.Subscribed;
-            let spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
-            let spyUpdate = subscriptionRepository.updateOne;
+            const spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            const spyUpdate = subscriptionRepository.updateOne;
 
             await subscriptionService.activateSubscription(subscription.id, subscription.planId, subscription.quantity);
             expect(spyGet.calledOnce).equals(true);
@@ -226,10 +226,10 @@ describe('Services: SubscriptionService', () => {
         });
 
         it('should thow an error if subscription status is different from PendingFulfillmentStart', async () => {
-            let subscription = createDummySubscriptionValidForActivation();
+            const subscription = createDummySubscriptionValidForActivation();
             subscription.saasSubscriptionStatus = ESubscriptionStatus.Unsubscribed;
-            let spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
-            let spyUpdate = subscriptionRepository.updateOne;
+            const spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            const spyUpdate = subscriptionRepository.updateOne;
 
             await expect(subscriptionService.activateSubscription(subscription.id, subscription.planId, subscription.quantity))
                 .to.eventually.be.rejectedWith("To Activate a Subscription, the status must be 'NotStarted' or 'PendingFulfillmentStart'")
@@ -241,10 +241,10 @@ describe('Services: SubscriptionService', () => {
         });
 
         it('should thow an error if subscription plan is different from the planId provided', async () => {
-            let subscription = createDummySubscriptionValidForActivation();
+            const subscription = createDummySubscriptionValidForActivation();
             subscription.saasSubscriptionStatus = ESubscriptionStatus.PendingFulfillmentStart;
-            let spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
-            let spyUpdate = subscriptionRepository.updateOne;
+            const spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            const spyUpdate = subscriptionRepository.updateOne;
 
             await expect(subscriptionService.activateSubscription(subscription.id, "anythingelse", subscription.quantity))
                 .to.eventually.be.rejectedWith("PlanId divergence.")
@@ -256,9 +256,9 @@ describe('Services: SubscriptionService', () => {
         });
 
         it('should thow an error if subscription quantity is different from the quantity provided', async () => {
-            let subscription = createDummySubscriptionValidForActivation();
-            let spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
-            let spyUpdate = subscriptionRepository.updateOne;
+            const subscription = createDummySubscriptionValidForActivation();
+            const spyGet = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            const spyUpdate = subscriptionRepository.updateOne;
 
             await expect(subscriptionService.activateSubscription(subscription.id, subscription.planId, "2"))
                 .to.eventually.be.rejectedWith("Quantity divergence.")
@@ -270,12 +270,12 @@ describe('Services: SubscriptionService', () => {
         });
 
         it('should activate the subscription if all conditions are met with quantities null', async () => {
-            let subscription = createDummySubscriptionValidForActivation();
+            const subscription = createDummySubscriptionValidForActivation();
             subscription.quantity = null;
-            let updateSubscription = { ...subscription };
+            const updateSubscription = { ...subscription };
             updateSubscription.saasSubscriptionStatus = ESubscriptionStatus.Subscribed;
-            let spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
-            let spy2 = subscriptionRepository.updateOne.withArgs(subscription.id, updateSubscription);
+            const spy = subscriptionRepository.getById.withArgs("1").resolves(subscription);
+            const spy2 = subscriptionRepository.updateOne.withArgs(subscription.id, updateSubscription);
 
             await subscriptionService.activateSubscription(subscription.id, subscription.planId, undefined);
             expect(spy.calledOnce).equals(true);

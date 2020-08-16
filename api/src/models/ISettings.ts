@@ -1,13 +1,13 @@
 export default interface ISettings {
-    landingPageUrl: string;
-    webhookUrl: string;
-    publisherId: string;
-    offerId: string;
     beneficiaryTenantId: string;
-    purchaserTenantId: string;
+    landingPageUrl: string;
+    offerId: string;
     plans: {
-        planId: string,
         displayName: string,
-        isPrivate: boolean
-    }[]
+        isPrivate: boolean,
+        planId: string
+    }[],
+    publisherId: string;
+    purchaserTenantId: string;
+    webhookUrl: string;
 }

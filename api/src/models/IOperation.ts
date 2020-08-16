@@ -1,12 +1,12 @@
 export default interface IOperation{
-    id: string;
-    activityId: string;
-    subscriptionId: string;
-    offerId: string;
-    publisherId: string;
-    planId: string;
-    quantity: string;
     action: string;
-    timeStamp: string;
+    activityId: string;
+    id: string;
+    offerId: string;
+    planId: string;
+    publisherId: string;
+    quantity: string;
     status: string;
+    subscriptionId: string;
+    timeStamp: string;
 }

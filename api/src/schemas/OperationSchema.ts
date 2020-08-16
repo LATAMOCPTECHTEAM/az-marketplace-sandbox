@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { IOperation } from "models";
+
+import { IOperation } from "@models";
 
 const OperationSchemaDetails = new mongoose.Schema(
     {

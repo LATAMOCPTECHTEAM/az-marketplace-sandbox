@@ -1,10 +1,9 @@
-import { injectable, inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 
-
-import { ISubscriptionService, ISubscriptionRepository } from "types";
-import { ISubscription } from "models";
-import { ESubscriptionStatus } from "enums";
-import { NotFoundError, BadRequestError, ValidationError } from "errors";
+import { ESubscriptionStatus } from "@enums";
+import { ISubscription } from "@models";
+import { BadRequestError, NotFoundError } from "@errors";
+import { ISubscriptionRepository, ISubscriptionService } from "@types";
 
 @injectable()
 export default class SubscriptionService implements ISubscriptionService {
@@ -12,25 +11,25 @@ export default class SubscriptionService implements ISubscriptionService {
     constructor(@inject("ISubscriptionRepository") private subscriptionRepository: ISubscriptionRepository) {
     }
 
-    async listSubscriptionPaged(skip: number): Promise<{ subscriptions: ISubscription[]; nextSkip: number; }> {
-        let pagedList = await this.subscriptionRepository.listPaged(skip, 10, "desc");
+    async listSubscriptionPaged(skip: number): Promise<{ nextSkip: number; subscriptions: ISubscription[]; }> {
+        const pagedList = await this.subscriptionRepository.listPaged(skip, 10, "desc");
         return pagedList;
     }
 
     async activateSubscription(id: string, planId: string, quantity: string) {
-        var subscription: ISubscription = await this.subscriptionRepository.getById(id);
+        const subscription: ISubscription = await this.subscriptionRepository.getById(id);
 
-        if (subscription.saasSubscriptionStatus == "Subscribed")
+        if (subscription.saasSubscriptionStatus === ESubscriptionStatus.Subscribed)
             return;
 
-        if (subscription.saasSubscriptionStatus != "PendingFulfillmentStart")
+        if (subscription.saasSubscriptionStatus !== ESubscriptionStatus.PendingFulfillmentStart)
             throw new BadRequestError("To Activate a Subscription, the status must be 'NotStarted' or 'PendingFulfillmentStart'");
 
-        if (subscription.planId != planId)
+        if (subscription.planId !== planId)
             throw new BadRequestError("PlanId divergence.");
 
         if (!!(subscription.quantity) || !!(quantity)) {
-            if (subscription.quantity != quantity) {
+            if (subscription.quantity !== quantity) {
                 throw new BadRequestError("Quantity divergence.");
             }
         }
@@ -54,7 +53,7 @@ export default class SubscriptionService implements ISubscriptionService {
     }
 
     async getSubscription(id: string): Promise<ISubscription> {
-        let subscription = await this.subscriptionRepository.getById(id);
+        const subscription = await this.subscriptionRepository.getById(id);
         if (!subscription) {
             throw new NotFoundError("Subscription not found.");
         }

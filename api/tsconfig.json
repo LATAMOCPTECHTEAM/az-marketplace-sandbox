@@ -3,7 +3,7 @@
         "module": "commonjs",
         "target": "ES5",
         "outDir": "bin",
-        "rootDir": "src",
+        "rootDir": ".",
         "sourceMap": true,
         "downlevelIteration": true,
         "experimentalDecorators": true,
@@ -11,17 +11,17 @@
         "esModuleInterop": true,
         "baseUrl": ".",
         "paths": {
-            "*": [
+            "@*": [
                 "node_modules/*",
                 "src/*"
             ]
         }
     },
     "exclude": [
-        "tests",
         "node_modules"
     ],
     "include": [
-        "src"
+        "src",
+        "tests"
     ]
 }

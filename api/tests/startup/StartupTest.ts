@@ -1,13 +1,12 @@
-//# Imports Default
+// Imports Default
 import "reflect-metadata";
-import { expect } from 'chai';
 import 'mocha';
-import { StubbedInstance, stubInterface as StubInterface, } from "ts-sinon";
+import { expect } from 'chai';
+import { StubbedInstance, stubInterface } from "ts-sinon";
 
-//# Imports
-
-import Startup from "../../src/Startup"
-import { IServer } from "../../src/types";
+// Imports
+import { IServer } from "@types";
+import Startup from "@Startup"
 
 describe('Startup: Startup', () => {
     let serverStub: StubbedInstance<IServer>;
@@ -15,20 +14,18 @@ describe('Startup: Startup', () => {
     let startup: Startup;
 
     beforeEach(() => {
-        serverStub = StubInterface<IServer>();
+        serverStub = stubInterface<IServer>();
 
         startup = new Startup(serverStub);
     })
 
     describe('install', () => {
         it('should run install command with args parameter and return result', async () => {
-         
-            var serverStartSpy = serverStub.startServer;
-            var serverCreateAppSpy = serverStub.createAppWithRoutes;
 
+            const serverStartSpy = serverStub.startServer;
+            const serverCreateAppSpy = serverStub.createAppWithRoutes;
 
             await startup.main();
-
 
             expect(serverCreateAppSpy.calledOnce).equals(true);
             expect(serverStartSpy.calledOnce).equals(true);
