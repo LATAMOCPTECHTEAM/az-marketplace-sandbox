@@ -1,11 +1,10 @@
 import { injectable, inject } from "tsyringe";
 
-import { ESubscriptionStatus } from "../enums";
 
 import { ISubscriptionService, ISubscriptionRepository } from "types";
 import { ISubscription } from "models";
-
-import { NotFoundError, BadRequestError, ValidationError } from "../errors";
+import { ESubscriptionStatus } from "enums";
+import { NotFoundError, BadRequestError, ValidationError } from "errors";
 
 @injectable()
 export default class SubscriptionService implements ISubscriptionService {

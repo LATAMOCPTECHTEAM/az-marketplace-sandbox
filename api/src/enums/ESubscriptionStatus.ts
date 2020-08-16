@@ -1,4 +1,3 @@
-console.log("ESubscriptionStatus")
 enum ESubscriptionStatus {
     PendingFulfillmentStart = "PendingFulfillmentStart",
     Subscribed = "Subscribed",
