@@ -24,7 +24,7 @@ jobs:
         path: .
         add_git_labels: true
         push: true
-    - name: Helm tool installer
+    - name: Install Helm Tool
       uses: Azure/setup-helm@v1
       with:
         version: 3.0.0
