@@ -5,12 +5,18 @@ on:
   release:
     types: [prereleased]
 
-env:
-  AZURE_WEBAPP_NAME: contosoweather  
-  AZURE_WEBAPP_SLOT: staging
- 
 jobs:
   greet:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v1.1.0
+      with:
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        repository: latamocptechteam/az-marketplace-sandbox
+        tags: ${{ github.event.release.tag_name }}
+        path: .
+        add_git_labels: true
+        push: true
