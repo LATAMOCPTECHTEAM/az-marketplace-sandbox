@@ -1,0 +1,16 @@
+name: Deployment [Staging]
+
+on:
+  workflow_dispatch:
+  release:
+    types: [prereleased]
+
+env:
+  AZURE_WEBAPP_NAME: contosoweather  
+  AZURE_WEBAPP_SLOT: staging
+ 
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
