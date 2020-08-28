@@ -36,3 +36,4 @@ jobs:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: deployment
         asset_name: ${{ env.helmPackageFile }}
+        asset_content_type: application/x-tar
