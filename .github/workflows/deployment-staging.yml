@@ -5,6 +5,10 @@ on:
   release:
     types: [prereleased]
 
+env:
+  tag: ${{ github.event.release.tag_name }}
+  helmPackageFile: az-marketplace-sandbox-${{ github.event.release.tag_name }}.tgz
+
 jobs:
   greet:
     runs-on: ubuntu-latest
@@ -20,3 +24,13 @@ jobs:
         path: .
         add_git_labels: true
         push: true
+    - name: Helm tool installer
+      uses: Azure/setup-helm@v1
+    - name: Package Project
+      run: cd deployment && helm package az-marketplace-sandbox --version ${{ env.tag }} --set image.tag=${{ env.tag }}
+    - name: Upload a Release Asset
+      uses: actions/upload-release-asset@v1.0.2
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: deployment
+        asset_name: ${{ env.helmPackageFile }}
