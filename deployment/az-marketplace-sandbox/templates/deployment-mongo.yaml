@@ -1,0 +1,46 @@
+{{- if .Values.database.create -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "az-marketplace-sandbox.fullname" . }}-db
+  labels:
+    {{- include "az-marketplace-sandbox.labels" . | nindent 4 }}
+    {{- include "az-marketplace-sandbox.selectorDatabase" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "az-marketplace-sandbox.selectorLabels" . | nindent 6 }}
+      {{- include "az-marketplace-sandbox.selectorDatabase" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "az-marketplace-sandbox.selectorLabels" . | nindent 8 }}
+        {{- include "az-marketplace-sandbox.selectorDatabase" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "az-marketplace-sandbox.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.database.image }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 27017
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end }}
