@@ -32,6 +32,8 @@ jobs:
       run: cd deployment && helm package az-marketplace-sandbox --version ${{ env.tag }} --set image.tag=${{ env.tag }}
     - name: Upload a Release Asset
       uses: actions/upload-release-asset@v1.0.2
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: deployment/${{ env.helmPackageFile }}
