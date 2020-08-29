@@ -1,9 +1,9 @@
-name: Deployment [Staging]
+name: Deployment [Production]
 
 on:
   workflow_dispatch:
   release:
-    types: [prereleased]
+    types: [released]
 
 env:
   tag: ${{ github.event.release.tag_name }}
