@@ -34,6 +34,6 @@ jobs:
       uses: actions/upload-release-asset@v1.0.2
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: deployment
-        asset_name: ${{ env.helmPackageFile }}
+        asset_path: deployment/${{ env.helmPackageFile }}
+        asset_name: Helm Chart
         asset_content_type: application/x-tar
