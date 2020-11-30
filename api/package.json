@@ -18,7 +18,7 @@
         "copy-assets": "cpx 'src/assets/**' 'bin/assets'"
     },
     "dependencies": {
-        "@types/mongoose": "^5.7.21",
+        "@types/mongoose": "5.7.21",
         "body-parser": "1.18.2",
         "chance": "^1.1.6",
         "class-validator": "^0.12.2",
