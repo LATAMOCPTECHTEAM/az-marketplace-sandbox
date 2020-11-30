@@ -21,6 +21,8 @@ FROM base as build-api
 WORKDIR /build
 
 COPY ./api/package.json package.json
+COPY ./api/package-lock.json package-lock.json
+
 RUN npm install
 
 COPY ./api .

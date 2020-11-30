@@ -1,0 +1,4 @@
+node_modules
+bin
+.nyc_output
+.vscode
