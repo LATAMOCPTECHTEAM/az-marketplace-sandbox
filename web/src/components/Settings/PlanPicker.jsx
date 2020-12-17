@@ -17,7 +17,6 @@ export default class PlanPicker extends Component {
     }
 
     async componentDidMount() {
-        debugger;
         if (this.props.planOptions) {
             this.setState({ planOptions: this.props.planOptions });
         } else {

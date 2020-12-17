@@ -44,7 +44,7 @@ export interface ISubscriptionService {
 export interface IOperationService {
     delete(operationId: string);
     sendWebhook(operationId: string);
-    confirmChangePlan(operationId: string, subscriptionId: string, planId: string, quantity: string, status: string);
+    confirmChangePlan(operationId: string, subscriptionId: string, status: string);
     changePlan(subscriptionId: string, planId: string, id?: string, activityId?: string, timeStamp?: string): Promise<{ id: string, webhookSent: boolean }>;
     changeQuantity(subscriptionId: string, quantity: string, id?: string, activityId?: string, timeStamp?: string): Promise<{ id: string, webhookSent: boolean }>;
     simulateSuspend(operation: IOperation): Promise<boolean>;
