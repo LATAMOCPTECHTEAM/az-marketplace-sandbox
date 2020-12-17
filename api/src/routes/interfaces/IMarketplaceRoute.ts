@@ -473,4 +473,78 @@ export default interface IMarketplaceRoute extends BaseRoute {
     *                 $ref: '#/components/schemas/InternalServerError'
     */
    getOperation(req: Request, res: Response, next: NextFunction);
+
+    /**
+    * GET /api/saas/subscriptions/{subscriptionId}
+    * @swagger
+    * /api/saas/subscriptions/{subscriptionId}/operations/{operationId}:
+    *   patch:
+    *     tags:
+    *     - "Operations"
+    *     summary: "Update the status of an operation"
+    *     description: "<p>Use this API to update the status of a pending operation to indicate the operation's success or failure on the publisher side.
+
+                            The operationId for this API call can be retrieved from the value returned by Operation-Location, the get pending Operations API call, or the <id> parameter value received in a webhook call.</p>
+    *                   <br/>
+    *                   <a href=\"https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-the-status-of-an-operation\" target=\"_blank\">Official Documentation</a>"
+    *     parameters:
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) A unique string value for tracking the request from the client, preferably a GUID. If this value isn't provided, one will be generated and provided in the response headers."
+    *       name: x-ms-requestid
+    *       schema:
+    *         type: string
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) A unique string value for operation on the client. This parameter correlates all events from client operation with events on the server side. If this value isn't provided, one will be generated and provided in the response headers."
+    *       name: x-ms-correlationid
+    *       schema:
+    *         type: string
+    *     - in: header
+    *       description: "(Ignored by the Sandbox) Get JSON web token (JWT) bearer token. For example: \"Bearer <access_token>\". https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration#get-a-token-based-on-the-azure-ad-app"
+    *       name: authorization
+    *       schema:
+    *         type: string
+    *     - in: path
+    *       description: "A unique identifier of the SaaS subscription that's obtained after resolving the token via Resolve API."
+    *       name: subscriptionId
+    *       schema:
+    *         type: string
+    *       required: true
+    *     - in: path
+    *       description: "The unique identifier of the operation being retrieved."
+    *       name: operationId
+    *       schema:
+    *         type: string
+    *       required: true
+    *     - in: query
+    *       name: api-version
+    *       description: "The version of the API to use for this request. The Sandbox API currently validates against the API Version=2018-08-31"
+    *       required: true
+    *       example: "2018-08-31"
+    *     requestBody:
+    *       description: "Request payload example"
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             properties:
+    *               status:
+    *                 type: string
+    *                 description: "Allowed Values: Success/Failure. Indicates the status of the operation on ISV side."
+    *                 example: "Success"
+    *     responses:
+    *       200:
+    *         description: Success
+    *       403:
+    *         description: Unauthorized. The authentication token wasn't provided or is invalid, or the request is attempting to access an acquisition that doesn't belong to the current publisher.
+    *       404:
+    *         description: Not found. The SaaS subscription with subscriptionId or the Operation with operation id is not found.
+    *       500:
+    *         description: "Internal Server Error"
+    *         content:
+    *             application/json:
+    *               schema:
+    *                 $ref: '#/components/schemas/InternalServerError'
+    */
+   patchOperation(req: Request, res: Response, next: NextFunction);
 }

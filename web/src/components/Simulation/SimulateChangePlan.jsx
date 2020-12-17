@@ -49,9 +49,6 @@ export default class SimulateChangePlan extends Component {
 
     updateOperationResponse() {
         var operationResponseState = { ...this.state.operationResponse };
-
-        operationResponseState.planId = this.state.operation.planId;
-        operationResponseState.quantity = this.state.operation.quantity;
         operationResponseState.status = "Success";
 
         this.setState({ operationResponse: operationResponseState });

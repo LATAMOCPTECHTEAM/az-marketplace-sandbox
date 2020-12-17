@@ -156,8 +156,9 @@ export default class MarketplaceRoute extends BaseRoute implements IMarketplaceR
     @RouteConfig("patch", "/:subscriptionId/operations/:operationId")
     async patchOperation(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+            console.log(req.params.operationId)
             this.validateApiVersion(req);
-            await this.operationService.confirmChangePlan(req.params.subscriptionId, req.params.operationId, req.body.planId, req.body.quantity, req.body.status);
+            await this.operationService.confirmChangePlan(req.params.subscriptionId, req.params.operationId, req.body.status);
             res.status(200).json("OK");
         } catch (error) {
             this.handleError(error, res);
