@@ -31,17 +31,19 @@ export default class OperationService implements IOperationService {
         return this.operationRepository.listBySubscriptionDescendingByTimestamp(subscriptionId);;
     }
 
-    async confirmChangePlan(subscriptionId: string, operationId: string, planId: string, quantity: string, status: string) {
+    async confirmChangePlan(subscriptionId: string, operationId: string, status: string) {
         var operation = await this.operationRepository.getById(operationId);
         var subscription = await this.subscriptionRepository.getById(subscriptionId);
 
-        operation.status = status == "Success" ? "Succeeded" : "Failed";
+        operation.status = status == "Success" ? "Succeed" : "Failed";
 
         await this.operationRepository.updateOne(operation.id, operation);
 
-        subscription.planId = planId;
-        subscription.quantity = quantity;
-
+        if (operation.status == "Succeed") {
+            subscription.planId = operation.planId;
+            subscription.quantity = operation.quantity;
+        }
+        
         await this.subscriptionRepository.updateOne(subscription.id, subscription);
     }
 
